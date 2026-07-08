@@ -9,12 +9,10 @@ Plateforme de mise en relation entre artisans et clients, contexte Afrique franc
 ## 2. Constats sur la base de code fournie
 
 **Forces**
-
 - Structure de composants déjà pensée (header, bottom-nav, modales chargées en `fetch`) — bonne base pour un futur passage en composants React.
 - La modale de réservation avait déjà une vraie logique de calendrier (semaine glissante) et de sélection de professionnel : réutilisable.
 
 **Faiblesses corrigées dans cette passe**
-
 - `js/main.js` et `artisan-detail.html` redéfinissaient deux fois les mêmes fonctions (`initHeaderComponents`, `getFlagEmoji`) → conflits silencieux. Corrigé : une seule source de vérité (`main.js`).
 - Couleurs codées en dur dans `modal-reservation.html` (`#0072bc`, `#18181b`…) indépendantes du reste du site → aucune cohérence avec un futur mode sombre. Corrigé : tout passe par les variables CSS du design system.
 - Données mockées génériques (villes françaises, un seul visuel réutilisé pour les 6 artisans, avatar image de chat en `og:image`) → peu crédible pour le contexte réel du produit. Corrigé : données diversifiées (8 métiers, 6 villes ouest/centre-africaines, visuels distincts, prix en FCFA).
@@ -38,6 +36,6 @@ Plateforme de mise en relation entre artisans et clients, contexte Afrique franc
 - `js/main.js` — toute la logique consolidée (thème, favoris en localStorage, recherche, filtres, toasts, rendu des cartes et de la page détail).
 - `js/data/artisans.js` — 8 artisans réalistes, 8 catégories, 4 témoignages.
 
-## 5. To be done
+## 5. Ce qui n'est pas encore fait (volontairement)
 
-`search.html`, `appointments.html`, `favorites.html`, le dashboard artisan et la messagerie ne sont pas construits dans cette passe. Ils sont documentés dans `ROADMAP.md`. Toutes les données sont mockées ; le passage à Supabase est l'étape suivante que nous avons convenu de traiter séparément.
+Conformément à votre règle de livraison itérative : `search.html`, `appointments.html`, `favorites.html`, le dashboard artisan et la messagerie ne sont pas construits dans cette passe. Ils sont documentés dans `ROADMAP.md`. Toutes les données sont mockées ; le passage à Supabase est l'étape suivante que nous avons convenu de traiter séparément.

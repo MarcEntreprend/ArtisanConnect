@@ -26,6 +26,13 @@ const ICONS = {
   mail: '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2m0 16H8V7h11z"/>',
   chat: '<path d="M16.75 13.96c.25.13.41.2.46.3.06.11.04.61-.21 1.18-.2.56-1.24 1.1-1.7 1.12-.46.02-.47.36-2.96-.73-2.49-1.09-3.99-3.75-4.11-3.92-.12-.17-.96-1.38-.92-2.61.05-1.22.69-1.8.95-2.04.24-.26.51-.29.68-.26h.47c.15 0 .36-.06.55.45l.69 1.87c.06.13.1.28.01.44l-.27.41-.39.42c-.12.12-.26.25-.12.5.12.26.62 1.09 1.32 1.78.91.88 1.71 1.17 1.95 1.3.24.14.39.12.54-.04l.81-.94c.19-.25.35-.19.58-.11l1.67.88M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10c-1.97 0-3.8-.57-5.35-1.55L2 22l1.55-4.65A9.969 9.969 0 0 1 2 12 10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8c0 1.72.54 3.31 1.46 4.61L4.5 19.5l2.89-.96A7.95 7.95 0 0 0 12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"/>',
   navigate: '<path d="M21 3 3 10.53v.98l6.84 2.65L12.48 21h.98z"/>',
+  chevronLeft: '<path d="m15 18-6-6 6-6"/>',
+  send: '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/>',
+  trendUp: '<path d="M3 17 9 11 13 15 21 6"/><path d="M15 6h6v6"/>',
+  filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trash: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
 };
 
 function icon(name, size) {
@@ -276,6 +283,11 @@ function initFavoriteButtons() {
     const id = Number(btn.dataset.id);
     const isFav = toggleFavorite(id);
     btn.classList.toggle("active", isFav);
+
+    // Si on est sur la page favoris, on retire immédiatement la carte
+    if (!isFav && document.getElementById("favoritesGrid")) {
+      renderFavoritesPage();
+    }
   });
 }
 
@@ -626,3 +638,674 @@ function renderArtisanDetail(container, a) {
 }
 
 console.log("🛠️ ArtisanConnect chargé");
+
+/* ============================================================
+   15. HELPERS PARTAGÉS
+   ============================================================ */
+function getArtisanById(id) {
+  return artisansData.find((a) => a.id === Number(id));
+}
+
+function formatDateFrLong(iso) {
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
+}
+
+/* ============================================================
+   16. RECHERCHE AVANCÉE (search.html)
+   ============================================================ */
+function initAdvancedSearch() {
+  const grid = document.getElementById("searchResultsGrid");
+  if (!grid) return;
+
+  const catsEl = document.getElementById("filterCategories");
+  const citiesEl = document.getElementById("filterCities");
+  const ratingEl = document.getElementById("filterRating");
+  const priceInput = document.getElementById("filterPrice");
+  const priceValue = document.getElementById("filterPriceValue");
+  const availToday = document.getElementById("filterAvailableToday");
+  const searchInput = document.getElementById("advancedSearchInput");
+  const sortSelect = document.getElementById("sortSelect");
+  const resultCount = document.getElementById("searchResultCount");
+  const emptyState = document.getElementById("searchEmptyState");
+  const filterPanel = document.getElementById("filterPanel");
+
+  const state = {
+    categories: new Set(),
+    cities: new Set(),
+    minRating: 0,
+    maxPrice: 65000,
+    availableToday: false,
+    query: "",
+    sort: "pertinence",
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("q")) {
+    state.query = params.get("q");
+    if (searchInput) searchInput.value = state.query;
+  }
+
+  // --- Catégories ---
+  catsEl.innerHTML = CATEGORIES.map(
+    (c) => `
+      <label class="filter-check">
+        <input type="checkbox" value="${c.slug}" data-filter="category" />
+        ${c.label}
+      </label>`
+  ).join("");
+
+  // --- Villes ---
+  const cities = [...new Set(artisansData.map((a) => a.city))].sort();
+  citiesEl.innerHTML = cities
+    .map(
+      (city) => `
+      <label class="filter-check">
+        <input type="checkbox" value="${city}" data-filter="city" />
+        ${city}
+      </label>`
+    )
+    .join("");
+
+  // --- Note minimale ---
+  const ratingOptions = [
+    { label: "Toutes les notes", value: 0 },
+    { label: "4.0 et plus", value: 4 },
+    { label: "4.5 et plus", value: 4.5 },
+  ];
+  ratingEl.innerHTML = ratingOptions
+    .map(
+      (opt, i) => `
+      <label class="filter-check">
+        <input type="radio" name="ratingFilter" value="${opt.value}" data-filter="rating" ${i === 0 ? "checked" : ""} />
+        ${opt.label}
+      </label>`
+    )
+    .join("");
+
+  function applyFilters() {
+    let results = artisansData.filter((a) => {
+      if (state.categories.size && !state.categories.has(a.categorySlug)) return false;
+      if (state.cities.size && !state.cities.has(a.city)) return false;
+      if (a.rating < state.minRating) return false;
+      if (a.priceFrom > state.maxPrice) return false;
+      if (state.availableToday && !a.availableToday) return false;
+      if (state.query) {
+        const q = state.query.toLowerCase();
+        const haystack = `${a.name} ${a.category} ${a.city} ${a.ownerName}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+
+    if (state.sort === "rating") results.sort((a, b) => b.rating - a.rating);
+    else if (state.sort === "price-asc") results.sort((a, b) => a.priceFrom - b.priceFrom);
+    else if (state.sort === "distance") results.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+
+    renderResults(results);
+  }
+
+  function renderResults(results) {
+    resultCount.textContent = results.length;
+    if (!results.length) {
+      grid.innerHTML = "";
+      grid.style.display = "none";
+      emptyState.style.display = "flex";
+      return;
+    }
+    grid.style.display = "";
+    emptyState.style.display = "none";
+    grid.innerHTML = results.map(artisanCardHTML).join("");
+  }
+
+  catsEl.addEventListener("change", (e) => {
+    if (e.target.dataset.filter !== "category") return;
+    e.target.checked ? state.categories.add(e.target.value) : state.categories.delete(e.target.value);
+    applyFilters();
+  });
+
+  citiesEl.addEventListener("change", (e) => {
+    if (e.target.dataset.filter !== "city") return;
+    e.target.checked ? state.cities.add(e.target.value) : state.cities.delete(e.target.value);
+    applyFilters();
+  });
+
+  ratingEl.addEventListener("change", (e) => {
+    if (e.target.dataset.filter !== "rating") return;
+    state.minRating = Number(e.target.value);
+    applyFilters();
+  });
+
+  priceInput.addEventListener("input", (e) => {
+    state.maxPrice = Number(e.target.value);
+    priceValue.textContent = `${state.maxPrice.toLocaleString("fr-FR")} FCFA`;
+    applyFilters();
+  });
+
+  availToday.addEventListener("change", (e) => {
+    state.availableToday = e.target.checked;
+    applyFilters();
+  });
+
+  searchInput?.addEventListener("input", (e) => {
+    state.query = e.target.value.trim();
+    applyFilters();
+  });
+
+  sortSelect.addEventListener("change", (e) => {
+    state.sort = e.target.value;
+    applyFilters();
+  });
+
+  function resetFilters() {
+    state.categories.clear();
+    state.cities.clear();
+    state.minRating = 0;
+    state.maxPrice = 65000;
+    state.availableToday = false;
+    state.query = "";
+    state.sort = "pertinence";
+
+    catsEl.querySelectorAll("input").forEach((i) => (i.checked = false));
+    citiesEl.querySelectorAll("input").forEach((i) => (i.checked = false));
+    ratingEl.querySelectorAll("input")[0].checked = true;
+    priceInput.value = 65000;
+    priceValue.textContent = "65 000 FCFA";
+    availToday.checked = false;
+    if (searchInput) searchInput.value = "";
+    sortSelect.value = "pertinence";
+
+    applyFilters();
+  }
+
+  document.getElementById("filterReset").addEventListener("click", resetFilters);
+  document.getElementById("searchEmptyReset")?.addEventListener("click", resetFilters);
+
+  document.getElementById("mobileFilterToggle")?.addEventListener("click", () => {
+    filterPanel.classList.toggle("mobile-open");
+  });
+
+  applyFilters();
+}
+
+/* ============================================================
+   17. PAGE FAVORIS
+   ============================================================ */
+function renderFavoritesPage() {
+  const grid = document.getElementById("favoritesGrid");
+  const empty = document.getElementById("favoritesEmptyState");
+  const subtitle = document.getElementById("favoritesSubtitle");
+  if (!grid) return;
+
+  const ids = getFavorites();
+  const favArtisans = artisansData.filter((a) => ids.includes(a.id));
+
+  if (!favArtisans.length) {
+    grid.style.display = "none";
+    grid.innerHTML = "";
+    empty.style.display = "flex";
+    if (subtitle) subtitle.textContent = "Vous n'avez pas encore de favoris.";
+    return;
+  }
+
+  grid.style.display = "";
+  empty.style.display = "none";
+  if (subtitle) {
+    subtitle.textContent = `${favArtisans.length} artisan${favArtisans.length > 1 ? "s" : ""} enregistré${favArtisans.length > 1 ? "s" : ""}`;
+  }
+  grid.innerHTML = favArtisans.map(artisanCardHTML).join("");
+}
+
+/* ============================================================
+   18. PAGE RENDEZ-VOUS
+   ============================================================ */
+function apptCardHTML(appt) {
+  const a = getArtisanById(appt.artisanId);
+  if (!a) return "";
+  const statusMeta = {
+    upcoming: ["À venir", "upcoming"],
+    done: ["Terminé", "done"],
+    cancelled: ["Annulé", "cancelled"],
+  };
+  const [label, cls] = statusMeta[appt.status];
+  const dateLabel = formatDateFrLong(appt.date);
+
+  let actions = "";
+  if (appt.status === "upcoming") {
+    actions = `
+      <button type="button" class="btn btn-outline" style="padding:.5rem 1rem;font-size:.8rem;" data-appt-modify="${appt.id}">Modifier</button>
+      <button type="button" class="btn btn-ghost" style="padding:.5rem 1rem;font-size:.8rem;" data-appt-cancel="${appt.id}">Annuler</button>`;
+  } else if (appt.status === "done") {
+    actions = `<a href="artisan-detail.html?id=${a.id}" class="btn btn-outline" style="padding:.5rem 1rem;font-size:.8rem;">Laisser un avis</a>`;
+  } else {
+    actions = `<a href="artisan-detail.html?id=${a.id}" class="btn btn-primary" style="padding:.5rem 1rem;font-size:.8rem;">Réserver à nouveau</a>`;
+  }
+
+  return `
+    <div class="appt-card">
+      <img src="${a.avatar}" alt="${a.name}" class="appt-avatar" />
+      <div class="appt-info">
+        <div class="appt-service">${appt.serviceName}</div>
+        <div class="appt-artisan">${a.name} · ${a.city}</div>
+        <div class="appt-datetime">${icon("clock", 14)} ${dateLabel} à ${appt.time} · <span class="mono-num">${appt.price.toLocaleString("fr-FR")} ${a.currency}</span></div>
+      </div>
+      <span class="appt-status ${cls}">${label}</span>
+      <div class="appt-actions">${actions}</div>
+    </div>
+  `;
+}
+
+function initAppointmentsPage() {
+  const list = document.getElementById("appointmentsList");
+  if (!list) return;
+
+  const tabs = document.querySelectorAll(".appt-tab");
+  const empty = document.getElementById("appointmentsEmptyState");
+  const emptyTitle = document.getElementById("appointmentsEmptyTitle");
+  const emptyText = document.getElementById("appointmentsEmptyText");
+  let currentStatus = "upcoming";
+
+  const copy = {
+    upcoming: ["Aucun rendez-vous à venir", "Réservez votre prochain artisan dès maintenant."],
+    done: ["Aucun rendez-vous passé", "Votre historique de prestations apparaîtra ici."],
+    cancelled: ["Aucun rendez-vous annulé", "Bonne nouvelle, vous n'avez rien annulé récemment."],
+  };
+
+  function render() {
+    const items = appointmentsData
+      .filter((a) => a.status === currentStatus)
+      .sort((a, b) =>
+        currentStatus === "upcoming" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+      );
+
+    if (!items.length) {
+      list.innerHTML = "";
+      list.style.display = "none";
+      empty.style.display = "flex";
+      emptyTitle.textContent = copy[currentStatus][0];
+      emptyText.textContent = copy[currentStatus][1];
+      return;
+    }
+
+    list.style.display = "";
+    empty.style.display = "none";
+    list.innerHTML = items.map(apptCardHTML).join("");
+  }
+
+  tabs.forEach((tab) =>
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      currentStatus = tab.dataset.status;
+      render();
+    })
+  );
+
+  document.addEventListener("click", (e) => {
+    const cancelBtn = e.target.closest("[data-appt-cancel]");
+    if (cancelBtn) {
+      const appt = appointmentsData.find((a) => a.id === Number(cancelBtn.dataset.apptCancel));
+      if (appt) {
+        appt.status = "cancelled";
+        showToast("Rendez-vous annulé.");
+        render();
+      }
+      return;
+    }
+    const modifyBtn = e.target.closest("[data-appt-modify]");
+    if (modifyBtn) {
+      showToast("La modification de rendez-vous arrive bientôt.");
+    }
+  });
+
+  render();
+}
+
+/* ============================================================
+   19. MESSAGERIE
+   ============================================================ */
+function initMessagingPage() {
+  const convListEl = document.getElementById("convList");
+  const threadPanel = document.getElementById("threadPanel");
+  if (!convListEl || !threadPanel) return;
+
+  let activeConvId = conversationsData[0] ? conversationsData[0].id : null;
+
+  function renderConvList() {
+    convListEl.innerHTML = conversationsData
+      .map((c) => {
+        const a = getArtisanById(c.artisanId);
+        const last = c.messages[c.messages.length - 1];
+        return `
+          <div class="conv-item ${c.id === activeConvId ? "active" : ""}" data-id="${c.id}">
+            <img src="${a.avatar}" alt="${a.name}" class="conv-avatar" />
+            <div class="conv-info">
+              <div class="conv-name"><span>${a.name}</span><span class="conv-time">${last.time}</span></div>
+              <div class="conv-preview">${last.from === "me" ? "Vous : " : ""}${last.text}</div>
+            </div>
+            ${c.unread ? '<span class="conv-unread"></span>' : ""}
+          </div>`;
+      })
+      .join("");
+
+    convListEl.querySelectorAll(".conv-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        activeConvId = Number(item.dataset.id);
+        const conv = conversationsData.find((c) => c.id === activeConvId);
+        if (conv) conv.unread = false;
+        renderConvList();
+        renderThread();
+        convListEl.classList.remove("mobile-visible");
+        threadPanel.classList.remove("mobile-hidden");
+      });
+    });
+  }
+
+  function renderThread() {
+    const conv = conversationsData.find((c) => c.id === activeConvId);
+    if (!conv) {
+      threadPanel.innerHTML = `<div class="empty-state" style="border:none;height:100%;justify-content:center;">Sélectionnez une conversation</div>`;
+      return;
+    }
+    const a = getArtisanById(conv.artisanId);
+
+    threadPanel.innerHTML = `
+      <div class="thread-header">
+        <button class="icon-btn thread-back" aria-label="Retour" id="threadBackBtn">${icon("chevronLeft", 18)}</button>
+        <img src="${a.avatar}" alt="${a.name}" style="width:38px;height:38px;border-radius:999px;object-fit:cover;" />
+        <div>
+          <div style="font-weight:700;font-size:.88rem;">${a.name}</div>
+          <div style="font-size:.75rem;color:var(--ink-faint);">${a.category} · ${a.city}</div>
+        </div>
+        <a href="artisan-detail.html?id=${a.id}" class="btn btn-outline" style="margin-left:auto;padding:.4rem .9rem;font-size:.78rem;">Voir le profil</a>
+      </div>
+      <div class="thread-messages" id="threadMessages">
+        ${conv.messages
+          .map(
+            (m) => `
+          <div class="bubble ${m.from === "me" ? "bubble-me" : "bubble-them"}">
+            ${m.text}
+            <span class="bubble-time">${m.time}</span>
+          </div>`
+          )
+          .join("")}
+      </div>
+      <div class="thread-composer">
+        <input type="text" placeholder="Écrire un message…" id="threadInput" />
+        <button class="thread-send" id="threadSendBtn" aria-label="Envoyer">${icon("send", 17)}</button>
+      </div>
+    `;
+
+    document.getElementById("threadBackBtn")?.addEventListener("click", () => {
+      convListEl.classList.add("mobile-visible");
+      threadPanel.classList.add("mobile-hidden");
+    });
+
+    const msgsEl = document.getElementById("threadMessages");
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+
+    function send() {
+      const input = document.getElementById("threadInput");
+      const text = input.value.trim();
+      if (!text) return;
+      conv.messages.push({ from: "me", text, time: "Maintenant" });
+      input.value = "";
+      renderThread();
+      renderConvList();
+    }
+
+    document.getElementById("threadSendBtn").addEventListener("click", send);
+    document.getElementById("threadInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") send();
+    });
+  }
+
+  renderConvList();
+  renderThread();
+}
+
+/* ============================================================
+   20. ESPACE ARTISAN (dashboard.html)
+   ============================================================ */
+function statTileHTML(label, value, trend) {
+  return `
+    <div class="stat-tile">
+      <div class="stat-tile-label">${label}</div>
+      <div class="stat-tile-value mono-num">${value}</div>
+      ${trend ? `<div class="stat-tile-trend">${icon("trendUp", 13)} ${trend}</div>` : ""}
+    </div>`;
+}
+
+function dashReviewCardHTML(r) {
+  const stars = Array.from({ length: 5 })
+    .map((_, i) => `<span style="opacity:${i < r.rating ? 1 : 0.25}">${icon("star", 14)}</span>`)
+    .join("");
+  const dateLabel = new Date(r.date + "T00:00:00").toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  return `
+    <div class="dash-review-card">
+      <div class="dash-review-top">
+        <div class="dash-review-author">
+          <img src="${r.avatar}" alt="${r.author}" />
+          <div>
+            <div class="dash-review-name">${r.author}</div>
+            <div class="dash-review-date">${dateLabel}</div>
+          </div>
+        </div>
+        <div class="dash-review-stars">${stars}</div>
+      </div>
+      <p class="dash-review-text">${r.comment}</p>
+      <div class="dash-reply-box">
+        ${
+          r.reply
+            ? `<div class="dash-reply-existing"><strong>Votre réponse</strong>${r.reply.text}</div>`
+            : `<form class="dash-reply-form" data-review-id="${r.id}">
+                <input type="text" placeholder="Répondre à cet avis…" required />
+                <button type="submit" class="dash-reply-submit">Répondre</button>
+              </form>`
+        }
+      </div>
+    </div>`;
+}
+
+function initDashboard() {
+  const artisan = getArtisanById(typeof CURRENT_ARTISAN_ID !== "undefined" ? CURRENT_ARTISAN_ID : 1);
+  const miniProfile = document.getElementById("dashProfileMini");
+  if (!artisan || !miniProfile) return;
+
+  miniProfile.innerHTML = `
+    <img src="${artisan.avatar}" alt="${artisan.name}" />
+    <div>
+      <strong>${artisan.name}</strong>
+      <span>${artisan.category} · ${artisan.city}</span>
+    </div>`;
+
+  // --- Navigation entre panneaux ---
+  const navItems = document.querySelectorAll(".dash-nav-item");
+  const panels = document.querySelectorAll(".dash-panel");
+  navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      navItems.forEach((n) => n.classList.remove("active"));
+      item.classList.add("active");
+      panels.forEach((p) => p.classList.toggle("active", p.dataset.panel === item.dataset.panel));
+    });
+  });
+
+  // --- Profil ---
+  const catSelect = document.getElementById("pfCategory");
+  if (catSelect) {
+    catSelect.innerHTML = CATEGORIES.map(
+      (c) => `<option value="${c.slug}" ${c.slug === artisan.categorySlug ? "selected" : ""}>${c.label}</option>`
+    ).join("");
+  }
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+  setVal("pfName", artisan.name);
+  setVal("pfCity", artisan.city);
+  setVal("pfPhone", artisan.phone);
+  setVal("pfAddress", artisan.address);
+  setVal("pfDesc", artisan.description);
+
+  document.getElementById("dashProfileForm")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    artisan.name = document.getElementById("pfName").value;
+    artisan.city = document.getElementById("pfCity").value;
+    artisan.phone = document.getElementById("pfPhone").value;
+    artisan.address = document.getElementById("pfAddress").value;
+    artisan.description = document.getElementById("pfDesc").value;
+    miniProfile.querySelector("strong").textContent = artisan.name;
+    showToast("Profil mis à jour.");
+  });
+
+  document.getElementById("pfCancel")?.addEventListener("click", () => {
+    setVal("pfName", artisan.name);
+    setVal("pfCity", artisan.city);
+    setVal("pfPhone", artisan.phone);
+    setVal("pfAddress", artisan.address);
+    setVal("pfDesc", artisan.description);
+    showToast("Modifications annulées.");
+  });
+
+  // --- Services ---
+  const servicesList = document.getElementById("dashServicesList");
+  function renderServices() {
+    if (!servicesList) return;
+    servicesList.innerHTML = artisan.services
+      .map(
+        (s) => `
+        <div class="dash-service-row">
+          <img src="${s.image}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;" />
+          <div class="dash-service-info">
+            <div class="dash-service-name">${s.name}</div>
+            <div class="dash-service-price mono-num">${s.price ? s.price.toLocaleString("fr-FR") + " " + artisan.currency : "Gratuit"} · ${s.duration} min</div>
+          </div>
+          <div class="dash-service-actions">
+            <button type="button" class="icon-btn-sm" aria-label="Modifier" data-edit-service="${s.id}">${icon("edit", 15)}</button>
+            <button type="button" class="icon-btn-sm danger" aria-label="Supprimer" data-remove-service="${s.id}">${icon("trash", 15)}</button>
+          </div>
+        </div>`
+      )
+      .join("");
+  }
+  renderServices();
+
+  servicesList?.addEventListener("click", (e) => {
+    const removeBtn = e.target.closest("[data-remove-service]");
+    if (removeBtn) {
+      const id = Number(removeBtn.dataset.removeService);
+      artisan.services = artisan.services.filter((s) => s.id !== id);
+      renderServices();
+      showToast("Service supprimé.");
+      return;
+    }
+    const editBtn = e.target.closest("[data-edit-service]");
+    if (editBtn) {
+      showToast("L'édition détaillée arrive avec la connexion à la base de données.");
+    }
+  });
+
+  document.getElementById("dashAddService")?.addEventListener("click", () => {
+    artisan.services.push({
+      id: Date.now(),
+      name: "Nouveau service",
+      desc: "Décrivez votre prestation",
+      price: 0,
+      duration: 30,
+      image: artisan.avatar,
+    });
+    renderServices();
+    showToast("Service ajouté — modifiez-le pour compléter les informations.");
+  });
+
+  // --- Disponibilités ---
+  const availGrid = document.getElementById("availGrid");
+  if (availGrid) {
+    availGrid.innerHTML = artisan.hours
+      .map((h, i) => {
+        const closed = h.time.toLowerCase().includes("ferm");
+        const parts = closed ? ["09:00", "18:00"] : h.time.split(" - ");
+        return `
+          <div class="avail-day">
+            <div class="avail-day-name">${h.day}</div>
+            <div class="avail-toggle-row">
+              <span style="font-size:.75rem;color:var(--ink-faint);" data-avail-label="${i}">${closed ? "Fermé" : "Ouvert"}</span>
+              <label class="switch">
+                <input type="checkbox" data-day-toggle="${i}" ${closed ? "" : "checked"} />
+                <span class="switch-track"></span>
+              </label>
+            </div>
+            <div class="avail-times">
+              <input type="time" value="${parts[0]}" />
+              <input type="time" value="${parts[1]}" />
+            </div>
+          </div>`;
+      })
+      .join("");
+
+    availGrid.addEventListener("change", (e) => {
+      const toggle = e.target.closest("[data-day-toggle]");
+      if (!toggle) return;
+      const label = availGrid.querySelector(`[data-avail-label="${toggle.dataset.dayToggle}"]`);
+      if (label) label.textContent = toggle.checked ? "Ouvert" : "Fermé";
+    });
+  }
+
+  document.getElementById("availSave")?.addEventListener("click", () => {
+    showToast("Disponibilités enregistrées.");
+  });
+
+  // --- Statistiques ---
+  const statBento = document.getElementById("statBento");
+  if (statBento) {
+    statBento.innerHTML =
+      statTileHTML("Réservations (30j)", "18", "+12% vs mois dernier") +
+      statTileHTML("Taux de réponse", "96%", "+4 pts") +
+      statTileHTML("Note moyenne", artisan.rating.toFixed(1), `${artisan.reviews} avis au total`) +
+      statTileHTML("Revenu estimé", `${(artisan.priceFrom * 18).toLocaleString("fr-FR")} ${artisan.currency}`, "Basé sur les réservations du mois");
+  }
+
+  const recentEl = document.getElementById("statRecentBookings");
+  if (recentEl) {
+    recentEl.innerHTML = appointmentsData
+      .slice(0, 4)
+      .map(
+        (bk) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.85rem;">
+          <span>${bk.serviceName}</span>
+          <span class="mono-num" style="color:var(--ink-faint);">${new Date(bk.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })}</span>
+        </div>`
+      )
+      .join("");
+  }
+
+  // --- Avis ---
+  const myReviews = reviewsData.filter((r) => r.artisanId === artisan.id);
+  const reviewsEl = document.getElementById("dashReviewsList");
+  function renderReviews() {
+    if (!reviewsEl) return;
+    reviewsEl.innerHTML = myReviews.length
+      ? myReviews.map(dashReviewCardHTML).join("")
+      : `<p style="color:var(--ink-faint);font-size:.88rem;">Aucun avis pour le moment.</p>`;
+
+    reviewsEl.querySelectorAll(".dash-reply-form").forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = form.querySelector("input");
+        const text = input.value.trim();
+        if (!text) return;
+        const id = Number(form.dataset.reviewId);
+        const review = myReviews.find((r) => r.id === id);
+        if (review) review.reply = { text, date: new Date().toISOString().split("T")[0] };
+        renderReviews();
+        showToast("Réponse publiée.");
+      });
+    });
+  }
+  renderReviews();
+}

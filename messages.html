@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messagerie — ArtisanConnect</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Aller au contenu</a>
+    <div id="header-container"></div>
+
+    <main class="main-content" id="main">
+      <div class="container">
+        <div class="page-header">
+          <h1>Messagerie</h1>
+          <p>Échangez directement avec les artisans avant et après vos rendez-vous.</p>
+        </div>
+
+        <div class="messages-layout" id="messagesLayout">
+          <div class="conv-list mobile-visible" id="convList"></div>
+
+          <div class="thread-panel mobile-hidden" id="threadPanel">
+            <!-- injecté par JS -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="bottom-nav-container"></div>
+    <div id="booking-modal-container"></div>
+    <div id="login-modal-container"></div>
+    <div class="toast-stack" id="toastStack"></div>
+
+    <script src="js/data/artisans.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+      loadIncludes({ activePage: "messages.html" });
+      initMessagingPage();
+    </script>
+  </body>
+</html>
