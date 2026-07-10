@@ -1,3 +1,4 @@
+<!-- messages.html -->
 <!doctype html>
 <html lang="fr">
   <head>
@@ -14,7 +15,10 @@
       <div class="container">
         <div class="page-header">
           <h1>Messagerie</h1>
-          <p>Échangez directement avec les artisans avant et après vos rendez-vous.</p>
+          <p>
+            Échangez directement avec les artisans avant et après vos
+            rendez-vous.
+          </p>
         </div>
 
         <div class="messages-layout" id="messagesLayout">
@@ -32,11 +36,70 @@
     <div id="login-modal-container"></div>
     <div class="toast-stack" id="toastStack"></div>
 
-    <script src="js/data/artisans.js"></script>
+    <!-- mock -->
+    <!-- <script src="js/data/artisans.js"></script>
     <script src="js/main.js"></script>
     <script>
       loadIncludes({ activePage: "messages.html" });
       initMessagingPage();
+    </script> -->
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+
+    <script src="js/data/artisans.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+      loadIncludes({ activePage: "messages.html" });
+
+      async function loadMessagesSupabase() {
+        const {
+          data: { session },
+        } = await SupabaseAPI.auth.getSession();
+        if (session?.user) {
+          try {
+            const { data: profile } = await SupabaseAPI.auth.getUser();
+            const role = profile?.role || "client";
+            const { data: conversations } =
+              await SupabaseAPI.messages.getConversations(
+                session.user.id,
+                role,
+              );
+            if (conversations && conversations.length > 0) {
+              // Convertit au format attendu par initMessagingPage
+              window.conversationsData = [];
+              for (const c of conversations) {
+                const { data: msgs } = await SupabaseAPI.messages.getMessages(
+                  c.id,
+                );
+                window.conversationsData.push({
+                  id: c.id,
+                  artisanId: c.artisan_id,
+                  unread: msgs
+                    ? msgs.some((m) => !m.is_read && m.sender_type !== role)
+                    : false,
+                  messages: msgs
+                    ? msgs.map((m) => ({
+                        from: m.sender_type === role ? "me" : "them",
+                        text: m.content,
+                        time: new Date(m.created_at).toLocaleTimeString(
+                          "fr-FR",
+                          { hour: "2-digit", minute: "2-digit" },
+                        ),
+                      }))
+                    : [],
+                });
+              }
+            }
+          } catch (e) {
+            console.warn("Supabase indisponible, fallback mock :", e.message);
+          }
+        }
+        initMessagingPage();
+      }
+
+      loadMessagesSupabase();
     </script>
   </body>
 </html>
