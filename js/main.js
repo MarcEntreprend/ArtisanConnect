@@ -218,11 +218,14 @@ function initHeaderInteractions() {
         profileTrigger.style.display = "none";
       }
     } catch (e) {
-      // SupabaseAPI non chargé, on reste sur l'état non connecté
+      // SupabaseAPI non chargé ou réseau indisponible, on laisse le bouton "Se connecter" visible
+      console.warn("updateAuthUI :", e.message);
+      if (loginBtn) loginBtn.style.display = "";
+      if (profileTrigger) profileTrigger.style.display = "none";
     }
   }
 
-  updateAuthUI();
+  setTimeout(updateAuthUI, 100);
 
   // Déconnexion
   document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
