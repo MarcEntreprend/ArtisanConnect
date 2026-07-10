@@ -549,3 +549,152 @@ const testimonialsData = [
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
   },
 ];
+
+/* ============================================================
+   AVIS CLIENTS (par artisan)
+   ============================================================ */
+const reviewsData = [
+  {
+    id: 1,
+    artisanId: 1,
+    author: "Chantal Boko",
+    avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop",
+    rating: 5,
+    date: "2026-06-28",
+    comment: "Table sur mesure magnifique, livrée avec une semaine d'avance. Le bois est superbe.",
+    reply: null,
+  },
+  {
+    id: 2,
+    artisanId: 1,
+    author: "Serge Kouassi",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+    rating: 4,
+    date: "2026-06-14",
+    comment: "Bon travail sur la restauration de mon armoire, un peu de retard sur le délai annoncé.",
+    reply: {
+      text: "Merci Serge, désolé pour le délai — nous avons eu une rupture de vernis. Content que le résultat vous plaise !",
+      date: "2026-06-15",
+    },
+  },
+  {
+    id: 3,
+    artisanId: 2,
+    author: "Aïcha Ndour",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop",
+    rating: 5,
+    date: "2026-06-30",
+    comment: "Intervention rapide et propre, tableau électrique aux normes enfin ! Merci Aminata.",
+    reply: null,
+  },
+  {
+    id: 4,
+    artisanId: 7,
+    author: "Patrick Mvondo",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
+    rating: 5,
+    date: "2026-07-02",
+    comment: "Meilleur barbershop du quartier, ambiance top et coupe nickel.",
+    reply: {
+      text: "Merci Patrick, à très vite pour la prochaine coupe 🙌",
+      date: "2026-07-02",
+    },
+  },
+];
+
+/* ============================================================
+   RENDEZ-VOUS (utilisateur connecté, mock)
+   ============================================================ */
+const appointmentsData = [
+  {
+    id: 1001,
+    artisanId: 7,
+    serviceName: "Coupe + Barbe",
+    date: "2026-07-12",
+    time: "10:30",
+    status: "upcoming",
+    price: 3500,
+  },
+  {
+    id: 1002,
+    artisanId: 2,
+    serviceName: "Diagnostic électrique complet",
+    date: "2026-07-18",
+    time: "09:00",
+    status: "upcoming",
+    price: 12000,
+  },
+  {
+    id: 1003,
+    artisanId: 1,
+    serviceName: "Restauration de meuble ancien",
+    date: "2026-06-20",
+    time: "14:00",
+    status: "done",
+    price: 18000,
+  },
+  {
+    id: 1004,
+    artisanId: 6,
+    serviceName: "Tenue traditionnelle sur mesure",
+    date: "2026-06-05",
+    time: "11:00",
+    status: "done",
+    price: 25000,
+  },
+  {
+    id: 1005,
+    artisanId: 5,
+    serviceName: "Peinture pièce (jusqu'à 20 m²)",
+    date: "2026-05-22",
+    time: "08:00",
+    status: "cancelled",
+    price: 28000,
+  },
+];
+
+/* ============================================================
+   MESSAGERIE (mock)
+   ============================================================ */
+const conversationsData = [
+  {
+    id: 1,
+    artisanId: 7,
+    unread: true,
+    messages: [
+      { from: "me", text: "Bonjour, avez-vous un créneau ce vendredi après-midi ?", time: "09:12" },
+      { from: "them", text: "Bonjour ! Oui, il me reste 15h30 ou 17h. Ça vous va ?", time: "09:20" },
+      { from: "me", text: "Va pour 15h30, merci !", time: "09:22" },
+      { from: "them", text: "Parfait, c'est noté 👍 À vendredi.", time: "09:24" },
+    ],
+  },
+  {
+    id: 2,
+    artisanId: 2,
+    unread: false,
+    messages: [
+      { from: "me", text: "Bonjour, mon tableau électrique disjoncte souvent, pouvez-vous passer voir ?", time: "Hier" },
+      { from: "them", text: "Bonjour, je peux passer jeudi matin pour un diagnostic. Ça vous convient ?", time: "Hier" },
+      { from: "me", text: "Oui très bien, merci beaucoup.", time: "Hier" },
+    ],
+  },
+  {
+    id: 3,
+    artisanId: 1,
+    unread: false,
+    messages: [
+      { from: "them", text: "Votre table est prête, vous pouvez venir la récupérer à l'atelier.", time: "20 juin" },
+      { from: "me", text: "Super merci, je passe demain !", time: "20 juin" },
+    ],
+  },
+  {
+    id: 4,
+    artisanId: 6,
+    unread: true,
+    messages: [
+      { from: "them", text: "Bonjour, j'ai bien reçu vos mesures. Quel tissu souhaitez-vous pour la tenue ?", time: "Lun" },
+    ],
+  },
+];
+
+const CURRENT_ARTISAN_ID = 1; // Pour la démo de l'espace artisan (Koffi Atelier Bois)

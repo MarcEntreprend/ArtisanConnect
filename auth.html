@@ -1,0 +1,274 @@
+<!-- auth.html -->
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion — ArtisanConnect</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body
+    style="
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    "
+  >
+    <div
+      style="
+        width: 100%;
+        max-width: 420px;
+        background: var(--bg-elevated);
+        border-radius: var(--r-card);
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+      "
+    >
+      <div id="authForms">
+        <!-- Connexion -->
+        <form id="loginForm" style="display: block">
+          <h2
+            style="
+              font-size: 1.5rem;
+              font-weight: 700;
+              margin-bottom: 1.5rem;
+              text-align: center;
+            "
+          >
+            Se connecter
+          </h2>
+          <div class="dash-field">
+            <label>Email</label>
+            <input type="email" id="loginEmail" required />
+          </div>
+          <div class="dash-field">
+            <label>Mot de passe</label>
+            <input type="password" id="loginPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Connexion
+          </button>
+          <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem">
+            <a href="#" id="showSignup">Créer un compte</a> ·
+            <a href="#" id="showRecover">Mot de passe oublié</a>
+          </p>
+          <div
+            id="loginError"
+            style="
+              color: var(--danger);
+              font-size: 0.8rem;
+              text-align: center;
+              margin-top: 0.5rem;
+            "
+          ></div>
+        </form>
+
+        <!-- Inscription -->
+        <form id="signupForm" style="display: none">
+          <h2
+            style="
+              font-size: 1.5rem;
+              font-weight: 700;
+              margin-bottom: 1.5rem;
+              text-align: center;
+            "
+          >
+            Créer un compte
+          </h2>
+          <div class="dash-field">
+            <label>Nom complet</label>
+            <input type="text" id="signupName" required />
+          </div>
+          <div class="dash-field">
+            <label>Email</label>
+            <input type="email" id="signupEmail" required />
+          </div>
+          <div class="dash-field">
+            <label>Mot de passe</label>
+            <input type="password" id="signupPassword" required minlength="6" />
+          </div>
+          <div class="dash-field">
+            <label>Vous êtes ?</label>
+            <select id="signupRole">
+              <option value="client">Client</option>
+              <option value="artisan_solo">Artisan indépendant</option>
+              <option value="responsable">Responsable d'entreprise</option>
+              <option value="employe">Employé</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            S'inscrire
+          </button>
+          <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem">
+            <a href="#" id="showLogin">Déjà un compte ? Connectez-vous</a>
+          </p>
+          <div
+            id="signupError"
+            style="
+              color: var(--danger);
+              font-size: 0.8rem;
+              text-align: center;
+              margin-top: 0.5rem;
+            "
+          ></div>
+        </form>
+
+        <!-- Récupération -->
+        <form id="recoverForm" style="display: none">
+          <h2
+            style="
+              font-size: 1.5rem;
+              font-weight: 700;
+              margin-bottom: 1.5rem;
+              text-align: center;
+            "
+          >
+            Mot de passe oublié
+          </h2>
+          <div class="dash-field">
+            <label>Email</label>
+            <input type="email" id="recoverEmail" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Envoyer le lien
+          </button>
+          <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem">
+            <a href="#" id="showLoginFromRecover">Retour à la connexion</a>
+          </p>
+          <div
+            id="recoverMsg"
+            style="
+              color: var(--accent);
+              font-size: 0.8rem;
+              text-align: center;
+              margin-top: 0.5rem;
+            "
+          ></div>
+          <div
+            id="recoverError"
+            style="
+              color: var(--danger);
+              font-size: 0.8rem;
+              text-align: center;
+              margin-top: 0.5rem;
+            "
+          ></div>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/data/artisans.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+      loadTheme();
+
+      document.getElementById("showSignup").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "block";
+      });
+      document.getElementById("showLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("signupForm").style.display = "none";
+        document.getElementById("loginForm").style.display = "block";
+      });
+      document.getElementById("showRecover").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("recoverForm").style.display = "block";
+      });
+      document
+        .getElementById("showLoginFromRecover")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          document.getElementById("recoverForm").style.display = "none";
+          document.getElementById("loginForm").style.display = "block";
+        });
+
+      // Connexion
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector("button[type=submit]");
+          btn.disabled = true;
+          btn.textContent = "Connexion…";
+          const { error } = await SupabaseAPI.auth.signIn(
+            document.getElementById("loginEmail").value,
+            document.getElementById("loginPassword").value,
+          );
+          if (error) {
+            document.getElementById("loginError").textContent = error.message;
+            btn.disabled = false;
+            btn.textContent = "Connexion";
+          } else {
+            window.location.href = "index.html";
+          }
+        });
+
+      // Inscription
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector("button[type=submit]");
+          btn.disabled = true;
+          btn.textContent = "Création…";
+          const name = document.getElementById("signupName").value.trim();
+          const email = document.getElementById("signupEmail").value;
+          const password = document.getElementById("signupPassword").value;
+          const role = document.getElementById("signupRole").value;
+          if (!name) {
+            document.getElementById("signupError").textContent =
+              "Veuillez indiquer votre nom.";
+            btn.disabled = false;
+            btn.textContent = "S'inscrire";
+            return;
+          }
+          const { error } = await SupabaseAPI.auth.signUp(
+            email,
+            password,
+            name,
+            role,
+          );
+          if (error) {
+            document.getElementById("signupError").textContent = error.message;
+            btn.disabled = false;
+            btn.textContent = "S'inscrire";
+          } else {
+            // Redirige vers le dashboard selon le rôle
+            const redir =
+              role === "artisan_solo" ||
+              role === "responsable" ||
+              role === "employe"
+                ? "onboarding.html"
+                : "index.html";
+            window.location.href = redir;
+          }
+        });
+
+      // Récupération
+      document
+        .getElementById("recoverForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("recoverEmail").value;
+          const { error } = await SupabaseAPI.auth.resetPassword(email);
+          if (error) {
+            document.getElementById("recoverError").textContent = error.message;
+          } else {
+            document.getElementById("recoverMsg").textContent =
+              "Un lien de réinitialisation a été envoyé à votre adresse email.";
+            document.getElementById("recoverError").textContent = "";
+          }
+        });
+    </script>
+  </body>
+</html>

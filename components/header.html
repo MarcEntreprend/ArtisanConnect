@@ -9,61 +9,141 @@
       <nav class="header-nav" aria-label="Navigation principale">
         <a href="index.html" data-page="index.html">Accueil</a>
         <a href="search.html" data-page="search.html">Trouver un artisan</a>
-        <a href="appointments.html" data-page="appointments.html">Mes rendez-vous</a>
+        <a href="appointments.html" data-page="appointments.html"
+          >Mes rendez-vous</a
+        >
         <a href="favorites.html" data-page="favorites.html">Favoris</a>
+        <a href="messages.html" data-page="messages.html">Messagerie</a>
       </nav>
 
       <div class="header-actions">
-        <a href="#" class="artisan-cta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <a href="dashboard.html" class="artisan-cta" data-page="dashboard.html">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            width="16"
+            height="16"
+          >
             <path d="M12 5v14M5 12h14" />
           </svg>
-          Devenir artisan
+          Espace artisan
         </a>
 
         <button class="icon-btn" id="themeToggle" aria-label="Changer de thème">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9.37 5.51c-.18.64-.27 1.31-.27 1.99 0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1" />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M9.37 5.51c-.18.64-.27 1.31-.27 1.99 0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1"
+            />
           </svg>
         </button>
 
         <div class="language-wrapper">
-          <button class="lang-trigger" id="langTrigger" aria-label="Choisir la langue">
-            <img src="https://flagcdn.com/w40/fr.png" alt="" class="lang-flag-img" />
+          <button
+            class="lang-trigger"
+            id="langTrigger"
+            aria-label="Choisir la langue"
+          >
+            <img
+              src="https://flagcdn.com/w40/fr.png"
+              alt=""
+              class="lang-flag-img"
+            />
             <span class="lang-text">FR</span>
           </button>
           <ul class="lang-dropdown" id="langDropdown">
             <li data-lang="fr-FR" class="active">
-              <span style="display:flex;align-items:center;gap:.5rem;">
-                <img src="https://flagcdn.com/w40/fr.png" alt="" class="lang-flag-img" />
+              <span style="display: flex; align-items: center; gap: 0.5rem">
+                <img
+                  src="https://flagcdn.com/w40/fr.png"
+                  alt=""
+                  class="lang-flag-img"
+                />
                 <span class="lang-name">Français</span>
               </span>
-              <svg class="lang-check active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5" /></svg>
+              <svg
+                class="lang-check active"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
             </li>
             <li data-lang="en-US">
-              <span style="display:flex;align-items:center;gap:.5rem;">
-                <img src="https://flagcdn.com/w40/gb.png" alt="" class="lang-flag-img" />
+              <span style="display: flex; align-items: center; gap: 0.5rem">
+                <img
+                  src="https://flagcdn.com/w40/gb.png"
+                  alt=""
+                  class="lang-flag-img"
+                />
                 <span class="lang-name">English</span>
               </span>
-              <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5" /></svg>
+              <svg
+                class="lang-check"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
             </li>
             <li data-lang="pt-BR">
-              <span style="display:flex;align-items:center;gap:.5rem;">
-                <img src="https://flagcdn.com/w40/pt.png" alt="" class="lang-flag-img" />
+              <span style="display: flex; align-items: center; gap: 0.5rem">
+                <img
+                  src="https://flagcdn.com/w40/pt.png"
+                  alt=""
+                  class="lang-flag-img"
+                />
                 <span class="lang-name">Português</span>
               </span>
-              <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5" /></svg>
+              <svg
+                class="lang-check"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
             </li>
           </ul>
         </div>
 
         <div class="profile-wrapper">
-          <button class="profile-trigger" id="profileTrigger" aria-label="Compte">MJ</button>
+          <!-- Non connecté -->
+          <a
+            href="auth.html"
+            class="btn btn-outline"
+            id="loginBtn"
+            style="padding: 0.4rem 1rem"
+            >Se connecter</a
+          >
+
+          <!-- Connecté -->
+          <button
+            class="profile-trigger"
+            id="profileTrigger"
+            aria-label="Compte"
+            style="display: none"
+          >
+            <span id="profileInitials">MJ</span>
+          </button>
+
           <div class="profile-dropdown" id="profileDropdown">
-            <a href="#" id="openLoginModal">Se connecter</a>
             <a href="appointments.html">Mes rendez-vous</a>
             <a href="favorites.html">Favoris</a>
-            <button class="cookie-btn">Préférences des cookies</button>
+            <a href="messages.html">Messagerie</a>
+            <a href="dashboard.html">Espace artisan</a>
+            <button id="logoutBtn" class="cookie-btn">Se déconnecter</button>
           </div>
         </div>
       </div>

@@ -1,0 +1,216 @@
+<!-- dashboard.html -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Espace artisan — ArtisanConnect</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Aller au contenu</a>
+    <div id="header-container"></div>
+
+    <main class="main-content" id="main">
+      <div class="container">
+        <div class="page-header">
+          <h1 id="dashTitle">Espace artisan</h1>
+          <p id="dashSubtitle">
+            Gérez votre vitrine, vos services et vos disponibilités.
+          </p>
+        </div>
+
+        <div id="companyBannerSlot"></div>
+        <div id="modeSwitchSlot"></div>
+
+        <div class="dash-shell">
+          <aside class="dash-sidebar">
+            <div class="dash-profile-mini" id="dashProfileMini"></div>
+            <nav class="dash-nav" id="dashNav"></nav>
+          </aside>
+
+          <div id="dashPanels">
+            <!-- panneau actif injecté par js/dashboard.js -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="dash-demo-footer">
+      <div class="container dash-demo-footer-inner">
+        <div class="dash-demo-left">
+          <span class="dash-demo-badge">Mode démo</span>
+          <nav class="dash-persona-switcher" aria-label="Changer de vue démo">
+            <a href="dashboard.html?persona=solo" data-persona="solo"
+              >Vue solo</a
+            >
+            <span class="sep">|</span>
+            <a
+              href="dashboard.html?persona=responsable"
+              data-persona="responsable"
+              >Vue responsable</a
+            >
+            <span class="sep">|</span>
+            <a href="dashboard.html?persona=employe" data-persona="employe"
+              >Vue employé</a
+            >
+          </nav>
+        </div>
+        <button class="back-to-top" aria-label="Retourner en haut de la page">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z" />
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+    <div id="booking-modal-container"></div>
+    <div id="login-modal-container"></div>
+    <div class="toast-stack" id="toastStack"></div>
+
+    <!-- script mock -->
+    <!-- <script src="js/data/artisans.js"></script>
+    <script src="js/data/dashboard-mock.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+      loadIncludes({ activePage: "dashboard.html" });
+      initDashboard();
+    </script> -->
+
+    <!--  -->
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+
+    <script src="js/data/artisans.js"></script>
+    <script src="js/data/dashboard-mock.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+      loadIncludes({ activePage: "dashboard.html" });
+
+      async function loadDashboardSupabase() {
+        try {
+          const { data } = await SupabaseAPI.auth.getSession();
+          const session = data?.session || null;
+
+          if (session && session.user) {
+            const { user: profile } = await SupabaseAPI.auth.getUser();
+            if (profile?.role) {
+              const { data: artisans } = await SupabaseAPI.artisans.getByOwner(
+                session.user.id,
+              );
+              if (artisans && artisans.length > 0) {
+                const a = artisans[0];
+                const mockArtisan = artisansData.find((art) => art.id === a.id);
+                if (mockArtisan) {
+                  mockArtisan.name = a.name;
+                  mockArtisan.city = a.city;
+                  mockArtisan.phone = a.phone;
+                  mockArtisan.address = a.address;
+                  mockArtisan.description = a.description;
+                  mockArtisan.rating = a.rating;
+                  mockArtisan.reviews = a.reviews_count;
+                  mockArtisan.verified = a.verified;
+                  mockArtisan.availableToday = a.available_today;
+                  mockArtisan.priceFrom = a.price_from;
+                  mockArtisan.currency = a.currency;
+                }
+
+                const { data: services } =
+                  await SupabaseAPI.services.getByArtisan(a.id, false);
+                if (services && mockArtisan) {
+                  mockArtisan.services = services.map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    desc: s.description || "",
+                    price: s.price,
+                    duration: s.duration_min,
+                    image: s.image_url || a.avatar_url,
+                    active: s.is_active,
+                  }));
+                }
+
+                const { data: hours } = await SupabaseAPI.hours.getByArtisan(
+                  a.id,
+                );
+                if (hours && mockArtisan) {
+                  mockArtisan.hours = hours.map((h) => ({
+                    day: h.day_label,
+                    time: h.is_open
+                      ? `${h.opens_at?.slice(0, 5)} - ${h.closes_at?.slice(0, 5)}`
+                      : "Fermé",
+                  }));
+                }
+
+                const { data: appointments } =
+                  await SupabaseAPI.appointments.getByArtisan(a.id);
+                if (appointments) {
+                  window.appointmentsData = appointments.map((apt) => ({
+                    id: apt.id,
+                    artisanId: apt.artisan_id,
+                    serviceName: apt.service_name,
+                    price: apt.price,
+                    date: apt.appointment_date,
+                    time: apt.appointment_time?.slice(0, 5),
+                    status:
+                      apt.status === "upcoming"
+                        ? "upcoming"
+                        : apt.status === "done"
+                          ? "done"
+                          : "cancelled",
+                  }));
+                }
+
+                const { data: reviews } =
+                  await SupabaseAPI.reviews.getByArtisan(a.id);
+                if (reviews) {
+                  window.reviewsData = reviews.map((r) => ({
+                    id: r.id,
+                    artisanId: r.artisan_id,
+                    author: r.users?.full_name || "Client",
+                    avatar: r.users?.avatar_url || "",
+                    rating: r.rating,
+                    comment: r.comment || "",
+                    date: r.created_at?.split("T")[0] || "",
+                    reply: r.reply_text
+                      ? {
+                          text: r.reply_text,
+                          date: r.reply_at?.split("T")[0] || "",
+                        }
+                      : null,
+                  }));
+                }
+
+                if (a.is_team) {
+                  const { data: team } = await SupabaseAPI.team.getByArtisan(
+                    a.id,
+                  );
+                  if (team?.members) {
+                    window.teamData = team;
+                  }
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Supabase indisponible, fallback mock :", e.message);
+        }
+
+        // Empêche dashboard.js de supprimer le paramètre ?persona=
+        const origReplace = history.replaceState;
+        history.replaceState = function () {};
+        initDashboard();
+        history.replaceState = origReplace;
+      }
+
+      loadDashboardSupabase();
+    </script>
+  </body>
+</html>

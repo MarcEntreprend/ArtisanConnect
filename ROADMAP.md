@@ -9,12 +9,12 @@
 - [x] Favoris en `localStorage`
 - [x] Données mockées réalistes (8 métiers, 6 villes)
 
-## Itération 2 — Pages manquantes (frontend, mock)
-- [ ] `search.html` — recherche avancée avec filtres (prix, note, disponibilité, ville)
-- [ ] `favorites.html` — liste des artisans favoris
-- [ ] `appointments.html` — historique et rendez-vous à venir (mock)
-- [ ] Page 404 personnalisée
-- [ ] Messagerie client ↔ artisan (mock, avant intégration temps réel)
+## Itération 2 — Pages manquantes (frontend, mock) — livrée
+- [x] `search.html` — recherche avancée avec filtres (métier, ville, note, budget, disponibilité) et tri
+- [x] `favorites.html` — liste des artisans favoris avec état vide
+- [x] `appointments.html` — onglets à venir / passés / annulés, annulation mock
+- [x] `error.html` — page 404 personnalisée avec recherche
+- [x] `messages.html` — messagerie client ↔ artisan (mock, conversations + envoi en session)
 
 ## Itération 3 — Modèle de données réel (Supabase)
 - [ ] Schéma Postgres : `artisans`, `services`, `disponibilites`, `reservations`, `avis`, `favoris`, `messages`, `utilisateurs`
@@ -28,11 +28,14 @@
 - [ ] Notifications (email via Resend, SMS/WhatsApp à évaluer selon les pays ciblés)
 - [ ] Upload d'images (galerie artisan, avatar) via Supabase Storage
 
-## Itération 5 — Espace artisan (dashboard)
-- [ ] Gestion du profil, des services, des tarifs
-- [ ] Calendrier de disponibilités (récurrent + exceptions ponctuelles)
-- [ ] Statistiques (taux de réponse, note moyenne, réservations par mois)
-- [ ] Réponse aux avis
+## Itération 5 — Espace artisan (dashboard, mock) — livrée
+- [x] `dashboard.html` — gestion du profil (formulaire pré-rempli)
+- [x] Gestion des services (ajout, suppression ; édition détaillée en attente du backend)
+- [x] Disponibilités récurrentes (bascule ouvert/fermé + horaires par jour)
+- [x] Statistiques (bento : réservations, taux de réponse, note moyenne, revenu estimé)
+- [x] Réponse aux avis (formulaire inline, persistance en mémoire pour la session)
+
+> Démo branchée sur un seul artisan (`CURRENT_ARTISAN_ID` dans `js/data/artisans.js`), en attendant l'authentification réelle.
 
 ## Notes techniques pour la suite
 - Le design system (`css/style.css`) est déjà construit en variables CSS ; un passage à Tailwind ou à un framework component (React/Next) pourra réutiliser les mêmes tokens sans perte.
