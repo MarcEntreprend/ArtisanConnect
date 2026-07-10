@@ -697,6 +697,17 @@ function renderServicesPanel(container, personaKey, scope) {
     <div id="dashServicesList"></div>
     ${editable ? `<button type="button" class="dash-add-service" data-dash-action="service-add">${icon("plus", 16)} Ajouter un service</button>` : ""}
   `;
+
+  if (!scope.artisan.services.length) {
+    document.getElementById("dashServicesList").innerHTML = emptyIllustrated(
+      "🛠️",
+      "Aucun service pour le moment",
+      "Ajoutez votre première prestation pour que les clients puissent vous réserver en ligne.",
+      editable ? "Ajouter un service" : null,
+      editable ? "service-add" : null,
+    );
+    return;
+  }
   renderServicesList(personaKey, scope, editable);
 }
 
@@ -847,6 +858,9 @@ function renderDisponibilitesPanel(container, personaKey, scope) {
    ============================================================ */
 function renderStatistiquesPanel(container, personaKey, scope) {
   const showToggle = personaKey === "responsable" && scope.team;
+  const appts = scopedAppointments(personaKey, scope);
+  const hasDone = appts.some((a) => a.status === "done");
+
   container.innerHTML = `
     <div class="dash-panel-header">
       <div><h2>Statistiques</h2><p>Vue d'ensemble de votre activité sur les 30 derniers jours.</p></div>
@@ -862,12 +876,19 @@ function renderStatistiquesPanel(container, personaKey, scope) {
       </div>`
         : ""
     }
-    <div class="stat-bento" id="dashStatBento"></div>
-    <div class="side-panel" style="padding:1.5rem;">
-      <h2 style="font-size:.95rem;font-weight:700;margin-bottom:1rem;">Réservations des 7 derniers jours</h2>
-      <div class="bar-chart" id="dashBarChart"></div>
-    </div>
+    ${
+      !hasDone && !showToggle
+        ? `
+      ${emptyIllustrated("📈", "Pas encore de statistiques", "Elles apparaîtront ici après vos premières prestations terminées.", "Voir mes rendez-vous", "goto-rendezvous")}`
+        : `
+      <div class="stat-bento" id="dashStatBento"></div>
+      <div class="side-panel" style="padding:1.5rem;">
+        <h2 style="font-size:.95rem;font-weight:700;margin-bottom:1rem;">Réservations des 7 derniers jours</h2>
+        <div class="bar-chart" id="dashBarChart"></div>
+      </div>`
+    }
   `;
+
   if (showToggle) {
     container.querySelectorAll("[data-stats-scope]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -876,8 +897,11 @@ function renderStatistiquesPanel(container, personaKey, scope) {
       });
     });
   }
-  renderStatTiles(personaKey, scope);
-  renderBarChart(personaKey, scope);
+
+  if (hasDone || showToggle) {
+    renderStatTiles(personaKey, scope);
+    renderBarChart(personaKey, scope);
+  }
 }
 
 function statTileHTML(label, value, trend) {
@@ -1012,6 +1036,25 @@ function renderAvisPanel(container, personaKey, scope) {
     <div id="dashReviewsList"></div>
   `;
   renderReviewsList(personaKey, scope);
+}
+
+function renderReviewsList(personaKey, scope) {
+  const el = document.getElementById("dashReviewsList");
+  if (!el) return;
+  const reviews = scopedReviews(personaKey, scope);
+  if (!reviews.length) {
+    el.innerHTML = emptyIllustrated(
+      "⭐",
+      "Aucun avis pour le moment",
+      "Vos premiers avis clients apparaîtront ici après vos prestations. Partagez votre vitrine pour en recevoir plus vite !",
+      "Partager ma vitrine",
+      "share-vitrine",
+    );
+    return;
+  }
+  el.innerHTML = reviews
+    .map((r) => dashReviewCardHTML(r, personaKey, scope))
+    .join("");
 }
 
 function renderReviewsList(personaKey, scope) {
@@ -1277,6 +1320,14 @@ function handleDashClick(e, personaKey, scope) {
       renderDashConvList(personaKey, scope, convs);
       break;
     }
+    case "share-vitrine":
+      showToast(
+        "Lien de votre vitrine copié ! (fonctionnalité complète avec Supabase)",
+      );
+      return;
+    case "goto-rendezvous":
+      goToPanel(personaKey, scope, "rendezvous");
+      return;
   }
 }
 
@@ -1387,3 +1438,731 @@ function handleDashSubmit(e, personaKey, scope) {
     showToast("Vitrine mise à jour.");
   }
 }
+
+/* ============================================================
+   HELPERS ÉTATS VIDES ILLUSTRÉS
+   ============================================================ */
+function emptyIllustrated(emoji, title, text, btnLabel, btnAction) {
+  return `
+    <div class="empty-illustrated">
+      <div class="empty-illustrated-emoji">${emoji}</div>
+      <h3>${title}</h3>
+      <p>${text}</p>
+      ${btnLabel ? `<button type="button" class="btn btn-primary" data-dash-action="${btnAction}">${btnLabel}</button>` : ""}
+    </div>`;
+}
+
+/* ============================================================
+   SÉLECTEUR DE CONTEXTE (employé avec activité solo)
+   ============================================================ */
+let employeContext = "equipe"; // "equipe" | "solo"
+
+function renderContextSelector(personaKey, scope) {
+  if (
+    personaKey !== "employe" ||
+    !scope.member ||
+    !scope.member.hasSoloActivity
+  )
+    return "";
+  return `
+    <div class="context-selector">
+      <button type="button" class="context-option ${employeContext === "equipe" ? "active" : ""}" data-context="equipe">
+        ${scope.team.name}
+      </button>
+      <button type="button" class="context-option ${employeContext === "solo" ? "active" : ""}" data-context="solo">
+        Mon activité solo
+      </button>
+    </div>`;
+}
+
+/* ============================================================
+   C.1 — SECTION ÉQUIPE (mode Complet, responsable)
+   ============================================================ */
+let showAddMemberForm = false;
+
+function renderEquipePanel(container, personaKey, scope) {
+  if (personaKey !== "responsable" || !scope.team) {
+    container.innerHTML = `<div class="dash-panel-header"><div><h2>Équipe</h2></div></div>
+      ${emptyIllustrated("🔒", "Accès réservé", "Cette section est réservée au responsable de l'équipe.", null, null)}`;
+    return;
+  }
+
+  const pending = pendingChangesData.filter(
+    (p) => p.teamId === scope.team.id && p.status === "en_attente",
+  );
+
+  container.innerHTML = `
+    <div class="dash-panel-header">
+      <div>
+        <h2>Équipe</h2>
+        <p>${scope.team.name} · ${scope.team.members.length} professionnel${scope.team.members.length > 1 ? "s" : ""}</p>
+      </div>
+      <button type="button" class="btn btn-primary" data-dash-action="team-add-toggle">
+        ${icon("plus", 16)} Ajouter un professionnel
+      </button>
+    </div>
+
+    ${
+      pending.length
+        ? `
+      <div class="team-pending-block">
+        <div class="team-pending-title">${icon("clock", 15)} ${pending.length} modification${pending.length > 1 ? "s" : ""} en attente de validation</div>
+        ${pending
+          .map((p) => {
+            const m = getTeamMember(scope.team.id, p.memberId);
+            return `
+            <div class="team-pending-item">
+              <span>${m ? m.name + " — " : ""}${p.description}</span>
+              <div style="display:flex;gap:.5rem;">
+                <button type="button" class="btn btn-primary" style="padding:.35rem .8rem;font-size:.75rem;" data-dash-action="pending-approve" data-id="${p.id}">Approuver</button>
+                <button type="button" class="btn btn-ghost" style="padding:.35rem .8rem;font-size:.75rem;" data-dash-action="pending-reject" data-id="${p.id}">Refuser</button>
+              </div>
+            </div>`;
+          })
+          .join("")}
+      </div>`
+        : ""
+    }
+
+    ${
+      showAddMemberForm
+        ? `
+      <form class="team-add-form" data-dash-form="team-add-member">
+        <div class="dash-field">
+          <label>Nom complet</label>
+          <input type="text" name="name" placeholder="Ex. Sofia Mensah" required />
+        </div>
+        <div class="dash-field">
+          <label>Spécialité</label>
+          <input type="text" name="specialty" placeholder="Ex. Coloration" required />
+        </div>
+        <div class="dash-field span-2" style="display:flex;gap:.6rem;justify-content:flex-end;">
+          <button type="button" class="btn btn-ghost" data-dash-action="team-add-toggle">Annuler</button>
+          <button type="submit" class="btn btn-primary">Ajouter à l'équipe</button>
+        </div>
+      </form>`
+        : ""
+    }
+
+    <div class="team-grid" id="teamMemberGrid"></div>
+  `;
+
+  renderTeamMemberGrid(scope);
+}
+
+function renderTeamMemberGrid(scope) {
+  const grid = document.getElementById("teamMemberGrid");
+  if (!grid) return;
+  grid.innerHTML = scope.team.members
+    .map((m) => teamMemberCardHTML(m, scope))
+    .join("");
+}
+
+function teamMemberCardHTML(m, scope) {
+  const statusLabel = m.status === "actif" ? "Actif" : "En pause";
+  return `
+    <div class="team-member-card ${m.status === "en_pause" ? "en-pause" : ""}">
+      <div class="team-member-top">
+        <img src="${m.avatar}" alt="${m.name}" class="team-member-avatar" />
+        <div>
+          <div class="team-member-name">${m.name}</div>
+          <div class="team-member-role">${m.specialty}</div>
+        </div>
+        <span class="team-status-badge ${m.status}">${statusLabel}</span>
+      </div>
+
+      <div class="team-permissions">
+        <div class="team-perm-row">
+          <span class="team-perm-label">Voir les statistiques</span>
+          <label class="switch">
+            <input type="checkbox" data-dash-action="perm-toggle" data-member-id="${m.id}" data-perm="voitStats" ${m.permissions.voitStats ? "checked" : ""} />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="team-perm-row">
+          <span class="team-perm-label">Modifier services et créneaux (avec validation)</span>
+          <label class="switch">
+            <input type="checkbox" data-dash-action="perm-toggle" data-member-id="${m.id}" data-perm="modifieServicesHoraires" ${m.permissions.modifieServicesHoraires ? "checked" : ""} />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="team-perm-row">
+          <span class="team-perm-label">Répondre aux avis</span>
+          <label class="switch">
+            <input type="checkbox" data-dash-action="perm-toggle" data-member-id="${m.id}" data-perm="reponsAvis" ${m.permissions.reponsAvis ? "checked" : ""} />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+      </div>
+
+      ${
+        m.role !== "responsable"
+          ? `
+        <div class="team-member-actions">
+          <button type="button" class="btn btn-ghost" style="flex:1;font-size:.8rem;padding:.5rem;" data-dash-action="team-toggle-pause" data-member-id="${m.id}">
+            ${m.status === "actif" ? "Mettre en pause" : "Réactiver"}
+          </button>
+          <button type="button" class="btn btn-ghost" style="font-size:.8rem;padding:.5rem;color:var(--danger);" data-dash-action="team-remove" data-member-id="${m.id}">
+            Retirer de l'équipe
+          </button>
+        </div>`
+          : `
+        <div style="font-size:.75rem;color:var(--ink-faint);text-align:center;padding-top:.5rem;">Responsable · non modifiable</div>`
+      }
+    </div>`;
+}
+
+/* ============================================================
+   C.2 — FINANCES (responsable)
+   ============================================================ */
+function renderFinancesPanel(container, personaKey, scope) {
+  if (personaKey === "responsable") {
+    renderFinancesResponsable(container, scope);
+  } else if (personaKey === "employe") {
+    renderFinancesEmploye(container, scope);
+  } else {
+    renderFinancesSolo(container, scope);
+  }
+}
+
+function renderFinancesResponsable(container, scope) {
+  const fd = financeData.entreprise;
+  container.innerHTML = `
+    <div class="dash-panel-header">
+      <div><h2>Finances</h2><p>Gérez les recettes de ${scope.team.name} et les versements à votre équipe.</p></div>
+    </div>
+
+    <div class="finance-bento">
+      <div class="finance-tile accent">
+        <div class="finance-tile-label">Solde global</div>
+        <div class="finance-tile-value mono-num">${fd.soldeGlobal.toLocaleString("fr-FR")}</div>
+        <div class="finance-tile-sub">FCFA disponibles</div>
+      </div>
+      <div class="finance-tile">
+        <div class="finance-tile-label">Recettes du mois</div>
+        <div class="finance-tile-value mono-num">${fd.recettesDuMois.toLocaleString("fr-FR")}</div>
+        <div class="finance-tile-sub">FCFA</div>
+      </div>
+      <div class="finance-tile">
+        <div class="finance-tile-label">Total dû à l'équipe</div>
+        <div class="finance-tile-value mono-num">${fd.ceQuOnDoitAuxMembres.reduce((s, m) => s + m.montant, 0).toLocaleString("fr-FR")}</div>
+        <div class="finance-tile-sub">FCFA à verser</div>
+      </div>
+    </div>
+
+    <div class="finance-section-title">Ce qu'on doit à chaque professionnel</div>
+    <div class="finance-table">
+      ${fd.ceQuOnDoitAuxMembres
+        .map((due) => {
+          const member = getTeamMember(scope.team.id, due.memberId);
+          if (!member) return "";
+          return `
+          <div class="finance-due-row">
+            <img src="${member.avatar}" alt="${member.name}" class="finance-due-avatar" />
+            <span class="finance-due-name">${member.name}</span>
+            <span class="finance-due-amount mono-num">${due.montant.toLocaleString("fr-FR")} FCFA</span>
+            <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.78rem;" data-dash-action="finance-pay" data-member-id="${due.memberId}">Payer</button>
+          </div>`;
+        })
+        .join("")}
+    </div>
+
+    <div class="finance-section-title">Dernières transactions</div>
+    <div class="finance-table">
+      ${fd.historiqueTransactions
+        .map(
+          (t) => `
+        <div class="finance-row">
+          <span class="finance-row-label">${t.label}</span>
+          <span class="finance-row-date">${t.date}</span>
+          <span class="finance-row-amount positive">+${t.montant.toLocaleString("fr-FR")} FCFA</span>
+        </div>`,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderFinancesEmploye(container, scope) {
+  const mf = financeData.membres[scope.member.id];
+  const contextSelector = renderContextSelector("employe", scope);
+
+  if (!mf) {
+    container.innerHTML = `<div class="dash-panel-header"><div><h2>Mes finances</h2></div></div>
+      ${emptyIllustrated("💰", "Aucune donnée financière", "Vos gains apparaîtront ici après vos premières prestations.", null, null)}`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="dash-panel-header">
+      <div><h2>Mes finances</h2><p>Vos gains consolidés de toutes vos activités.</p></div>
+    </div>
+
+    ${contextSelector}
+
+    <div class="finance-bento">
+      <div class="finance-tile accent">
+        <div class="finance-tile-label">Ce qu'on vous doit</div>
+        <div class="finance-tile-value mono-num">${mf.gainsEntreprise.toLocaleString("fr-FR")}</div>
+        <div class="finance-tile-sub">FCFA · ${scope.team.name}</div>
+      </div>
+      ${
+        scope.member.hasSoloActivity
+          ? `
+        <div class="finance-tile">
+          <div class="finance-tile-label">Activité solo</div>
+          <div class="finance-tile-value mono-num">${mf.gainsSolo.toLocaleString("fr-FR")}</div>
+          <div class="finance-tile-sub">FCFA</div>
+        </div>`
+          : ""
+      }
+      <div class="finance-tile">
+        <div class="finance-tile-label">Total consolidé</div>
+        <div class="finance-tile-value mono-num">${(mf.gainsEntreprise + (scope.member.hasSoloActivity ? mf.gainsSolo : 0)).toLocaleString("fr-FR")}</div>
+        <div class="finance-tile-sub">FCFA toutes sources</div>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" style="margin-bottom:1.5rem;" data-dash-action="finance-withdraw">
+      ${icon("download", 16)} Demander un retrait
+    </button>
+
+    <div class="finance-section-title">Historique de vos paiements</div>
+    <div class="finance-table">
+      ${mf.historique
+        .map(
+          (h) => `
+        <div class="finance-row">
+          <span class="finance-row-label">${h.label}</span>
+          <span class="finance-row-date">${h.date}</span>
+          <span class="finance-row-amount positive">${h.montant.toLocaleString("fr-FR")} FCFA</span>
+          <span class="finance-row-status ${h.statut}">${h.statut === "verse" ? "Versé" : "En attente"}</span>
+        </div>`,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderFinancesSolo(container, scope) {
+  const appts = scopedAppointments("solo", scope).filter(
+    (a) => a.status === "done",
+  );
+  const total = appts.reduce((s, a) => s + a.price, 0);
+  container.innerHTML = `
+    <div class="dash-panel-header">
+      <div><h2>Mes finances</h2><p>Aperçu de vos recettes.</p></div>
+    </div>
+    <div class="finance-bento">
+      <div class="finance-tile accent">
+        <div class="finance-tile-label">Recettes totales</div>
+        <div class="finance-tile-value mono-num">${total.toLocaleString("fr-FR")}</div>
+        <div class="finance-tile-sub">FCFA (prestations terminées)</div>
+      </div>
+    </div>
+    ${emptyIllustrated("📊", "Connectez un moyen de retrait", "La gestion avancée des recettes arrive avec la connexion à Supabase.", null, null)}
+  `;
+}
+
+/* ============================================================
+   C.3 — GESTION DES CONFLITS DE DISPONIBILITÉS
+   ============================================================ */
+function assignProfessional(teamId, date, time, preference) {
+  const team = teamsData.find((t) => t.id === teamId);
+  if (!team) return null;
+
+  const availableMembers = team.members.filter((m) => {
+    if (m.status !== "actif" || m.role === "responsable") return false;
+    // Vérifie qu'il n'a pas déjà un RDV sur ce créneau (mock simplifié)
+    const clash = appointmentsData.some(
+      (a) =>
+        a.artisanId === team.artisanId &&
+        a.professionalId === m.id &&
+        a.date === date &&
+        a.time === time &&
+        a.status === "upcoming",
+    );
+    return !clash;
+  });
+
+  if (!availableMembers.length) return null;
+
+  // Assignation aléatoire parmi les disponibles
+  return availableMembers[Math.floor(Math.random() * availableMembers.length)];
+}
+
+function renderConflitsPanel(container, personaKey, scope) {
+  if (personaKey !== "responsable" || !scope.team) {
+    container.innerHTML = emptyIllustrated(
+      "🔒",
+      "Accès réservé",
+      "Section réservée au responsable.",
+      null,
+      null,
+    );
+    return;
+  }
+
+  // Rendez-vous sans professionnel assigné
+  const unassigned = appointmentsData.filter(
+    (a) =>
+      a.artisanId === scope.artisan.id &&
+      a.status === "upcoming" &&
+      !a.professionalId,
+  );
+
+  container.innerHTML = `
+    <div class="dash-panel-header">
+      <div>
+        <h2>Assignation des créneaux</h2>
+        <p>Gérez les rendez-vous sans professionnel assigné et réassignez si nécessaire.</p>
+      </div>
+    </div>
+    ${
+      !unassigned.length
+        ? `
+      <div class="tdb-empty-hint">✅ Tous les rendez-vous ont un professionnel assigné. Beau travail !</div>`
+        : `
+      <div class="finance-table" id="conflitsTable">
+        ${unassigned.map((a) => conflitRowHTML(a, scope)).join("")}
+      </div>`
+    }
+
+    <div class="finance-section-title" style="margin-top:2rem;">Tous les rendez-vous à venir</div>
+    <div class="finance-table" id="allApptsTable">
+      ${appointmentsData
+        .filter(
+          (a) => a.artisanId === scope.artisan.id && a.status === "upcoming",
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.date + "T" + a.time) - new Date(b.date + "T" + b.time),
+        )
+        .map((a) => {
+          const pro = a.professionalId
+            ? getTeamMember(scope.team.id, a.professionalId)
+            : null;
+          return `
+            <div class="finance-row">
+              <div class="finance-row-label">
+                <div style="font-weight:600;">${a.serviceName}</div>
+                <div style="font-size:.76rem;color:var(--ink-faint);">${formatDateFrLong(a.date)} à ${a.time}</div>
+              </div>
+              <span style="font-size:.8rem;color:${pro ? "var(--ink-soft)" : "var(--star)"};">
+                ${pro ? pro.name : "⚠️ À assigner"}
+              </span>
+              <select class="appt-filter-select" style="font-size:.76rem;padding:.3rem .6rem;" data-dash-action="reassign-appt" data-appt-id="${a.id}">
+                <option value="">— Assigner —</option>
+                ${scope.team.members
+                  .filter((m) => m.status === "actif")
+                  .map(
+                    (m) =>
+                      `<option value="${m.id}" ${a.professionalId === m.id ? "selected" : ""}>${m.name}</option>`,
+                  )
+                  .join("")}
+              </select>
+            </div>`;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function conflitRowHTML(a, scope) {
+  const suggested = assignProfessional(
+    scope.team.id,
+    a.date,
+    a.time,
+    a.preference,
+  );
+  return `
+    <div class="finance-row">
+      <div class="finance-row-label">
+        <div style="font-weight:600;">${a.serviceName}</div>
+        <div style="font-size:.76rem;color:var(--ink-faint);">${formatDateFrLong(a.date)} à ${a.time}</div>
+      </div>
+      <span style="font-size:.78rem;color:var(--star);">
+        ${suggested ? "Suggestion : " + suggested.name : "Aucun professionnel disponible"}
+      </span>
+      <button type="button" class="btn btn-primary" style="padding:.4rem .85rem;font-size:.76rem;" data-dash-action="auto-assign" data-appt-id="${a.id}">
+        Confirmer
+      </button>
+    </div>`;
+}
+
+/* ============================================================
+   MISE À JOUR DU DISPATCH — ajouter les nouveaux panneaux
+   ============================================================ */
+// Remplace renderPanel pour inclure equipe, finances, conflits
+const _originalRenderPanel = renderPanel;
+window.renderPanel = function renderPanel(personaKey, scope) {
+  const container = document.getElementById("dashPanels");
+  if (!container) return;
+  switch (currentPanelKey) {
+    case "equipe":
+      return renderEquipePanel(container, personaKey, scope);
+    case "finances":
+      return renderFinancesPanel(container, personaKey, scope);
+    case "conflits":
+      return renderConflitsPanel(container, personaKey, scope);
+    default:
+      return _originalRenderPanel(personaKey, scope);
+  }
+};
+
+// Ajouter les nouveaux items de nav
+Object.assign(ALL_NAV_ITEMS, {
+  equipe: { label: "Équipe", icon: "user" },
+  finances: { label: "Finances", icon: "card" },
+  conflits: { label: "Créneaux", icon: "calendar" },
+});
+
+// Mise à jour de computeVisibleNav
+const _originalComputeVisibleNav = computeVisibleNav;
+window.computeVisibleNav = function computeVisibleNav(personaKey, scope) {
+  const base = _originalComputeVisibleNav(personaKey, scope);
+  const mode = getDashMode(personaKey);
+
+  if (personaKey === "responsable" && mode === "complet") {
+    // Ajoute Équipe, Finances, Créneaux après Paiement
+    const idx = base.indexOf("paiement");
+    if (idx !== -1) {
+      base.splice(idx + 1, 0, "equipe", "finances", "conflits");
+    }
+  }
+  if (personaKey === "employe") {
+    // Ajoute Finances pour l'employé
+    if (!base.includes("finances")) base.push("finances");
+  }
+  if (personaKey === "solo") {
+    // Finances optionnel pour solo
+    if (!base.includes("finances")) base.push("finances");
+  }
+  return base;
+};
+
+/* ============================================================
+   MISE À JOUR DU GESTIONNAIRE DE CLICS — nouveaux cas
+   ============================================================ */
+const _originalHandleDashClick = handleDashClick;
+window.handleDashClick = function handleDashClick(e, personaKey, scope) {
+  const actionEl = e.target.closest("[data-dash-action]");
+  if (actionEl) {
+    const action = actionEl.dataset.dashAction;
+    const id = actionEl.dataset.id ? Number(actionEl.dataset.id) : null;
+    const memberId = actionEl.dataset.memberId
+      ? Number(actionEl.dataset.memberId)
+      : null;
+    const apptId = actionEl.dataset.apptId
+      ? Number(actionEl.dataset.apptId)
+      : null;
+
+    switch (action) {
+      case "team-add-toggle":
+        showAddMemberForm = !showAddMemberForm;
+        renderEquipePanel(
+          document.getElementById("dashPanels"),
+          personaKey,
+          scope,
+        );
+        return;
+
+      case "team-toggle-pause": {
+        const team = scope.team;
+        const m = team.members.find((mb) => mb.id === memberId);
+        if (m) {
+          m.status = m.status === "actif" ? "en_pause" : "actif";
+        }
+        renderTeamMemberGrid(scope);
+        showToast(
+          m && m.status === "actif" ? m.name + " réactivé." : "Mis en pause.",
+        );
+        return;
+      }
+
+      case "team-remove": {
+        const team = scope.team;
+        const m = team.members.find((mb) => mb.id === memberId);
+        if (m && confirm(`Retirer ${m.name} de l'équipe ?`)) {
+          team.members = team.members.filter((mb) => mb.id !== memberId);
+          renderEquipePanel(
+            document.getElementById("dashPanels"),
+            personaKey,
+            scope,
+          );
+          showToast(m.name + " retiré de l'équipe.");
+        }
+        return;
+      }
+
+      case "pending-approve": {
+        const p = pendingChangesData.find((pc) => pc.id === id);
+        if (p) {
+          p.status = "approuve";
+          showToast("Modification approuvée.");
+        }
+        renderEquipePanel(
+          document.getElementById("dashPanels"),
+          personaKey,
+          scope,
+        );
+        return;
+      }
+
+      case "pending-reject": {
+        const p = pendingChangesData.find((pc) => pc.id === id);
+        if (p) {
+          p.status = "refuse";
+          showToast("Modification refusée.");
+        }
+        renderEquipePanel(
+          document.getElementById("dashPanels"),
+          personaKey,
+          scope,
+        );
+        return;
+      }
+
+      case "finance-pay": {
+        const due = financeData.entreprise.ceQuOnDoitAuxMembres.find(
+          (d) => d.memberId === memberId,
+        );
+        const m = scope.team ? getTeamMember(scope.team.id, memberId) : null;
+        if (due && m) {
+          financeData.entreprise.historiqueTransactions.unshift({
+            id: Date.now(),
+            label: "Versement à " + m.name,
+            montant: due.montant,
+            date: TODAY_MOCK,
+          });
+          due.montant = 0;
+          showToast("Versement de " + m.name + " effectué.");
+          renderFinancesPanel(
+            document.getElementById("dashPanels"),
+            personaKey,
+            scope,
+          );
+        }
+        return;
+      }
+
+      case "finance-withdraw": {
+        const mf = financeData.membres[scope.member && scope.member.id];
+        if (mf) {
+          showToast("Demande de retrait envoyée à votre responsable.");
+        }
+        return;
+      }
+
+      case "auto-assign": {
+        const appt = appointmentsData.find((a) => a.id === apptId);
+        if (appt && scope.team) {
+          const pro = assignProfessional(
+            scope.team.id,
+            appt.date,
+            appt.time,
+            appt.preference,
+          );
+          if (pro) {
+            appt.professionalId = pro.id;
+            showToast(pro.name + " assigné pour ce créneau.");
+            renderConflitsPanel(
+              document.getElementById("dashPanels"),
+              personaKey,
+              scope,
+            );
+          } else {
+            showToast("Aucun professionnel disponible sur ce créneau.");
+          }
+        }
+        return;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  // Sélecteur de contexte employé
+  const ctxBtn = e.target.closest("[data-context]");
+  if (ctxBtn) {
+    employeContext = ctxBtn.dataset.context;
+    renderPanel(personaKey, scope);
+    return;
+  }
+
+  // Déléguer au gestionnaire original
+  _originalHandleDashClick(e, personaKey, scope);
+};
+
+/* ============================================================
+   MISE À JOUR DU GESTIONNAIRE CHANGE — permissions équipe + réassignation
+   ============================================================ */
+const _originalHandleDashChange = handleDashChange;
+window.handleDashChange = function handleDashChange(e, personaKey, scope) {
+  const actionEl = e.target.closest("[data-dash-action]");
+  if (actionEl && actionEl.dataset.dashAction === "perm-toggle") {
+    const memberId = Number(actionEl.dataset.memberId);
+    const perm = actionEl.dataset.perm;
+    const team = scope.team;
+    if (!team) return;
+    const m = team.members.find((mb) => mb.id === memberId);
+    if (m && perm in m.permissions) {
+      m.permissions[perm] = actionEl.checked;
+      showToast("Permission mise à jour pour " + m.name + ".");
+    }
+    return;
+  }
+
+  if (actionEl && actionEl.dataset.dashAction === "reassign-appt") {
+    const apptId = Number(actionEl.dataset.apptId);
+    const newMemberId = actionEl.value ? Number(actionEl.value) : null;
+    const appt = appointmentsData.find((a) => a.id === apptId);
+    if (appt) {
+      appt.professionalId = newMemberId;
+      const m =
+        newMemberId && scope.team
+          ? getTeamMember(scope.team.id, newMemberId)
+          : null;
+      showToast(m ? m.name + " assigné." : "Assignation retirée.");
+    }
+    return;
+  }
+
+  _originalHandleDashChange(e, personaKey, scope);
+};
+
+/* ============================================================
+   MISE À JOUR DU GESTIONNAIRE SUBMIT — ajout de membre
+   ============================================================ */
+const _originalHandleDashSubmit = handleDashSubmit;
+window.handleDashSubmit = function handleDashSubmit(e, personaKey, scope) {
+  const form = e.target.closest("[data-dash-form]");
+  if (form && form.dataset.dashForm === "team-add-member") {
+    e.preventDefault();
+    const name = form.querySelector('[name="name"]').value.trim();
+    const specialty = form.querySelector('[name="specialty"]').value.trim();
+    if (!name || !specialty) return;
+    const newMember = {
+      id: Date.now(),
+      name,
+      role: "employe",
+      specialty,
+      avatar:
+        "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=150&h=150&fit=crop",
+      status: "actif",
+      permissions: {
+        voitStats: false,
+        modifieServicesHoraires: false,
+        reponsAvis: false,
+      },
+      hasSoloActivity: false,
+    };
+    scope.team.members.push(newMember);
+    showAddMemberForm = false;
+    showToast(name + " ajouté à l'équipe.");
+    renderEquipePanel(document.getElementById("dashPanels"), personaKey, scope);
+    return;
+  }
+  _originalHandleDashSubmit(e, personaKey, scope);
+};
