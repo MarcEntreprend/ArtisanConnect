@@ -101,7 +101,7 @@
           const session = data?.session || null;
 
           if (session && session.user) {
-            const { data: profile } = await SupabaseAPI.auth.getUser();
+            const { user: profile } = await SupabaseAPI.auth.getUser();
             if (profile?.role) {
               const { data: artisans } = await SupabaseAPI.artisans.getByOwner(
                 session.user.id,

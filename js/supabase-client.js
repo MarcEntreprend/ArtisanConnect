@@ -52,10 +52,8 @@
         return { data, error }; // <-- data contient { session: ... }
       },
       getUser: async () => {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
+        const { data, error } = await supabase.auth.getUser();
+        const user = data?.user || null;
         if (error || !user) return { user: null, error };
         const { data: profile } = await supabase
           .from("users")

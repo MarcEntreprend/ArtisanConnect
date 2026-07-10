@@ -22,14 +22,15 @@
       style="
         width: 100%;
         max-width: 420px;
-        background: var(--card-bg);
-        border-radius: var(--r);
+        background: var(--bg-elevated);
+        border-radius: var(--r-card);
         padding: 2rem;
         box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
       "
     >
       <div id="authForms">
-        <!-- Formulaire de connexion -->
+        <!-- Connexion -->
         <form id="loginForm" style="display: block">
           <h2
             style="
@@ -41,11 +42,11 @@
           >
             Se connecter
           </h2>
-          <div class="field">
+          <div class="dash-field">
             <label>Email</label>
             <input type="email" id="loginEmail" required />
           </div>
-          <div class="field">
+          <div class="dash-field">
             <label>Mot de passe</label>
             <input type="password" id="loginPassword" required />
           </div>
@@ -67,7 +68,7 @@
           ></div>
         </form>
 
-        <!-- Formulaire d'inscription -->
+        <!-- Inscription -->
         <form id="signupForm" style="display: none">
           <h2
             style="
@@ -79,19 +80,19 @@
           >
             Créer un compte
           </h2>
-          <div class="field">
+          <div class="dash-field">
             <label>Nom complet</label>
             <input type="text" id="signupName" required />
           </div>
-          <div class="field">
+          <div class="dash-field">
             <label>Email</label>
             <input type="email" id="signupEmail" required />
           </div>
-          <div class="field">
+          <div class="dash-field">
             <label>Mot de passe</label>
             <input type="password" id="signupPassword" required minlength="6" />
           </div>
-          <div class="field">
+          <div class="dash-field">
             <label>Vous êtes ?</label>
             <select id="signupRole">
               <option value="client">Client</option>
@@ -117,7 +118,7 @@
           ></div>
         </form>
 
-        <!-- Formulaire de récupération -->
+        <!-- Récupération -->
         <form id="recoverForm" style="display: none">
           <h2
             style="
@@ -129,7 +130,7 @@
           >
             Mot de passe oublié
           </h2>
-          <div class="field">
+          <div class="dash-field">
             <label>Email</label>
             <input type="email" id="recoverEmail" required />
           </div>
@@ -142,7 +143,7 @@
           <div
             id="recoverMsg"
             style="
-              color: var(--success);
+              color: var(--accent);
               font-size: 0.8rem;
               text-align: center;
               margin-top: 0.5rem;
@@ -163,8 +164,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
+    <script src="js/data/artisans.js"></script>
+    <script src="js/main.js"></script>
     <script>
-      // Navigation entre formulaires
+      loadTheme();
+
       document.getElementById("showSignup").addEventListener("click", (e) => {
         e.preventDefault();
         document.getElementById("loginForm").style.display = "none";
@@ -193,14 +197,17 @@
         .getElementById("loginForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          const email = document.getElementById("loginEmail").value;
-          const password = document.getElementById("loginPassword").value;
-          const { data, error } = await SupabaseAPI.auth.signIn(
-            email,
-            password,
+          const btn = e.target.querySelector("button[type=submit]");
+          btn.disabled = true;
+          btn.textContent = "Connexion…";
+          const { error } = await SupabaseAPI.auth.signIn(
+            document.getElementById("loginEmail").value,
+            document.getElementById("loginPassword").value,
           );
           if (error) {
             document.getElementById("loginError").textContent = error.message;
+            btn.disabled = false;
+            btn.textContent = "Connexion";
           } else {
             window.location.href = "index.html";
           }
@@ -211,11 +218,21 @@
         .getElementById("signupForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          const name = document.getElementById("signupName").value;
+          const btn = e.target.querySelector("button[type=submit]");
+          btn.disabled = true;
+          btn.textContent = "Création…";
+          const name = document.getElementById("signupName").value.trim();
           const email = document.getElementById("signupEmail").value;
           const password = document.getElementById("signupPassword").value;
           const role = document.getElementById("signupRole").value;
-          const { data, error } = await SupabaseAPI.auth.signUp(
+          if (!name) {
+            document.getElementById("signupError").textContent =
+              "Veuillez indiquer votre nom.";
+            btn.disabled = false;
+            btn.textContent = "S'inscrire";
+            return;
+          }
+          const { error } = await SupabaseAPI.auth.signUp(
             email,
             password,
             name,
@@ -223,18 +240,15 @@
           );
           if (error) {
             document.getElementById("signupError").textContent = error.message;
+            btn.disabled = false;
+            btn.textContent = "S'inscrire";
           } else {
             // Redirige vers le dashboard selon le rôle
             const redir =
               role === "artisan_solo" ||
               role === "responsable" ||
               role === "employe"
-                ? "dashboard.html?persona=" +
-                  (role === "responsable"
-                    ? "responsable"
-                    : role === "employe"
-                      ? "employe"
-                      : "solo")
+                ? "onboarding.html"
                 : "index.html";
             window.location.href = redir;
           }
