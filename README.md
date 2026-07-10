@@ -26,25 +26,37 @@ ou avec Node :
 npx serve .
 ```
 
-## Structure
+## Architecture
 
 ```
 artisanconnect/
 ├── index.html                  # Accueil
+├── search.html                 # Recherche avancée avec filtres et tri
 ├── artisan-detail.html         # Profil détaillé d'un artisan
+├── appointments.html           # Mes rendez-vous (client)
+├── favorites.html              # Favoris (client)
+├── messages.html               # Messagerie client ↔ artisan
+├── dashboard.html              # Espace artisan (solo / entreprise / employé)
+├── auth.html                   # Connexion / inscription / récupération
+├── onboarding.html             # Onboarding 3 étapes (nouvel artisan)
+├── error.html                  # Page 404 personnalisée
 ├── components/
-│   ├── header.html
-│   ├── bottom-nav.html
-│   ├── modal-login.html
-│   └── modal-reservation.html
+│   ├── header.html             # Navigation + profil + langue + thème
+│   ├── bottom-nav.html         # Navigation mobile
+│   ├── modal-login.html        # Modale de connexion (legacy)
+│   └── modal-reservation.html  # Modale de réservation
 ├── css/
 │   └── style.css               # Design system "Terrain" (clair + sombre)
 ├── js/
-│   ├── main.js                 # Logique applicative
+│   ├── main.js                 # Logique partagée (rendu, thème, favoris, recherche, etc.)
+│   ├── dashboard.js            # Espace artisan (navigation, CRUD mock, stats, avis)
+│   ├── supabase-client.js      # Client Supabase (auth, API, stockage)
 │   └── data/
-│       └── artisans.js         # Données mockées (8 artisans, 8 catégories, avis)
-├── AUDIT.md                    # Audit et direction créative
-└── ROADMAP.md                  # Prochaines étapes (backend, paiement…)
+│       ├── artisans.js         # Données mockées (8 artisans, services, avis, RDV, conversations)
+│       └── dashboard-mock.js   # Mock supplémentaires (équipes, permissions, finances)
+├── README.md
+├── ROADMAP.md
+└── AUDIT.md
 ```
 
 ## État actuel
