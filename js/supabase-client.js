@@ -28,21 +28,20 @@
     auth: {
       signUp: async (email, password, fullName, role = "client") => {
         const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) return { error };
-        // Créer l'entrée dans public.users
+        if (error) return { data: null, error };
         const { error: profileError } = await supabase.from("users").insert({
           id: data.user.id,
           role,
           full_name: fullName,
         });
-        return { user: data.user, error: profileError };
+        return { data, error: profileError };
       },
       signIn: async (email, password) => {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        return { session: data.session, user: data.user, error };
+        return { data, error };
       },
       signOut: async () => {
         const { error } = await supabase.auth.signOut();
@@ -50,18 +49,24 @@
       },
       getSession: async () => {
         const { data, error } = await supabase.auth.getSession();
-        return { session: data.session, error };
+        return { data, error }; // <-- data contient { session: ... }
       },
       getUser: async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) return { user: null, error };
-        // Récupérer le rôle depuis public.users
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+        if (error || !user) return { user: null, error };
         const { data: profile } = await supabase
           .from("users")
           .select("*")
-          .eq("id", data.user.id)
+          .eq("id", user.id)
           .single();
-        return { user: { ...data.user, ...profile }, error: null };
+        return { user: { ...user, ...profile }, error: null };
+      },
+      resetPassword: async (email) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        return { error };
       },
     },
 

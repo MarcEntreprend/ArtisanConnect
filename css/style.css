@@ -1174,6 +1174,23 @@ body.dark .category-btn.active {
   color: var(--accent);
 }
 
+/* .btn-outline {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.btn-outline:hover {
+  background: var(--hover);
+  border-color: var(--ink-soft);
+} */
+
 /* ============================================================
    FOOTER
    ============================================================ */

@@ -292,6 +292,7 @@
             ob.step = 2;
             renderStep();
           });
+          modal;
           modal
             .querySelector("#obFinish")
             .addEventListener("click", async () => {
@@ -310,7 +311,6 @@
               const artisanId = ob.type === "entreprise" ? 7 : 1;
               const artisan = artisansData.find((a) => a.id === artisanId);
 
-              // Ajoute le service dans les données mock
               if (artisan && name) {
                 artisan.services.unshift({
                   id: Date.now(),
@@ -323,10 +323,8 @@
                 });
               }
 
-              // Si connecté via Supabase, crée aussi le service côté backend
-              const {
-                data: { session },
-              } = await SupabaseAPI.auth.getSession();
+              const { data: authData } = await SupabaseAPI.auth.getSession();
+              const session = authData?.session || null;
               if (session?.user && artisanId) {
                 try {
                   await SupabaseAPI.services.create({

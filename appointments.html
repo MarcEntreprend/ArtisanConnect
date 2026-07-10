@@ -1,3 +1,4 @@
+<!-- appointments.html -->
 <!doctype html>
 <html lang="fr">
   <head>
@@ -97,17 +98,14 @@
       loadIncludes({ activePage: "appointments.html" });
 
       async function loadAppointmentsSupabase() {
-        const {
-          data: { session },
-        } = await SupabaseAPI.auth.getSession();
+        const { data } = await SupabaseAPI.auth.getSession();
+        const session = data?.session || null;
         if (session?.user) {
           try {
-            const { data, error } = await SupabaseAPI.appointments.getByClient(
-              session.user.id,
-            );
-            if (!error && data && data.length > 0) {
-              // Convertit le format Supabase vers le format mock attendu
-              window.appointmentsData = data.map((a) => ({
+            const { data: appointments, error } =
+              await SupabaseAPI.appointments.getByClient(session.user.id);
+            if (!error && appointments && appointments.length > 0) {
+              window.appointmentsData = appointments.map((a) => ({
                 id: a.id,
                 artisanId: a.artisan_id,
                 serviceName: a.service_name,

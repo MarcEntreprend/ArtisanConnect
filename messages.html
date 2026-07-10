@@ -54,9 +54,8 @@
       loadIncludes({ activePage: "messages.html" });
 
       async function loadMessagesSupabase() {
-        const {
-          data: { session },
-        } = await SupabaseAPI.auth.getSession();
+        const { data } = await SupabaseAPI.auth.getSession();
+        const session = data?.session || null;
         if (session?.user) {
           try {
             const { data: profile } = await SupabaseAPI.auth.getUser();
@@ -67,7 +66,6 @@
                 role,
               );
             if (conversations && conversations.length > 0) {
-              // Convertit au format attendu par initMessagingPage
               window.conversationsData = [];
               for (const c of conversations) {
                 const { data: msgs } = await SupabaseAPI.messages.getMessages(

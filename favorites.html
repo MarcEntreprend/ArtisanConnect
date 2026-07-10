@@ -1,3 +1,4 @@
+<!-- favorites.html -->
 <!doctype html>
 <html lang="fr">
   <head>
@@ -94,21 +95,17 @@
       loadIncludes({ activePage: "favorites.html" });
 
       async function loadFavoritesSupabase() {
-        const {
-          data: { session },
-        } = await SupabaseAPI.auth.getSession();
+        const { data } = await SupabaseAPI.auth.getSession();
+        const session = data?.session || null;
         if (session?.user) {
           try {
-            const { data, error } = await SupabaseAPI.favorites.getByUser(
-              session.user.id,
-            );
-            if (!error && data && data.length > 0) {
-              // Injecte les favoris Supabase dans le localStorage pour renderFavoritesPage
-              const ids = data.map((f) => f.artisan_id);
+            const { data: favorites, error } =
+              await SupabaseAPI.favorites.getByUser(session.user.id);
+            if (!error && favorites && favorites.length > 0) {
+              const ids = favorites.map((f) => f.artisan_id);
               localStorage.setItem("favorites", JSON.stringify(ids));
 
-              // Ajoute les artisans dans artisansData s'ils n'y sont pas déjà
-              const newArtisans = data
+              const newArtisans = favorites
                 .filter(
                   (f) =>
                     f.artisans &&
