@@ -6,7 +6,7 @@ Plateforme de mise en relation entre artisans et clients (prototype front-end, d
 
 Aucune dépendance, aucun build. Il faut cependant servir les fichiers via un petit serveur HTTP local (les `fetch()` des composants ne fonctionnent pas en ouvrant le fichier directement avec `file://`) :
 
-### Python (si installé)
+#### Python (si installé)
 
 python -m http.server 8080
 
