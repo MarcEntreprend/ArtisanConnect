@@ -185,16 +185,21 @@ function renderPageHeading(personaKey, scope) {
   } else if (personaKey === "responsable") {
     title.textContent = "Espace artisan";
     subtitle.textContent =
-      scope.team.name + " — Gérez votre équipe et votre activité.";
+      (scope.team ? scope.team.name + " — " : "") +
+      "Gérez votre équipe et votre activité.";
     bannerSlot.innerHTML = "";
   } else {
-    title.textContent = scope.team.name;
-    subtitle.textContent = "Espace employé de " + scope.member.name;
-    bannerSlot.innerHTML = `
+    title.textContent = scope.team ? scope.team.name : "Espace artisan";
+    subtitle.textContent = scope.member
+      ? "Espace employé de " + scope.member.name
+      : "";
+    bannerSlot.innerHTML = scope.member
+      ? `
       <div class="company-banner">
         ${icon("user", 18)}
         Vous consultez uniquement ce que votre responsable vous a autorisé à voir.
-      </div>`;
+      </div>`
+      : "";
   }
 }
 

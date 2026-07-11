@@ -203,6 +203,13 @@
           console.warn("Supabase indisponible, fallback mock :", e.message);
         }
 
+        // Mettre à jour la persona 'solo' avec l'artisan connecté
+        if (window.DEMO_PERSONAS && window.DEMO_PERSONAS["solo"]) {
+          DEMO_PERSONAS["solo"].artisanId = a.id;
+          DEMO_PERSONAS["solo"].firstName =
+            profile?.full_name?.split(" ")[0] || "Artisan";
+        }
+
         // Empêche dashboard.js de supprimer le paramètre ?persona=
         const origReplace = history.replaceState;
         history.replaceState = function () {};
