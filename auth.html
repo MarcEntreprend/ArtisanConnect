@@ -21,42 +21,137 @@
     <div
       style="
         width: 100%;
-        max-width: 420px;
+        max-width: 440px;
         background: var(--bg-elevated);
         border-radius: var(--r-card);
-        padding: 2rem;
+        padding: 2.5rem 2rem;
         box-shadow: var(--shadow-lg);
         border: 1px solid var(--border);
+        position: relative;
       "
     >
+      <!-- Flèche retour -->
+      <a
+        href="index.html"
+        id="backArrow"
+        style="
+          position: absolute;
+          top: 1.25rem;
+          left: 1.25rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          color: var(--ink-soft);
+          text-decoration: none;
+          transition:
+            background 0.2s,
+            color 0.2s;
+        "
+        onmouseover="
+          this.style.background = 'var(--hover)';
+          this.style.color = 'var(--ink)';
+        "
+        onmouseout="
+          this.style.background = 'transparent';
+          this.style.color = 'var(--ink-soft)';
+        "
+        aria-label="Retour à l'accueil"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </a>
+
       <div id="authForms">
-        <!-- Connexion -->
+        <!-- ========== CONNEXION ========== -->
         <form id="loginForm" style="display: block">
           <h2
             style="
               font-size: 1.5rem;
               font-weight: 700;
-              margin-bottom: 1.5rem;
+              margin-bottom: 0.25rem;
               text-align: center;
             "
           >
             Se connecter
           </h2>
-          <div class="dash-field">
+          <p
+            style="
+              text-align: center;
+              font-size: 0.85rem;
+              color: var(--ink-faint);
+              margin-bottom: 2rem;
+            "
+          >
+            Accédez à votre espace ArtisanConnect.
+          </p>
+
+          <div class="dash-field" style="margin-bottom: 1.25rem">
             <label>Email</label>
             <input type="email" id="loginEmail" required />
           </div>
-          <div class="dash-field">
+
+          <div class="dash-field" style="margin-bottom: 1.75rem">
             <label>Mot de passe</label>
             <input type="password" id="loginPassword" required />
           </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%">
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; margin-bottom: 1.25rem"
+          >
             Connexion
           </button>
-          <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem">
-            <a href="#" id="showSignup">Créer un compte</a> ·
-            <a href="#" id="showRecover">Mot de passe oublié</a>
+
+          <p
+            style="
+              text-align: center;
+              font-size: 0.85rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            <a
+              href="#"
+              id="showSignup"
+              style="
+                color: var(--primary);
+                text-decoration: none;
+                font-weight: 500;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '0.7'"
+              onmouseout="this.style.opacity = '1'"
+              >Créer un compte</a
+            >
+            <span style="color: var(--ink-faint); margin: 0 0.4rem">·</span>
+            <a
+              href="#"
+              id="showRecover"
+              style="
+                color: var(--primary);
+                text-decoration: none;
+                font-weight: 500;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '0.7'"
+              onmouseout="this.style.opacity = '1'"
+              >Mot de passe oublié</a
+            >
           </p>
+
           <div
             id="loginError"
             style="
@@ -64,35 +159,50 @@
               font-size: 0.8rem;
               text-align: center;
               margin-top: 0.5rem;
+              min-height: 1.2rem;
             "
           ></div>
         </form>
 
-        <!-- Inscription -->
+        <!-- ========== INSCRIPTION ========== -->
         <form id="signupForm" style="display: none">
           <h2
             style="
               font-size: 1.5rem;
               font-weight: 700;
-              margin-bottom: 1.5rem;
+              margin-bottom: 0.25rem;
               text-align: center;
             "
           >
             Créer un compte
           </h2>
-          <div class="dash-field">
+          <p
+            style="
+              text-align: center;
+              font-size: 0.85rem;
+              color: var(--ink-faint);
+              margin-bottom: 2rem;
+            "
+          >
+            Rejoignez ArtisanConnect en quelques secondes.
+          </p>
+
+          <div class="dash-field" style="margin-bottom: 1.25rem">
             <label>Nom complet</label>
             <input type="text" id="signupName" required />
           </div>
-          <div class="dash-field">
+
+          <div class="dash-field" style="margin-bottom: 1.25rem">
             <label>Email</label>
             <input type="email" id="signupEmail" required />
           </div>
-          <div class="dash-field">
+
+          <div class="dash-field" style="margin-bottom: 1.25rem">
             <label>Mot de passe</label>
             <input type="password" id="signupPassword" required minlength="6" />
           </div>
-          <div class="dash-field">
+
+          <div class="dash-field" style="margin-bottom: 1.75rem">
             <label>Vous êtes ?</label>
             <select id="signupRole">
               <option value="client">Client</option>
@@ -101,12 +211,37 @@
               <option value="employe">Employé</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%">
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; margin-bottom: 1.25rem"
+          >
             S'inscrire
           </button>
-          <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem">
-            <a href="#" id="showLogin">Déjà un compte ? Connectez-vous</a>
+
+          <p
+            style="
+              text-align: center;
+              font-size: 0.85rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            <a
+              href="#"
+              id="showLogin"
+              style="
+                color: var(--primary);
+                text-decoration: none;
+                font-weight: 500;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '0.7'"
+              onmouseout="this.style.opacity = '1'"
+              >Déjà un compte ? Connectez-vous</a
+            >
           </p>
+
           <div
             id="signupError"
             style="
@@ -114,32 +249,69 @@
               font-size: 0.8rem;
               text-align: center;
               margin-top: 0.5rem;
+              min-height: 1.2rem;
             "
           ></div>
         </form>
 
-        <!-- Récupération -->
+        <!-- ========== RÉCUPÉRATION ========== -->
         <form id="recoverForm" style="display: none">
           <h2
             style="
               font-size: 1.5rem;
               font-weight: 700;
-              margin-bottom: 1.5rem;
+              margin-bottom: 0.25rem;
               text-align: center;
             "
           >
             Mot de passe oublié
           </h2>
-          <div class="dash-field">
+          <p
+            style="
+              text-align: center;
+              font-size: 0.85rem;
+              color: var(--ink-faint);
+              margin-bottom: 2rem;
+            "
+          >
+            Recevez un lien de réinitialisation par email.
+          </p>
+
+          <div class="dash-field" style="margin-bottom: 1.75rem">
             <label>Email</label>
             <input type="email" id="recoverEmail" required />
           </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%">
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; margin-bottom: 1.25rem"
+          >
             Envoyer le lien
           </button>
-          <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem">
-            <a href="#" id="showLoginFromRecover">Retour à la connexion</a>
+
+          <p
+            style="
+              text-align: center;
+              font-size: 0.85rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            <a
+              href="#"
+              id="showLoginFromRecover"
+              style="
+                color: var(--primary);
+                text-decoration: none;
+                font-weight: 500;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '0.7'"
+              onmouseout="this.style.opacity = '1'"
+              >Retour à la connexion</a
+            >
           </p>
+
           <div
             id="recoverMsg"
             style="
@@ -147,6 +319,7 @@
               font-size: 0.8rem;
               text-align: center;
               margin-top: 0.5rem;
+              min-height: 1.2rem;
             "
           ></div>
           <div
@@ -155,7 +328,8 @@
               color: var(--danger);
               font-size: 0.8rem;
               text-align: center;
-              margin-top: 0.5rem;
+              margin-top: 0.25rem;
+              min-height: 1.2rem;
             "
           ></div>
         </form>
@@ -168,6 +342,31 @@
     <script src="js/main.js"></script>
     <script>
       loadTheme();
+
+      // Logique de la flèche retour : revient à la page précédente ou index
+      document
+        .getElementById("backArrow")
+        .addEventListener("click", function (e) {
+          if (
+            document.referrer &&
+            document.referrer.includes(window.location.host)
+          ) {
+            // On vient du site, on retourne en arrière
+            return; // laisse le href="index.html" comme fallback, ou utilise history.back()
+          }
+          // Sinon, on va vers index.html (comportement par défaut du href)
+        });
+
+      // Si on veut un vrai "retour en arrière" quand on vient du site :
+      (function () {
+        if (
+          document.referrer &&
+          document.referrer.includes(window.location.host)
+        ) {
+          document.getElementById("backArrow").href =
+            "javascript:history.back()";
+        }
+      })();
 
       document.getElementById("showSignup").addEventListener("click", (e) => {
         e.preventDefault();
@@ -243,7 +442,6 @@
             btn.disabled = false;
             btn.textContent = "S'inscrire";
           } else {
-            // Redirige vers le dashboard selon le rôle
             const redir =
               role === "artisan_solo" ||
               role === "responsable" ||
