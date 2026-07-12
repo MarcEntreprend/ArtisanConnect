@@ -16,7 +16,9 @@ COMPOSANT : Modale de connexion / inscription
     -webkit-backdrop-filter: blur(4px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
     padding: 1rem;
   }
 
@@ -112,7 +114,9 @@ COMPOSANT : Modale de connexion / inscription
     font-weight: 600;
     border-radius: var(--r-pill);
     color: var(--ink-faint);
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
   }
 
   .auth-tab.active {
@@ -149,7 +153,9 @@ COMPOSANT : Modale de connexion / inscription
     background: var(--bg);
     font-size: 0.9rem;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .auth-field input:focus {
@@ -179,7 +185,9 @@ COMPOSANT : Modale de connexion / inscription
     border-radius: var(--r-pill);
     font-weight: 700;
     font-size: 0.92rem;
-    transition: background 0.2s ease, transform 0.15s ease;
+    transition:
+      background 0.2s ease,
+      transform 0.15s ease;
   }
 
   .auth-submit:hover {
@@ -223,7 +231,9 @@ COMPOSANT : Modale de connexion / inscription
     border: 1.5px solid var(--border);
     font-size: 0.85rem;
     font-weight: 600;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
   }
 
   .auth-social-btn:hover {
@@ -253,13 +263,22 @@ COMPOSANT : Modale de connexion / inscription
 <div class="auth-modal-overlay" id="loginModal">
   <div class="auth-modal">
     <button class="auth-modal-close" id="closeLoginModal" aria-label="Fermer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
     </button>
 
     <div class="auth-header">
       <div class="auth-logo-mark">AC</div>
       <h2 id="authTitle">Bon retour</h2>
-      <p id="authSubtitle">Connectez-vous pour réserver et suivre vos rendez-vous</p>
+      <p id="authSubtitle">
+        Connectez-vous pour réserver et suivre vos rendez-vous
+      </p>
     </div>
 
     <div class="auth-tabs">
@@ -270,13 +289,30 @@ COMPOSANT : Modale de connexion / inscription
     <form class="auth-form active" id="signinForm" data-form="signin">
       <div class="auth-field">
         <label for="signinEmail">Adresse e-mail</label>
-        <input type="email" id="signinEmail" placeholder="vous@exemple.com" required autocomplete="email" />
-        <span class="auth-error" data-error-for="signinEmail">Adresse e-mail invalide.</span>
+        <input
+          type="email"
+          id="signinEmail"
+          placeholder="vous@exemple.com"
+          required
+          autocomplete="email"
+        />
+        <span class="auth-error" data-error-for="signinEmail"
+          >Adresse e-mail invalide.</span
+        >
       </div>
       <div class="auth-field">
         <label for="signinPassword">Mot de passe</label>
-        <input type="password" id="signinPassword" placeholder="••••••••" required autocomplete="current-password" minlength="6" />
-        <span class="auth-error" data-error-for="signinPassword">6 caractères minimum.</span>
+        <input
+          type="password"
+          id="signinPassword"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+          minlength="6"
+        />
+        <span class="auth-error" data-error-for="signinPassword"
+          >6 caractères minimum.</span
+        >
       </div>
       <button type="submit" class="auth-submit">Se connecter</button>
     </form>
@@ -284,18 +320,43 @@ COMPOSANT : Modale de connexion / inscription
     <form class="auth-form" id="signupForm" data-form="signup">
       <div class="auth-field">
         <label for="signupName">Nom complet</label>
-        <input type="text" id="signupName" placeholder="Votre nom" required autocomplete="name" />
-        <span class="auth-error" data-error-for="signupName">Veuillez indiquer votre nom.</span>
+        <input
+          type="text"
+          id="signupName"
+          placeholder="Votre nom"
+          required
+          autocomplete="name"
+        />
+        <span class="auth-error" data-error-for="signupName"
+          >Veuillez indiquer votre nom.</span
+        >
       </div>
       <div class="auth-field">
         <label for="signupEmail">Adresse e-mail</label>
-        <input type="email" id="signupEmail" placeholder="vous@exemple.com" required autocomplete="email" />
-        <span class="auth-error" data-error-for="signupEmail">Adresse e-mail invalide.</span>
+        <input
+          type="email"
+          id="signupEmail"
+          placeholder="vous@exemple.com"
+          required
+          autocomplete="email"
+        />
+        <span class="auth-error" data-error-for="signupEmail"
+          >Adresse e-mail invalide.</span
+        >
       </div>
       <div class="auth-field">
         <label for="signupPassword">Mot de passe</label>
-        <input type="password" id="signupPassword" placeholder="6 caractères minimum" required autocomplete="new-password" minlength="6" />
-        <span class="auth-error" data-error-for="signupPassword">6 caractères minimum.</span>
+        <input
+          type="password"
+          id="signupPassword"
+          placeholder="6 caractères minimum"
+          required
+          autocomplete="new-password"
+          minlength="6"
+        />
+        <span class="auth-error" data-error-for="signupPassword"
+          >6 caractères minimum.</span
+        >
       </div>
       <button type="submit" class="auth-submit">Créer mon compte</button>
     </form>
@@ -304,17 +365,43 @@ COMPOSANT : Modale de connexion / inscription
 
     <div class="auth-social">
       <button type="button" class="auth-social-btn" data-provider="google">
-        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.85A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.09V7.06H2.18A11 11 0 0 0 1 12c0 1.77.43 3.45 1.18 4.94z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.82 6.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.85A11 11 0 0 0 12 23z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.09V7.06H2.18A11 11 0 0 0 1 12c0 1.77.43 3.45 1.18 4.94z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.82 6.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"
+          />
+        </svg>
         Continuer avec Google
       </button>
       <button type="button" class="auth-social-btn" data-provider="apple">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.02-2.24 1.83-3.32 1.91-3.37-1.05-1.53-2.68-1.74-3.26-1.76-1.39-.14-2.71.82-3.42.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.89-3.71 2.25-1.58 2.75-.4 6.82 1.14 9.05.75 1.09 1.65 2.32 2.83 2.28 1.14-.05 1.57-.74 2.94-.74s1.76.74 2.97.71c1.22-.02 2-1.11 2.75-2.21.87-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.92-2.4-3.65z"/><path d="M14.83 5.24c.63-.77 1.05-1.83 .94-2.9-.9.04-2.01.6-2.66 1.36-.58.67-1.09 1.75-.95 2.79 1.01.08 2.05-.51 2.67-1.25z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M17.05 12.04c-.02-2.24 1.83-3.32 1.91-3.37-1.05-1.53-2.68-1.74-3.26-1.76-1.39-.14-2.71.82-3.42.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.89-3.71 2.25-1.58 2.75-.4 6.82 1.14 9.05.75 1.09 1.65 2.32 2.83 2.28 1.14-.05 1.57-.74 2.94-.74s1.76.74 2.97.71c1.22-.02 2-1.11 2.75-2.21.87-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.92-2.4-3.65z"
+          />
+          <path
+            d="M14.83 5.24c.63-.77 1.05-1.83 .94-2.9-.9.04-2.01.6-2.66 1.36-.58.67-1.09 1.75-.95 2.79 1.01.08 2.05-.51 2.67-1.25z"
+          />
+        </svg>
         Continuer avec Apple
       </button>
     </div>
 
     <p class="auth-footer-note">
-      En continuant, vous acceptez nos <a href="#">conditions d'utilisation</a> et notre politique de confidentialité.
+      En continuant, vous acceptez nos
+      <a href="#">conditions d'utilisation</a> et notre politique de
+      confidentialité.
     </p>
   </div>
 </div>
@@ -331,18 +418,28 @@ COMPOSANT : Modale de connexion / inscription
     const subtitle = document.getElementById("authSubtitle");
 
     const copy = {
-      signin: { title: "Bon retour", subtitle: "Connectez-vous pour réserver et suivre vos rendez-vous" },
-      signup: { title: "Créer un compte", subtitle: "Rejoignez ArtisanConnect en moins d'une minute" },
+      signin: {
+        title: "Bon retour",
+        subtitle: "Connectez-vous pour réserver et suivre vos rendez-vous",
+      },
+      signup: {
+        title: "Créer un compte",
+        subtitle: "Rejoignez ArtisanConnect en moins d'une minute",
+      },
     };
 
     function switchTab(tab) {
       tabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === tab));
-      forms.forEach((f) => f.classList.toggle("active", f.dataset.form === tab));
+      forms.forEach((f) =>
+        f.classList.toggle("active", f.dataset.form === tab),
+      );
       title.textContent = copy[tab].title;
       subtitle.textContent = copy[tab].subtitle;
     }
 
-    tabs.forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+    tabs.forEach((t) =>
+      t.addEventListener("click", () => switchTab(t.dataset.tab)),
+    );
 
     function openModal(tab) {
       switchTab(tab || "signin");
@@ -360,7 +457,8 @@ COMPOSANT : Modale de connexion / inscription
       if (e.target === overlay) closeModal();
     });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && overlay.classList.contains("active")) closeModal();
+      if (e.key === "Escape" && overlay.classList.contains("active"))
+        closeModal();
     });
 
     // Validation simple, sans window.alert
@@ -371,7 +469,8 @@ COMPOSANT : Modale de connexion / inscription
         const isEmail = input.type === "email";
         const passesPattern = isEmail
           ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)
-          : input.value.trim().length >= (input.minLength > 0 ? input.minLength : 1);
+          : input.value.trim().length >=
+            (input.minLength > 0 ? input.minLength : 1);
 
         if (!passesPattern) {
           input.classList.add("invalid");
@@ -394,7 +493,7 @@ COMPOSANT : Modale de connexion / inscription
           window.showToast(
             form.dataset.form === "signup"
               ? "Compte créé. Bienvenue sur ArtisanConnect !"
-              : "Connexion réussie."
+              : "Connexion réussie.",
           );
         }
         form.reset();
