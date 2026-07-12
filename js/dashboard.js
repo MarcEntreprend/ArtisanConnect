@@ -620,7 +620,14 @@ function renderApptList(personaKey, scope, allAppts) {
 /* ============================================================
    3. SERVICES
    ============================================================ */
-function applyOrQueueChange(personaKey, scope, description, targetId, applyFn) {
+function applyOrQueueChange(
+  personaKey,
+  scope,
+  description,
+  targetId,
+  applyFn,
+  supabaseOp,
+) {
   if (personaKey === "employe") {
     pendingChangesData.push({
       id: Date.now(),
@@ -635,7 +642,20 @@ function applyOrQueueChange(personaKey, scope, description, targetId, applyFn) {
     showToast("Modification envoyée à votre responsable pour validation.");
   } else {
     applyFn();
-    showToast("Modification enregistrée.");
+    // Si on a une opération Supabase et que c'est un vrai compte
+    if (
+      supabaseOp &&
+      typeof SupabaseAPI !== "undefined" &&
+      scope.artisan._isLive
+    ) {
+      supabaseOp().then(({ error }) => {
+        if (error)
+          showToast("Enregistré en local. Erreur réseau : " + error.message);
+        else showToast("Modification enregistrée ✓");
+      });
+    } else {
+      showToast("Modification enregistrée.");
+    }
   }
 }
 
@@ -729,6 +749,7 @@ function renderServicesList(personaKey, scope, editable) {
    ============================================================ */
 function renderVitrinePanel(container, personaKey, scope) {
   const a = scope.artisan;
+
   container.innerHTML = `
     <div class="dash-panel-header">
       <div><h2>Votre vitrine</h2><p>C'est ce que les clients voient en premier sur ArtisanConnect.</p></div>
@@ -756,24 +777,52 @@ function renderVitrinePanel(container, personaKey, scope) {
       </div>
     </div>
     <form class="dash-form-grid" id="dashVitrineForm">
-      <div class="dash-field"><label for="vName">Nom de l'activité</label><input type="text" id="vName" name="name" value="${a.name}" /></div>
-      <div class="dash-field"><label for="vCategory">Métier</label>
+      <div class="dash-field">
+        <label for="vName">Nom de l'activité</label>
+        <input type="text" id="vName" name="name" value="${a.name}" placeholder="Ex. Koffi Atelier Bois" />
+      </div>
+      <div class="dash-field">
+        <label for="vCategory">Métier</label>
         <select id="vCategory" name="category">
           ${CATEGORIES.map((c) => `<option value="${c.slug}" ${c.slug === a.categorySlug ? "selected" : ""}>${c.label}</option>`).join("")}
         </select>
       </div>
-      <div class="dash-field"><label for="vCity">Ville</label><input type="text" id="vCity" name="city" value="${a.city}" /></div>
-      <div class="dash-field"><label for="vPhone">Téléphone</label><input type="tel" id="vPhone" name="phone" value="${a.phone}" /></div>
-      <div class="dash-field span-2"><label for="vAddress">Adresse</label><input type="text" id="vAddress" name="address" value="${a.address}" /></div>
-      <div class="dash-field span-2"><label for="vDesc">Description</label><textarea id="vDesc" name="description">${a.description}</textarea></div>
+      <div class="dash-field">
+        <label for="vCity">Ville</label>
+        <input type="text" id="vCity" name="city" value="${a.city}" placeholder="Ville où vous travaillez" />
+      </div>
+      <div class="dash-field">
+        <label for="vPhone">Téléphone</label>
+        <input type="tel" id="vPhone" name="phone" value="${a.phone}" placeholder="+225 07 00 00 00 00" />
+      </div>
+      <div class="dash-field span-2">
+        <label for="vAddress">Adresse</label>
+        <input type="text" id="vAddress" name="address" value="${a.address}" placeholder="Quartier, rue, ville…" />
+      </div>
+      <div class="dash-field span-2">
+        <label for="vDesc">Description</label>
+        <textarea id="vDesc" name="description" placeholder="Décrivez votre activité, votre expérience, ce qui vous distingue…">${a.description}</textarea>
+      </div>
       <div class="dash-form-actions">
         <button type="button" class="btn btn-ghost" data-dash-action="vitrine-cancel">Annuler</button>
         <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
       </div>
     </form>
+
+    ${
+      a._isLive
+        ? `
+    <div class="danger-zone">
+      <h3>Zone de danger</h3>
+      <p>La suppression de votre compte est irréversible. Tous vos services, rendez-vous et données seront effacés définitivement.</p>
+      <button type="button" class="btn btn-danger" data-dash-action="delete-account">Supprimer mon compte</button>
+    </div>`
+        : ""
+    }
   `;
 
   const zone = document.getElementById("vitrinePhotoZone");
+  if (!zone) return;
   ["dragover", "dragenter"].forEach((evt) =>
     zone.addEventListener(evt, (e) => {
       e.preventDefault();
@@ -1258,32 +1307,121 @@ function handleDashClick(e, personaKey, scope) {
       renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
       break;
     case "service-delete":
-      scope.artisan.services = scope.artisan.services.filter(
-        (sv) => sv.id !== id,
-      );
+      {
+        const svcToDelete = scope.artisan.services.find((sv) => sv.id === id);
+        scope.artisan.services = scope.artisan.services.filter(
+          (sv) => sv.id !== id,
+        );
+        renderServicesList(
+          personaKey,
+          scope,
+          canEditServices(personaKey, scope),
+        );
+        // Supabase
+        if (
+          svcToDelete &&
+          typeof SupabaseAPI !== "undefined" &&
+          scope.artisan._isLive
+        ) {
+          SupabaseAPI.services.delete(id).then(({ error }) => {
+            if (error)
+              showToast("Supprimé en local. Erreur réseau : " + error.message);
+            else showToast("Service supprimé ✓");
+          });
+        } else {
+          showToast("Service supprimé.");
+        }
+        break;
+      }
       showToast("Service supprimé.");
       renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
       break;
-    case "service-add":
-      applyOrQueueChange(
-        personaKey,
-        scope,
-        "Ajout d'un nouveau service",
-        null,
-        () => {
-          scope.artisan.services.push({
-            id: Date.now(),
-            name: "Nouveau service",
-            desc: "",
-            price: 0,
-            duration: 30,
-            image: scope.artisan.avatar,
-            active: true,
-          });
-        },
-      );
-      renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
+    case "service-add": {
+      const editable = canEditServices(personaKey, scope);
+      const newSvc = {
+        id: Date.now(), // ID temporaire, remplacé par Supabase si connecté
+        name: "Nouveau service",
+        desc: "",
+        price: 0,
+        duration: 30,
+        image: scope.artisan.avatar,
+        active: true,
+      };
+      if (personaKey === "employe") {
+        pendingChangesData.push({
+          id: Date.now(),
+          teamId: scope.team.id,
+          memberId: scope.member.id,
+          type: "service",
+          targetId: null,
+          description: "Ajout d'un nouveau service",
+          date: TODAY_MOCK,
+          status: "en_attente",
+        });
+        showToast("Demande envoyée à votre responsable.");
+      } else {
+        scope.artisan.services.push(newSvc);
+        // Persister dans Supabase si compte réel
+        if (typeof SupabaseAPI !== "undefined" && scope.artisan._isLive) {
+          SupabaseAPI.services
+            .create({
+              artisan_id: scope.artisan.id,
+              name: newSvc.name,
+              price: newSvc.price,
+              duration_min: newSvc.duration,
+              is_active: true,
+            })
+            .then(({ data, error }) => {
+              if (!error && data && data.length > 0) {
+                // Mettre à jour l'ID local avec le vrai ID Supabase
+                newSvc.id = data[0].id;
+                showToast("Service ajouté ✓");
+              } else {
+                showToast(
+                  "Ajouté en local. Erreur réseau : " + (error?.message || ""),
+                );
+              }
+            });
+        } else {
+          showToast("Service ajouté (mode démo).");
+        }
+      }
+      renderServicesList(personaKey, scope, editable);
       break;
+    }
+
+    case "delete-account": {
+      const confirmed = window.confirm(
+        "Supprimer définitivement votre compte ?\n\nCette action est irréversible. Tous vos services et données seront effacés.",
+      );
+      if (!confirmed) break;
+
+      if (typeof SupabaseAPI === "undefined" || !scope.artisan._isLive) {
+        showToast(
+          "Suppression uniquement disponible sur un vrai compte connecté.",
+        );
+        break;
+      }
+
+      // 1. Supprimer l'artisan (cascade sur services, hours, reviews…)
+      SupabaseAPI.artisans
+        .update(scope.artisan.id, { status: "suspendu" })
+        .then(() => {
+          // 2. Déconnexion
+          return SupabaseAPI.auth.signOut();
+        })
+        .then(() => {
+          showToast("Compte supprimé. À bientôt.");
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1800);
+        })
+        .catch((err) => {
+          showToast("Erreur lors de la suppression : " + err.message);
+        });
+      break;
+    }
+
     case "vitrine-cancel":
       vitrinePhotoDataUrl = null;
       renderVitrinePanel(
@@ -1292,9 +1430,51 @@ function handleDashClick(e, personaKey, scope) {
         scope,
       );
       break;
-    case "avail-save":
-      showToast("Disponibilités enregistrées.");
+    case "avail-save": {
+      if (typeof SupabaseAPI === "undefined" || !scope.artisan._isLive) {
+        showToast("Disponibilités enregistrées (mode démo).");
+        break;
+      }
+      // Collecter les valeurs depuis la grille
+      const grid = document.getElementById("dashAvailGrid");
+      if (!grid) {
+        showToast("Disponibilités enregistrées.");
+        break;
+      }
+
+      const days = grid.querySelectorAll(".avail-day");
+      const hoursArray = [];
+      days.forEach((dayEl, i) => {
+        const toggle = dayEl.querySelector('[data-dash-action="avail-toggle"]');
+        const inputs = dayEl.querySelectorAll('input[type="time"]');
+        const isOpen = toggle ? toggle.checked : false;
+        hoursArray.push({
+          day_index: i,
+          day_label:
+            scope.artisan.hours[i]?.day ||
+            [
+              "Lundi",
+              "Mardi",
+              "Mercredi",
+              "Jeudi",
+              "Vendredi",
+              "Samedi",
+              "Dimanche",
+            ][i],
+          is_open: isOpen,
+          opens_at: isOpen && inputs[0] ? inputs[0].value + ":00" : null,
+          closes_at: isOpen && inputs[1] ? inputs[1].value + ":00" : null,
+        });
+      });
+
+      SupabaseAPI.hours
+        .upsert(scope.artisan.id, hoursArray)
+        .then(({ error }) => {
+          if (error) showToast("Erreur réseau : " + error.message);
+          else showToast("Disponibilités enregistrées ✓");
+        });
       break;
+    }
     case "conv-select": {
       dashActiveConvId = id;
       const conv = conversationsData.find((c) => c.id === id);
@@ -1401,30 +1581,50 @@ function handleDashSubmit(e, personaKey, scope) {
     const name = form.querySelector('[name="name"]').value.trim();
     const price = Number(form.querySelector('[name="price"]').value);
     const duration = Number(form.querySelector('[name="duration"]').value);
+    const editable = canEditServices(personaKey, scope);
+
     applyOrQueueChange(
       personaKey,
       scope,
-      `Modification du service « ${s.name} » → ${name}, ${price.toLocaleString("fr-FR")} Gourdes, ${duration} min`,
+      `Modification du service « ${s.name} » → ${name}, ${price.toLocaleString("fr-FR")} FCFA, ${duration} min`,
       s.id,
       () => {
         s.name = name;
         s.price = price;
         s.duration = duration;
       },
+      () =>
+        SupabaseAPI.services.update(s.id, {
+          name,
+          price,
+          duration_min: duration,
+        }),
     );
     editingServiceId = null;
-    renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
+    renderServicesList(personaKey, scope, editable);
     return;
   }
 
   if (type === "review-reply") {
     const id = Number(form.dataset.id);
-    const text = form.querySelector('[name="reply"]').value.trim();
+    const input = form.querySelector('[name="reply"]');
+    const text = input.value.trim();
     if (!text) return;
     const review = reviewsData.find((r) => r.id === id);
     if (review) review.reply = { text, date: TODAY_MOCK };
-    showToast("Réponse publiée.");
     renderReviewsList(personaKey, scope);
+
+    if (typeof SupabaseAPI !== "undefined" && scope.artisan._isLive) {
+      SupabaseAPI.reviews.reply(id, text).then(({ error }) => {
+        if (error)
+          showToast(
+            "Réponse enregistrée en local. Erreur réseau : " + error.message,
+          );
+        else showToast("Réponse publiée ✓");
+      });
+    } else {
+      showToast("Réponse publiée (mode démo).");
+    }
     return;
   }
 
@@ -1440,7 +1640,25 @@ function handleDashSubmit(e, personaKey, scope) {
     a.description = form.querySelector("#vDesc").value;
     if (vitrinePhotoDataUrl) a.avatar = vitrinePhotoDataUrl;
     renderProfileMini(personaKey, scope);
-    showToast("Vitrine mise à jour.");
+
+    // Persister dans Supabase si artisan réel
+    if (typeof SupabaseAPI !== "undefined" && a._isLive) {
+      SupabaseAPI.artisans
+        .update(a.id, {
+          name: a.name,
+          city: a.city,
+          phone: a.phone,
+          address: a.address,
+          description: a.description,
+        })
+        .then(({ error }) => {
+          if (error)
+            showToast("Sauvegardé en local. Erreur réseau : " + error.message);
+          else showToast("Vitrine mise à jour ✓");
+        });
+    } else {
+      showToast("Vitrine mise à jour (mode démo).");
+    }
   }
 }
 

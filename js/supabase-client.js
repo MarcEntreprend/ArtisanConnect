@@ -51,17 +51,35 @@
         const { data, error } = await supabase.auth.getSession();
         return { data, error }; // <-- data contient { session: ... }
       },
+
       getUser: async () => {
         const { data, error } = await supabase.auth.getUser();
         const user = data?.user || null;
         if (error || !user) return { user: null, error };
+        // Utiliser maybeSingle() au lieu de single() pour éviter 406 si absent
         const { data: profile } = await supabase
           .from("users")
           .select("*")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
+        // Si le profil n'existe pas encore dans public.users, le créer
+        if (!profile) {
+          const role = user.user_metadata?.role || "client";
+          const fullName =
+            user.user_metadata?.full_name || user.email || "Artisan";
+          await supabase.from("users").insert({
+            id: user.id,
+            role,
+            full_name: fullName,
+          });
+          return {
+            user: { ...user, role, full_name: fullName },
+            error: null,
+          };
+        }
         return { user: { ...user, ...profile }, error: null };
       },
+
       resetPassword: async (email) => {
         const { error } = await supabase.auth.resetPasswordForEmail(email);
         return { error };
@@ -183,9 +201,12 @@
         return { data, error };
       },
       getByArtisan: async (artisanId) => {
+        // Pas de jointure team_members : FK professional_id → team_members.id
+        // n'est pas reconnue par PostgREST sans déclaration explicite.
+        // On fait une requête simple et on enrichit côté client si besoin.
         const { data, error } = await supabase
           .from("appointments")
-          .select("*, services(name, price), team_members(name, avatar_url)")
+          .select("*, services(name, price)")
           .eq("artisan_id", artisanId)
           .order("appointment_date", { ascending: true });
         return { data, error };
@@ -216,9 +237,12 @@
     // --- Avis ---
     reviews: {
       getByArtisan: async (artisanId) => {
+        // users(full_name, avatar_url) : la FK client_id → auth.users,
+        // pas public.users. PostgREST ne peut pas traverser auth.* depuis public.
+        // On récupère les reviews sans jointure et on mappe les champs disponibles.
         const { data, error } = await supabase
           .from("reviews")
-          .select("*, users(full_name, avatar_url), team_members(name)")
+          .select("*, member_id")
           .eq("artisan_id", artisanId)
           .order("created_at", { ascending: false });
         return { data, error };

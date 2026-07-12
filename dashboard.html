@@ -96,105 +96,259 @@
       loadIncludes({ activePage: "dashboard.html" });
 
       async function loadDashboardSupabase() {
+        // Variables de scope partagé pour usage après les try/catch
+        let connectedArtisanId = null;
+        let connectedFirstName = null;
+
         try {
-          const { data } = await SupabaseAPI.auth.getSession();
-          const session = data?.session || null;
+          const { data: sessionData } = await SupabaseAPI.auth.getSession();
+          const session = sessionData?.session || null;
 
           if (session && session.user) {
+            // 1. Récupérer le profil (avec auto-création si absent)
             const { user: profile } = await SupabaseAPI.auth.getUser();
-            if (profile?.role) {
+
+            if (profile) {
+              connectedFirstName =
+                profile.full_name?.split(" ")[0] || "Artisan";
+
+              // 2. Récupérer l'artisan lié à cet utilisateur
               const { data: artisans } = await SupabaseAPI.artisans.getByOwner(
                 session.user.id,
               );
+
               if (artisans && artisans.length > 0) {
                 const a = artisans[0];
-                const mockArtisan = artisansData.find((art) => art.id === a.id);
-                if (mockArtisan) {
-                  mockArtisan.name = a.name;
-                  mockArtisan.city = a.city;
-                  mockArtisan.phone = a.phone;
-                  mockArtisan.address = a.address;
-                  mockArtisan.description = a.description;
-                  mockArtisan.rating = a.rating;
-                  mockArtisan.reviews = a.reviews_count;
-                  mockArtisan.verified = a.verified;
-                  mockArtisan.availableToday = a.available_today;
-                  mockArtisan.priceFrom = a.price_from;
-                  mockArtisan.currency = a.currency;
+                connectedArtisanId = a.id;
+
+                // 3. Construire un objet artisan complet depuis Supabase
+                //    On cherche d'abord dans le mock, sinon on crée un objet neuf
+                let mockArtisan = artisansData.find((art) => art.id === a.id);
+
+                if (!mockArtisan) {
+                  // Artisan nouveau (ID inconnu du mock) → créer une entrée dynamique
+                  mockArtisan = {
+                    id: a.id,
+                    name: a.name || "",
+                    ownerName: profile.full_name || "",
+                    category: "",
+                    categorySlug: "",
+                    rating: 0,
+                    reviews: 0,
+                    city: a.city || "",
+                    address: a.address || "",
+                    phone: a.phone || "",
+                    description: a.description || "",
+                    avatar:
+                      a.avatar_url ||
+                      "https://resources.finalsite.net/images/f_auto,q_auto,t_image_size_2/v1729115109/ousdorg/jr5nxqnwquxonp7im6jl/no-image.jpg",
+                    cover: a.cover_url || "",
+                    gallery: [],
+                    verified: a.verified || false,
+                    availableToday: a.available_today || false,
+                    priceFrom: a.price_from || 0,
+                    currency: a.currency || "FCFA",
+                    hours: [
+                      { day: "Lundi", time: "08:00 - 18:00" },
+                      { day: "Mardi", time: "08:00 - 18:00" },
+                      { day: "Mercredi", time: "08:00 - 18:00" },
+                      { day: "Jeudi", time: "08:00 - 18:00" },
+                      { day: "Vendredi", time: "08:00 - 18:00" },
+                      { day: "Samedi", time: "Fermé" },
+                      { day: "Dimanche", time: "Fermé" },
+                    ],
+                    paymentMethods: ["Espèces"],
+                    services: [],
+                    amenities: {
+                      wifi: false,
+                      parking: false,
+                      accessibility: false,
+                      kids: false,
+                    },
+                    _isLive: true, // flag pour savoir que c'est un vrai compte
+                  };
+                  artisansData.push(mockArtisan);
                 }
 
-                const { data: services } =
-                  await SupabaseAPI.services.getByArtisan(a.id, false);
-                if (services && mockArtisan) {
-                  mockArtisan.services = services.map((s) => ({
-                    id: s.id,
-                    name: s.name,
-                    desc: s.description || "",
-                    price: s.price,
-                    duration: s.duration_min,
-                    image: s.image_url || a.avatar_url,
-                    active: s.is_active,
-                  }));
+                // Toujours écraser avec les données Supabase
+                mockArtisan.name = a.name || mockArtisan.name;
+                mockArtisan.city = a.city || mockArtisan.city;
+                mockArtisan.phone = a.phone || mockArtisan.phone;
+                mockArtisan.address = a.address || mockArtisan.address;
+                mockArtisan.description =
+                  a.description || mockArtisan.description;
+                mockArtisan.rating = parseFloat(a.rating) || 0;
+                mockArtisan.reviews = a.reviews_count || 0;
+                mockArtisan.verified = a.verified || false;
+                mockArtisan.availableToday = a.available_today || false;
+                mockArtisan.priceFrom = a.price_from || 0;
+                mockArtisan.currency = a.currency || "FCFA";
+                if (a.avatar_url) mockArtisan.avatar = a.avatar_url;
+                mockArtisan._isLive = true;
+
+                // 4. Services (indépendant — si vide, tableau vide, pas d'erreur)
+                try {
+                  const { data: services } =
+                    await SupabaseAPI.services.getByArtisan(a.id, false);
+                  if (services) {
+                    mockArtisan.services = services.map((s) => ({
+                      id: s.id,
+                      name: s.name,
+                      desc: s.description || "",
+                      price: s.price,
+                      duration: s.duration_min,
+                      image: s.image_url || a.avatar_url || mockArtisan.avatar,
+                      active: s.is_active,
+                    }));
+                  }
+                } catch (e) {
+                  console.warn("services:", e.message);
                 }
 
-                const { data: hours } = await SupabaseAPI.hours.getByArtisan(
-                  a.id,
-                );
-                if (hours && mockArtisan) {
-                  mockArtisan.hours = hours.map((h) => ({
-                    day: h.day_label,
-                    time: h.is_open
-                      ? `${h.opens_at?.slice(0, 5)} - ${h.closes_at?.slice(0, 5)}`
-                      : "Fermé",
-                  }));
-                }
-
-                const { data: appointments } =
-                  await SupabaseAPI.appointments.getByArtisan(a.id);
-                if (appointments) {
-                  window.appointmentsData = appointments.map((apt) => ({
-                    id: apt.id,
-                    artisanId: apt.artisan_id,
-                    serviceName: apt.service_name,
-                    price: apt.price,
-                    date: apt.appointment_date,
-                    time: apt.appointment_time?.slice(0, 5),
-                    status:
-                      apt.status === "upcoming"
-                        ? "upcoming"
-                        : apt.status === "done"
-                          ? "done"
-                          : "cancelled",
-                  }));
-                }
-
-                const { data: reviews } =
-                  await SupabaseAPI.reviews.getByArtisan(a.id);
-                if (reviews) {
-                  window.reviewsData = reviews.map((r) => ({
-                    id: r.id,
-                    artisanId: r.artisan_id,
-                    author: r.users?.full_name || "Client",
-                    avatar: r.users?.avatar_url || "",
-                    rating: r.rating,
-                    comment: r.comment || "",
-                    date: r.created_at?.split("T")[0] || "",
-                    reply: r.reply_text
-                      ? {
-                          text: r.reply_text,
-                          date: r.reply_at?.split("T")[0] || "",
-                        }
-                      : null,
-                  }));
-                }
-
-                if (a.is_team) {
-                  const { data: team } = await SupabaseAPI.team.getByArtisan(
+                // 5. Horaires
+                try {
+                  const { data: hours } = await SupabaseAPI.hours.getByArtisan(
                     a.id,
                   );
-                  if (team?.members) {
-                    window.teamData = team;
+                  if (hours && hours.length > 0) {
+                    mockArtisan.hours = hours.map((h) => ({
+                      day: h.day_label,
+                      time: h.is_open
+                        ? `${h.opens_at?.slice(0, 5)} - ${h.closes_at?.slice(0, 5)}`
+                        : "Fermé",
+                    }));
                   }
+                } catch (e) {
+                  console.warn("hours:", e.message);
+                }
+
+                // 6. Rendez-vous (pas de jointure team_members pour éviter 500)
+                try {
+                  const { data: appointments, error: apptError } =
+                    await SupabaseAPI.appointments.getByArtisan(a.id);
+                  if (!apptError && appointments) {
+                    window.appointmentsData = appointments.map((apt) => ({
+                      id: apt.id,
+                      artisanId: apt.artisan_id,
+                      serviceName: apt.service_name,
+                      price: apt.price,
+                      date: apt.appointment_date,
+                      time: apt.appointment_time?.slice(0, 5),
+                      status:
+                        apt.status === "upcoming"
+                          ? "upcoming"
+                          : apt.status === "done"
+                            ? "done"
+                            : "cancelled",
+                      professionalId: apt.professional_id || null,
+                    }));
+                  } else {
+                    // Pas de rendez-vous = tableau vide, pas d'erreur
+                    window.appointmentsData = [];
+                  }
+                } catch (e) {
+                  console.warn("appointments:", e.message);
+                  window.appointmentsData = [];
+                }
+
+                // 7. Avis (sans jointure users/team_members pour éviter 500)
+                try {
+                  const { data: reviews, error: revError } =
+                    await SupabaseAPI.reviews.getByArtisan(a.id);
+                  if (!revError && reviews) {
+                    window.reviewsData = reviews.map((r) => ({
+                      id: r.id,
+                      artisanId: r.artisan_id,
+                      author: "Client",
+                      avatar:
+                        "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop",
+                      rating: r.rating,
+                      comment: r.comment || "",
+                      date: r.created_at?.split("T")[0] || "",
+                      memberId: r.member_id || null,
+                      reply: r.reply_text
+                        ? {
+                            text: r.reply_text,
+                            date: r.reply_at?.split("T")[0] || "",
+                          }
+                        : null,
+                    }));
+                  } else {
+                    window.reviewsData = [];
+                  }
+                } catch (e) {
+                  console.warn("reviews:", e.message);
+                  window.reviewsData = [];
+                }
+
+                // 8. Équipe si pertinent
+                if (a.is_team) {
+                  try {
+                    const { data: team } = await SupabaseAPI.team.getByArtisan(
+                      a.id,
+                    );
+                    if (team?.members) window.teamData = team;
+                  } catch (e) {
+                    console.warn("team:", e.message);
+                  }
+                }
+              } else {
+                // Connecté mais pas encore d'artisan → créer un artisan vide dans Supabase
+                console.info(
+                  "Aucun artisan trouvé, création d'un profil vide…",
+                );
+                const { data: newArtisan, error: createErr } =
+                  await SupabaseAPI.artisans.create({
+                    owner_id: session.user.id,
+                    name: profile.full_name || "Mon activité",
+                    city: "",
+                    currency: "FCFA",
+                    status: "actif",
+                  });
+                if (!createErr && newArtisan && newArtisan.length > 0) {
+                  connectedArtisanId = newArtisan[0].id;
+                  const emptyArtisan = {
+                    id: connectedArtisanId,
+                    name: newArtisan[0].name,
+                    ownerName: profile.full_name || "",
+                    category: "",
+                    categorySlug: "",
+                    rating: 0,
+                    reviews: 0,
+                    city: "",
+                    address: "",
+                    phone: "",
+                    description: "",
+                    avatar:
+                      "https://i.pinimg.com/736x/77/00/70/7700709ac1285b907c498a70fbccea5e.jpg",
+                    cover: "",
+                    gallery: [],
+                    verified: false,
+                    availableToday: false,
+                    priceFrom: 0,
+                    currency: "FCFA",
+                    hours: [
+                      { day: "Lundi", time: "08:00 - 18:00" },
+                      { day: "Mardi", time: "08:00 - 18:00" },
+                      { day: "Mercredi", time: "08:00 - 18:00" },
+                      { day: "Jeudi", time: "08:00 - 18:00" },
+                      { day: "Vendredi", time: "08:00 - 18:00" },
+                      { day: "Samedi", time: "Fermé" },
+                      { day: "Dimanche", time: "Fermé" },
+                    ],
+                    paymentMethods: ["Espèces"],
+                    services: [],
+                    amenities: {
+                      wifi: false,
+                      parking: false,
+                      accessibility: false,
+                      kids: false,
+                    },
+                    _isLive: true,
+                  };
+                  artisansData.push(emptyArtisan);
+                  window.appointmentsData = [];
+                  window.reviewsData = [];
                 }
               }
             }
@@ -203,18 +357,18 @@
           console.warn("Supabase indisponible, fallback mock :", e.message);
         }
 
-        // Mettre à jour la persona 'solo' avec l'artisan connecté
-        if (window.DEMO_PERSONAS && window.DEMO_PERSONAS["solo"]) {
-          DEMO_PERSONAS["solo"].artisanId = a.id;
-          DEMO_PERSONAS["solo"].firstName =
-            profile?.full_name?.split(" ")[0] || "Artisan";
+        // Brancher la persona 'solo' sur l'artisan connecté (ou Koffi si non connecté)
+        if (connectedArtisanId !== null) {
+          DEMO_PERSONAS["solo"].artisanId = connectedArtisanId;
+          if (connectedFirstName)
+            DEMO_PERSONAS["solo"].firstName = connectedFirstName;
+
+          // Masquer le footer démo quand un vrai compte est connecté
+          const demoFooter = document.querySelector(".dash-demo-footer");
+          if (demoFooter) demoFooter.style.display = "none";
         }
 
-        // Empêche dashboard.js de supprimer le paramètre ?persona=
-        const origReplace = history.replaceState;
-        history.replaceState = function () {};
         initDashboard();
-        history.replaceState = origReplace;
       }
 
       loadDashboardSupabase();

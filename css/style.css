@@ -4553,3 +4553,38 @@ body.dark .finance-row-amount.positive {
   line-height: 1.55;
   margin-bottom: 1.5rem;
 }
+
+/* ============================================================
+   ZONE DANGER (suppression de compte)
+   ============================================================ */
+.danger-zone {
+  border: 1.5px solid var(--danger);
+  border-radius: var(--r-card);
+  padding: 1.25rem 1.5rem;
+  margin-top: 2rem;
+  background: var(--danger-soft);
+}
+
+.danger-zone h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--danger);
+  margin-bottom: 0.4rem;
+}
+
+.danger-zone p {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #a0372400;
+  filter: brightness(0.88);
+}
