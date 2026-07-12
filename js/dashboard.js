@@ -441,7 +441,7 @@ function renderTableauDeBord(container, personaKey, scope) {
         <div class="tdb-card-icon">${icon("card", 18)}</div>
         <div class="tdb-card-label">${recettesLabel}</div>
         <div class="tdb-card-value mono-num">${recettes.toLocaleString("fr-FR")}</div>
-        <div class="tdb-card-sub">FCFA</div>
+        <div class="tdb-card-sub">Gourdes</div>
       </div>
     </div>
     ${
@@ -472,7 +472,7 @@ function renderTableauDeBord(container, personaKey, scope) {
    2. RENDEZ-VOUS
    ============================================================ */
 function exportAppointmentsCSV(list) {
-  const header = "Service;Date;Heure;Statut;Prix (FCFA)\n";
+  const header = "Service;Date;Heure;Statut;Prix (Gourdes)\n";
   const rows = list
     .map((a) => `${a.serviceName};${a.date};${a.time};${a.status};${a.price}`)
     .join("\n");
@@ -525,7 +525,7 @@ function dashApptCardHTML(appt, personaKey, scope) {
         <div class="appt-avatar" style="display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent-strong);">${icon("calendar", 20)}</div>
         <div class="appt-info">
           <div class="appt-service">${appt.serviceName}</div>
-          <div class="appt-artisan">${dateLabel} à ${appt.time} · <span class="mono-num">${appt.price.toLocaleString("fr-FR")} FCFA</span></div>
+          <div class="appt-artisan">${dateLabel} à ${appt.time} · <span class="mono-num">${appt.price.toLocaleString("fr-FR")} Gourdes</span></div>
           ${proTag}
         </div>
         <span class="appt-status ${cls}">${label}</span>
@@ -659,7 +659,7 @@ function serviceRowHTML(s, personaKey, scope, editable) {
       <img src="${s.image}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;" />
       <div class="dash-service-info">
         <div class="dash-service-name">${s.name} ${!isActive ? '<span style="color:var(--ink-faint);font-weight:500;font-size:.76rem;">(désactivé)</span>' : ""}</div>
-        <div class="dash-service-price mono-num">${s.price ? s.price.toLocaleString("fr-FR") + " FCFA" : "Gratuit"} · ${s.duration} min</div>
+        <div class="dash-service-price mono-num">${s.price ? s.price.toLocaleString("fr-FR") + " Gourdes" : "Gratuit"} · ${s.duration} min</div>
         ${pending ? `<span class="pending-badge">${icon("clock", 11)} En attente de validation</span>` : ""}
       </div>
       <div class="dash-service-actions">
@@ -680,7 +680,7 @@ function serviceRowHTML(s, personaKey, scope, editable) {
           ? `
         <form class="dash-service-edit-form" data-dash-form="service-edit" data-id="${s.id}">
           <input type="text" name="name" value="${s.name}" placeholder="Nom du service" required />
-          <input type="number" name="price" value="${s.price}" placeholder="Prix (FCFA)" min="0" step="500" required />
+          <input type="number" name="price" value="${s.price}" placeholder="Prix (Gourdes)" min="0" step="500" required />
           <input type="number" name="duration" value="${s.duration}" placeholder="Durée (min)" min="5" step="5" required />
           <div class="dash-service-edit-actions">
             <button type="button" class="btn btn-ghost" style="padding:.5rem 1rem;font-size:.8rem;" data-dash-action="service-edit-cancel">Annuler</button>
@@ -947,7 +947,7 @@ function renderStatTiles(personaKey, scope) {
     statTileHTML("Note moyenne", notemoyenne, null) +
     statTileHTML(
       personaKey === "employe" ? "Ce qu'on vous doit" : "Recettes",
-      recettes.toLocaleString("fr-FR") + " FCFA",
+      recettes.toLocaleString("fr-FR") + " Gourdes",
       null,
     );
 }
@@ -1404,7 +1404,7 @@ function handleDashSubmit(e, personaKey, scope) {
     applyOrQueueChange(
       personaKey,
       scope,
-      `Modification du service « ${s.name} » → ${name}, ${price.toLocaleString("fr-FR")} FCFA, ${duration} min`,
+      `Modification du service « ${s.name} » → ${name}, ${price.toLocaleString("fr-FR")} Gourdes, ${duration} min`,
       s.id,
       () => {
         s.name = name;
@@ -1641,17 +1641,17 @@ function renderFinancesResponsable(container, scope) {
       <div class="finance-tile accent">
         <div class="finance-tile-label">Solde global</div>
         <div class="finance-tile-value mono-num">${fd.soldeGlobal.toLocaleString("fr-FR")}</div>
-        <div class="finance-tile-sub">FCFA disponibles</div>
+        <div class="finance-tile-sub">Gourdes disponibles</div>
       </div>
       <div class="finance-tile">
         <div class="finance-tile-label">Recettes du mois</div>
         <div class="finance-tile-value mono-num">${fd.recettesDuMois.toLocaleString("fr-FR")}</div>
-        <div class="finance-tile-sub">FCFA</div>
+        <div class="finance-tile-sub">Gourdes</div>
       </div>
       <div class="finance-tile">
         <div class="finance-tile-label">Total dû à l'équipe</div>
         <div class="finance-tile-value mono-num">${fd.ceQuOnDoitAuxMembres.reduce((s, m) => s + m.montant, 0).toLocaleString("fr-FR")}</div>
-        <div class="finance-tile-sub">FCFA à verser</div>
+        <div class="finance-tile-sub">Gourdes à verser</div>
       </div>
     </div>
 
@@ -1665,7 +1665,7 @@ function renderFinancesResponsable(container, scope) {
           <div class="finance-due-row">
             <img src="${member.avatar}" alt="${member.name}" class="finance-due-avatar" />
             <span class="finance-due-name">${member.name}</span>
-            <span class="finance-due-amount mono-num">${due.montant.toLocaleString("fr-FR")} FCFA</span>
+            <span class="finance-due-amount mono-num">${due.montant.toLocaleString("fr-FR")} Gourdes</span>
             <button type="button" class="btn btn-primary" style="padding:.4rem .9rem;font-size:.78rem;" data-dash-action="finance-pay" data-member-id="${due.memberId}">Payer</button>
           </div>`;
         })
@@ -1680,7 +1680,7 @@ function renderFinancesResponsable(container, scope) {
         <div class="finance-row">
           <span class="finance-row-label">${t.label}</span>
           <span class="finance-row-date">${t.date}</span>
-          <span class="finance-row-amount positive">+${t.montant.toLocaleString("fr-FR")} FCFA</span>
+          <span class="finance-row-amount positive">+${t.montant.toLocaleString("fr-FR")} Gourdes</span>
         </div>`,
         )
         .join("")}
@@ -1709,7 +1709,7 @@ function renderFinancesEmploye(container, scope) {
       <div class="finance-tile accent">
         <div class="finance-tile-label">Ce qu'on vous doit</div>
         <div class="finance-tile-value mono-num">${mf.gainsEntreprise.toLocaleString("fr-FR")}</div>
-        <div class="finance-tile-sub">FCFA · ${scope.team.name}</div>
+        <div class="finance-tile-sub">Gourdes · ${scope.team.name}</div>
       </div>
       ${
         scope.member.hasSoloActivity
@@ -1717,14 +1717,14 @@ function renderFinancesEmploye(container, scope) {
         <div class="finance-tile">
           <div class="finance-tile-label">Activité solo</div>
           <div class="finance-tile-value mono-num">${mf.gainsSolo.toLocaleString("fr-FR")}</div>
-          <div class="finance-tile-sub">FCFA</div>
+          <div class="finance-tile-sub">Gourdes</div>
         </div>`
           : ""
       }
       <div class="finance-tile">
         <div class="finance-tile-label">Total consolidé</div>
         <div class="finance-tile-value mono-num">${(mf.gainsEntreprise + (scope.member.hasSoloActivity ? mf.gainsSolo : 0)).toLocaleString("fr-FR")}</div>
-        <div class="finance-tile-sub">FCFA toutes sources</div>
+        <div class="finance-tile-sub">Gourdes toutes sources</div>
       </div>
     </div>
 
@@ -1740,7 +1740,7 @@ function renderFinancesEmploye(container, scope) {
         <div class="finance-row">
           <span class="finance-row-label">${h.label}</span>
           <span class="finance-row-date">${h.date}</span>
-          <span class="finance-row-amount positive">${h.montant.toLocaleString("fr-FR")} FCFA</span>
+          <span class="finance-row-amount positive">${h.montant.toLocaleString("fr-FR")} Gourdes</span>
           <span class="finance-row-status ${h.statut}">${h.statut === "verse" ? "Versé" : "En attente"}</span>
         </div>`,
         )
@@ -1762,7 +1762,7 @@ function renderFinancesSolo(container, scope) {
       <div class="finance-tile accent">
         <div class="finance-tile-label">Recettes totales</div>
         <div class="finance-tile-value mono-num">${total.toLocaleString("fr-FR")}</div>
-        <div class="finance-tile-sub">FCFA (prestations terminées)</div>
+        <div class="finance-tile-sub">Gourdes (prestations terminées)</div>
       </div>
     </div>
     ${emptyIllustrated("📊", "Connectez un moyen de retrait", "La gestion avancée des recettes arrive avec la connexion à Supabase.", null, null)}

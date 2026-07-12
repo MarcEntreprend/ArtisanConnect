@@ -135,7 +135,7 @@ const pendingChangesData = [
     type: "service",
     targetId: 701, // id du service "Coupe de cheveux"
     description:
-      "Nouveau prix proposé pour « Coupe de cheveux » : 2 800 FCFA (au lieu de 2 500 FCFA)",
+      "Nouveau prix proposé pour « Coupe de cheveux » : 400 Gourdes (au lieu de 550 Gourdes)",
     date: "2026-07-06",
     status: "en_attente",
   },

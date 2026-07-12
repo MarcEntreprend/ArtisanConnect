@@ -9,13 +9,15 @@ Plateforme de mise en relation entre artisans et clients, contexte Afrique franc
 ## 2. Constats sur la base de code fournie
 
 **Forces**
+
 - Structure de composants déjà pensée (header, bottom-nav, modales chargées en `fetch`) — bonne base pour un futur passage en composants React.
 - La modale de réservation avait déjà une vraie logique de calendrier (semaine glissante) et de sélection de professionnel : réutilisable.
 
 **Faiblesses corrigées dans cette passe**
+
 - `js/main.js` et `artisan-detail.html` redéfinissaient deux fois les mêmes fonctions (`initHeaderComponents`, `getFlagEmoji`) → conflits silencieux. Corrigé : une seule source de vérité (`main.js`).
 - Couleurs codées en dur dans `modal-reservation.html` (`#0072bc`, `#18181b`…) indépendantes du reste du site → aucune cohérence avec un futur mode sombre. Corrigé : tout passe par les variables CSS du design system.
-- Données mockées génériques (villes françaises, un seul visuel réutilisé pour les 6 artisans, avatar image de chat en `og:image`) → peu crédible pour le contexte réel du produit. Corrigé : données diversifiées (8 métiers, 6 villes ouest/centre-africaines, visuels distincts, prix en FCFA).
+- Données mockées génériques (villes françaises, un seul visuel réutilisé pour les 6 artisans, avatar image de chat en `og:image`) → peu crédible pour le contexte réel du produit. Corrigé : données diversifiées (8 métiers, 6 villes ouest/centre-africaines, visuels distincts, prix en Gourdes).
 - Aucun état vide, aucun skeleton, `window.alert` implicite via les anciens formulaires → contraire à vos propres règles de qualité. Corrigé.
 - Aucune action de la modale de réservation n'aboutissait à une confirmation visible. Corrigé : récapitulatif + toast de confirmation.
 

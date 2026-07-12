@@ -869,7 +869,7 @@ function initAdvancedSearch() {
 
   priceInput.addEventListener("input", (e) => {
     state.maxPrice = Number(e.target.value);
-    priceValue.textContent = `${state.maxPrice.toLocaleString("fr-FR")} FCFA`;
+    priceValue.textContent = `${state.maxPrice.toLocaleString("fr-FR")} Gourdes`;
     applyFilters();
   });
 
@@ -901,7 +901,7 @@ function initAdvancedSearch() {
     citiesEl.querySelectorAll("input").forEach((i) => (i.checked = false));
     ratingEl.querySelectorAll("input")[0].checked = true;
     priceInput.value = 65000;
-    priceValue.textContent = "65 000 FCFA";
+    priceValue.textContent = "65 000 Gourdes";
     availToday.checked = false;
     if (searchInput) searchInput.value = "";
     sortSelect.value = "pertinence";
