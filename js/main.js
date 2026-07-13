@@ -247,6 +247,71 @@ function initHeaderInteractions() {
       profileDropdown?.classList.remove("open");
     }
   });
+
+  // Header flottant : disparaît en descendant, réapparaît en montant
+  function setupScrollHeader() {
+    const header = document.querySelector(".header");
+    if (!header) {
+      setTimeout(setupScrollHeader, 200);
+      return;
+    }
+
+    const headerHeight = header.offsetHeight;
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    let isFixed = false;
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY <= 5) {
+              // Tout en haut → mode sticky normal
+              if (isFixed) {
+                header.style.position = "sticky";
+                header.style.top = "";
+                header.style.left = "";
+                header.style.width = "";
+                document.body.style.paddingTop = "";
+                header.classList.remove("header-hidden");
+                isFixed = false;
+              }
+            } else {
+              // Mode flottant (fixed)
+              if (!isFixed) {
+                header.style.position = "fixed";
+                header.style.top = "0";
+                header.style.left = "0";
+                header.style.width = "100%";
+                document.body.style.paddingTop = headerHeight + "px";
+                isFixed = true;
+              }
+
+              if (currentScrollY > lastScrollY) {
+                header.classList.add("header-hidden");
+              } else if (currentScrollY < lastScrollY) {
+                header.classList.remove("header-hidden");
+              }
+            }
+
+            lastScrollY = currentScrollY;
+            ticking = false;
+          });
+          ticking = true;
+        }
+      },
+      { passive: true },
+    );
+  }
+
+  if (document.readyState === "complete") {
+    setupScrollHeader();
+  } else {
+    window.addEventListener("load", setupScrollHeader);
+  }
 }
 
 /* ============================================================
