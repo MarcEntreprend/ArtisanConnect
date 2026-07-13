@@ -25,11 +25,12 @@
 - [x] Auth Supabase : signUp, signIn, signOut, resetPassword avec création auto profil `public.users`
 - [x] Seeds SQL complets (8 catégories, 8 artisans, 15 utilisateurs, horaires, services, équipe Wytalo, RDV, avis, conversations)
 
-## Itération 4 — API & intégrations — en cours
+## Itération 4 — API & intégrations — livrée
 
 - [x] `supabase-client.js` : tous les endpoints (auth, artisans, services, hours, appointments, reviews, favorites, messages, team, finances, paymentSettings, categories, storage)
 - [x] Fix 500 : suppression des jointures FK non reconnues par PostgREST
-- [ ] Upload d'images (galerie artisan, avatar) via Supabase Storage
+- [x] Upload d'images avatar via Supabase Storage (bucket `artisan-avatars` + RLS)
+- [x] Fix `messages.getConversations` pour rôle artisan (via `owner_id`)
 - [ ] Recherche géolocalisée (PostGIS ou filtrage côté client par ville)
 - [ ] Paiement (Mobile Money en priorité, Stripe en option)
 - [ ] Notifications (email via Resend, SMS/WhatsApp)
@@ -45,29 +46,22 @@
 ## Itération 6 — Refonte Espace Artisan (Supabase) — livrée
 
 - [x] Double mode Essentiel / Complet avec bouton de bascule
-- [x] `dashboard.html` : chargement réel Supabase, fallback mock, création artisan vide si nouveau compte, footer démo masqué si connecté
-- [x] `dashboard.js` : CRUD services/dispos/avis → Supabase, suppression de compte (suspendu + signOut)
-- [x] `auth.html` : loadTheme(), états disabled pendant requête, redirection onboarding, flèche retour avec history.back()
-- [x] `onboarding.html` : vrai artisanId Supabase, détection si déjà passé, création artisan + service en base
-- [x] `modal-reservation.html` : state étendu, chargement pros Supabase, persistence `appointments.create`
-- [x] `js/main.js` : `serviceRowHTML` avec data-attributes complets, header dynamique loginBtn ↔ initiales + logout
-- [x] Fix "voit Koffi" : artisan réel injecté dans `artisansData`, `DEMO_PERSONAS["solo"].artisanId` branché sur le vrai ID
-- [x] Nettoyage doublons `supabase-client.js`
-- [x] `appointments.html` et `messages.html` : chargement depuis Supabase si connecté
+- [x] `dashboard.html` : chargement réel Supabase, fallback mock, création artisan vide si nouveau compte
+- [x] `dashboard.js` : CRUD services/dispos/avis → Supabase, suppression de compte
+- [x] `auth.html` : loadTheme(), états disabled pendant requête, redirection onboarding, flèche retour
+- [x] `onboarding.html` : vrai artisanId Supabase, création artisan + service en base
+- [x] `modal-reservation.html` : state étendu, chargement pros Supabase, `appointments.create`
+- [x] `js/main.js` : header dynamique loginBtn ↔ initiales + logout, scroll hide/show header
+- [x] Fix "voit Koffi" : artisan réel injecté dans `artisansData`, `DEMO_PERSONAS["solo"].artisanId` branché
 
-## Itération 7 — Stabilisation & finitions (priorité haute)
+## Itération 7 — Stabilisation & finitions — livrée
 
-- [ ] État "Connectez-vous" sur `appointments.html` si `!session`
-- [ ] État "Connectez-vous" sur `favorites.html` si `!session`
-- [ ] État "Connectez-vous" sur `messages.html` si `!session`
-- [ ] `initFavoriteButtons` → sync `SupabaseAPI.favorites.add/remove` si session active
-- [ ] `window.teamData` consommé par `dashboard.js` à la place de `teamsData` mock
-- [ ] Upload réel photo dans Votre vitrine via `SupabaseAPI.storage.uploadAvatar` (+ bucket + policy SQL)
-- [ ] Fix `messages.getConversations` pour rôle artisan (via `owner_id`, pas `artisan_id = UUID`)
-- [ ] Fix `supabase-client.js` : `messages.getConversations` adapté aux membres d'équipe
-- [ ] Ligne orpheline `showToast("Service supprimé.");` après `break;` dans `dashboard.js`
-- [ ] `onboarding.html` : `IS_FIRST_LOGIN` vérifie si l'artisan a déjà des services en base
-- [ ] Vérifier que la clé de service Supabase n'est JAMAIS dans le frontend
+- [x] État "Connectez-vous" sur `appointments.html`, `favorites.html`, `messages.html` si `!session`
+- [x] `initFavoriteButtons` → sync `SupabaseAPI.favorites.add/remove` si session active
+- [x] `window.teamData` consommé par `dashboard.js` à la place de `teamsData` mock (avec normalisation des clés de permissions)
+- [x] Upload réel photo dans Votre vitrine via `SupabaseAPI.storage.uploadAvatar`
+- [x] Fix `messages.getConversations` pour rôle artisan (via `owner_id`)
+- [x] Ligne orpheline supprimée après `break;` dans `dashboard.js`
 
 ## Itération 8 — Fonctionnalités avancées (priorité moyenne)
 
