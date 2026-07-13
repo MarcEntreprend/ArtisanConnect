@@ -395,7 +395,8 @@ function getFavorites() {
 function toggleFavorite(id) {
   const favs = getFavorites();
   const idx = favs.indexOf(id);
-  if (idx === -1) {
+  const adding = idx === -1;
+  if (adding) {
     favs.push(id);
     showToast("Ajouté à vos favoris.");
   } else {
@@ -404,6 +405,22 @@ function toggleFavorite(id) {
   }
   localStorage.setItem("favorites", JSON.stringify(favs));
   return favs.includes(id);
+}
+
+async function syncFavoriteToSupabase(artisanId, adding) {
+  if (typeof SupabaseAPI === "undefined") return;
+  try {
+    const { data: sessionData } = await SupabaseAPI.auth.getSession();
+    const session = sessionData?.session || null;
+    if (!session?.user) return; // visiteur non connecté : localStorage uniquement
+    if (adding) {
+      await SupabaseAPI.favorites.add(session.user.id, artisanId);
+    } else {
+      await SupabaseAPI.favorites.remove(session.user.id, artisanId);
+    }
+  } catch (e) {
+    console.warn("Sync favori Supabase :", e.message);
+  }
 }
 
 function initFavoriteButtons() {
@@ -415,6 +432,9 @@ function initFavoriteButtons() {
     const id = Number(btn.dataset.id);
     const isFav = toggleFavorite(id);
     btn.classList.toggle("active", isFav);
+
+    // Sync Supabase en arrière-plan (ne bloque pas l'UI)
+    syncFavoriteToSupabase(id, isFav);
 
     // Si on est sur la page favoris, on retire immédiatement la carte
     if (!isFav && document.getElementById("favoritesGrid")) {

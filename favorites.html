@@ -94,52 +94,92 @@
     <script>
       loadIncludes({ activePage: "favorites.html" });
 
-      async function loadFavoritesSupabase() {
-        const { data } = await SupabaseAPI.auth.getSession();
-        const session = data?.session || null;
-        if (session?.user) {
-          try {
-            const { data: favorites, error } =
-              await SupabaseAPI.favorites.getByUser(session.user.id);
-            if (!error && favorites && favorites.length > 0) {
-              const ids = favorites.map((f) => f.artisan_id);
-              localStorage.setItem("favorites", JSON.stringify(ids));
+      function showFavoritesLoginWall() {
+        document.getElementById("favoritesGrid").style.display = "none";
+        document.getElementById("favoritesGrid").innerHTML = "";
+        document.getElementById("favoritesEmptyState").style.display = "flex";
+        const subtitle = document.getElementById("favoritesSubtitle");
+        if (subtitle)
+          subtitle.textContent =
+            "Connectez-vous pour retrouver vos artisans favoris sur tous vos appareils.";
+        // Remplacer le CTA
+        const cta = document.querySelector("#favoritesEmptyState .btn");
+        if (cta) {
+          cta.textContent = "Se connecter";
+          cta.href = "auth.html";
+        }
+      }
 
-              const newArtisans = favorites
-                .filter(
-                  (f) =>
-                    f.artisans &&
-                    !artisansData.find((a) => a.id === f.artisan_id),
-                )
-                .map((f) => ({
+      async function loadFavoritesSupabase() {
+        let session = null;
+        try {
+          const { data } = await SupabaseAPI.auth.getSession();
+          session = data?.session || null;
+        } catch (e) {
+          console.warn("Session check failed:", e.message);
+        }
+
+        if (!session?.user) {
+          // Non connecté : afficher les favoris localStorage (règle métier mock)
+          // + mention de connexion dans le subtitle
+          const subtitle = document.getElementById("favoritesSubtitle");
+          const favIds = JSON.parse(localStorage.getItem("favorites") || "[]");
+          if (subtitle && favIds.length === 0) {
+            subtitle.textContent =
+              "Connectez-vous pour synchroniser vos favoris sur tous vos appareils.";
+          } else if (subtitle) {
+            subtitle.textContent = `${favIds.length} favori${favIds.length > 1 ? "s" : ""} en local · Connectez-vous pour les sauvegarder.`;
+          }
+          renderFavoritesPage();
+          return;
+        }
+
+        // Connecté → charger depuis Supabase et synchroniser localStorage
+        try {
+          const { data: favorites, error } =
+            await SupabaseAPI.favorites.getByUser(session.user.id);
+
+          if (!error && favorites && favorites.length > 0) {
+            // Mettre à jour localStorage avec les IDs Supabase (source de vérité)
+            const ids = favorites.map((f) => f.artisan_id);
+            localStorage.setItem("favorites", JSON.stringify(ids));
+
+            // Enrichir artisansData avec les artisans qui ne sont pas dans le mock
+            favorites.forEach((f) => {
+              if (!f.artisans) return;
+              const exists = artisansData.find((a) => a.id === f.artisan_id);
+              if (!exists) {
+                const cat = CATEGORIES.find(
+                  (c) => c.id === f.artisans.category_id,
+                );
+                artisansData.push({
                   id: f.artisans.id,
                   name: f.artisans.name,
-                  category:
-                    CATEGORIES.find((c) => c.id === f.artisans.category_id)
-                      ?.label || "",
-                  categorySlug:
-                    CATEGORIES.find((c) => c.id === f.artisans.category_id)
-                      ?.slug || "",
+                  category: cat?.label || "",
+                  categorySlug: cat?.slug || "",
                   city: f.artisans.city,
-                  avatar: f.artisans.avatar_url,
-                  rating: f.artisans.rating,
-                  reviews: f.artisans.reviews_count,
-                  verified: f.artisans.verified,
-                  availableToday: f.artisans.available_today,
-                  priceFrom: f.artisans.price_from,
-                  currency: f.artisans.currency,
+                  avatar: f.artisans.avatar_url || "",
+                  rating: f.artisans.rating || 0,
+                  reviews: f.artisans.reviews_count || 0,
+                  verified: f.artisans.verified || false,
+                  availableToday: f.artisans.available_today || false,
+                  priceFrom: f.artisans.price_from || 0,
+                  currency: f.artisans.currency || "FCFA",
                   distance: "—",
-                }));
-              if (newArtisans.length)
-                window.artisansData = [...artisansData, ...newArtisans];
-            }
-          } catch (e) {
-            console.warn(
-              "Supabase indisponible, fallback localStorage :",
-              e.message,
-            );
+                });
+              }
+            });
+          } else if (!error) {
+            // Connecté mais aucun favori → vider localStorage aussi pour cohérence
+            localStorage.setItem("favorites", "[]");
           }
+        } catch (e) {
+          console.warn(
+            "Favorites load failed, fallback localStorage:",
+            e.message,
+          );
         }
+
         renderFavoritesPage();
       }
 

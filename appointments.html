@@ -97,33 +97,65 @@
     <script>
       loadIncludes({ activePage: "appointments.html" });
 
-      async function loadAppointmentsSupabase() {
-        const { data } = await SupabaseAPI.auth.getSession();
-        const session = data?.session || null;
-        if (session?.user) {
-          try {
-            const { data: appointments, error } =
-              await SupabaseAPI.appointments.getByClient(session.user.id);
-            if (!error && appointments && appointments.length > 0) {
-              window.appointmentsData = appointments.map((a) => ({
-                id: a.id,
-                artisanId: a.artisan_id,
-                serviceName: a.service_name,
-                price: a.price,
-                date: a.appointment_date,
-                time: a.appointment_time?.slice(0, 5),
-                status:
-                  a.status === "upcoming"
-                    ? "upcoming"
-                    : a.status === "done"
-                      ? "done"
-                      : "cancelled",
-              }));
-            }
-          } catch (e) {
-            console.warn("Supabase indisponible, fallback mock :", e.message);
-          }
+      // Affiche un mur de connexion si non connecté
+      function showLoginWall(container) {
+        container.innerHTML = "";
+        document.getElementById("appointmentsEmptyState").style.display =
+          "flex";
+        document.getElementById("appointmentsEmptyTitle").textContent =
+          "Connectez-vous pour voir vos rendez-vous";
+        document.getElementById("appointmentsEmptyText").textContent =
+          "Créez un compte gratuit ou connectez-vous pour réserver des artisans et suivre vos rendez-vous.";
+        // Remplacer le CTA par un lien vers auth
+        const cta = document.querySelector("#appointmentsEmptyState .btn");
+        if (cta) {
+          cta.textContent = "Se connecter";
+          cta.href = "auth.html";
         }
+      }
+
+      async function loadAppointmentsSupabase() {
+        let session = null;
+        try {
+          const { data } = await SupabaseAPI.auth.getSession();
+          session = data?.session || null;
+        } catch (e) {
+          console.warn("Session check failed:", e.message);
+        }
+
+        if (!session?.user) {
+          // Pas connecté → afficher mock (règle métier) + bandeau
+          showLoginWall(document.getElementById("appointmentsList"));
+          return;
+        }
+
+        // Connecté → données Supabase
+        try {
+          const { data: appointments, error } =
+            await SupabaseAPI.appointments.getByClient(session.user.id);
+          if (!error && appointments && appointments.length > 0) {
+            window.appointmentsData = appointments.map((a) => ({
+              id: a.id,
+              artisanId: a.artisan_id,
+              serviceName: a.service_name,
+              price: a.price,
+              date: a.appointment_date,
+              time: a.appointment_time?.slice(0, 5),
+              status:
+                a.status === "upcoming"
+                  ? "upcoming"
+                  : a.status === "done"
+                    ? "done"
+                    : "cancelled",
+            }));
+          } else {
+            // Connecté mais aucun RDV → tableau vide (initAppointmentsPage gère l'empty state)
+            window.appointmentsData = [];
+          }
+        } catch (e) {
+          console.warn("Appointments load failed, fallback mock:", e.message);
+        }
+
         initAppointmentsPage();
       }
 

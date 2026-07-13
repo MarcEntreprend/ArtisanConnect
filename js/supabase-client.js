@@ -294,14 +294,24 @@
 
     // --- Messages ---
     messages: {
-      getConversations: async (userId, role) => {
+      getConversations: async (userIdOrArtisanId, role) => {
         let query = supabase
           .from("conversations")
-          .select(
-            "*, artisans(name, avatar_url), users!client_id(full_name, avatar_url), team_members(name, avatar_url)",
-          );
-        if (role === "client") query = query.eq("client_id", userId);
-        else query = query.or(`artisan_id.eq.${userId}`); // à adapter si l'utilisateur est un membre d'équipe
+          .select("*, artisans(name, avatar_url)");
+
+        if (role === "client") {
+          // userId est un UUID → filtrer par client_id
+          query = query.eq("client_id", userIdOrArtisanId);
+        } else {
+          // userIdOrArtisanId est ici l'artisan_id (INTEGER)
+          // résolu en amont dans messages.html depuis owner_id
+          if (userIdOrArtisanId === null || userIdOrArtisanId === undefined) {
+            // Pas d'artisan trouvé → retourner vide sans erreur
+            return { data: [], error: null };
+          }
+          query = query.eq("artisan_id", userIdOrArtisanId);
+        }
+
         const { data, error } = await query.order("last_message_at", {
           ascending: false,
         });

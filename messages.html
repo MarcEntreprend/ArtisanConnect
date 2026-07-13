@@ -53,47 +53,97 @@
     <script>
       loadIncludes({ activePage: "messages.html" });
 
+      function showMessagesLoginWall() {
+        const layout = document.getElementById("messagesLayout");
+        if (!layout) return;
+        layout.innerHTML = `
+          <div class="empty-illustrated" style="grid-column:1/-1;padding:4rem 1.5rem;">
+            <div class="empty-illustrated-emoji">💬</div>
+            <h3>Connectez-vous pour accéder à vos messages</h3>
+            <p>Retrouvez ici vos échanges avec les artisans avant et après vos rendez-vous.</p>
+            <a href="auth.html" class="btn btn-primary" style="margin-top:1.5rem;">Se connecter</a>
+          </div>`;
+      }
+
       async function loadMessagesSupabase() {
-        const { data } = await SupabaseAPI.auth.getSession();
-        const session = data?.session || null;
-        if (session?.user) {
-          try {
-            const { data: profile } = await SupabaseAPI.auth.getUser();
-            const role = profile?.role || "client";
-            const { data: conversations } =
-              await SupabaseAPI.messages.getConversations(
-                session.user.id,
-                role,
-              );
-            if (conversations && conversations.length > 0) {
-              window.conversationsData = [];
-              for (const c of conversations) {
-                const { data: msgs } = await SupabaseAPI.messages.getMessages(
-                  c.id,
-                );
-                window.conversationsData.push({
-                  id: c.id,
-                  artisanId: c.artisan_id,
-                  unread: msgs
-                    ? msgs.some((m) => !m.is_read && m.sender_type !== role)
-                    : false,
-                  messages: msgs
-                    ? msgs.map((m) => ({
-                        from: m.sender_type === role ? "me" : "them",
-                        text: m.content,
-                        time: new Date(m.created_at).toLocaleTimeString(
-                          "fr-FR",
-                          { hour: "2-digit", minute: "2-digit" },
-                        ),
-                      }))
-                    : [],
-                });
-              }
-            }
-          } catch (e) {
-            console.warn("Supabase indisponible, fallback mock :", e.message);
-          }
+        let session = null;
+        try {
+          const { data } = await SupabaseAPI.auth.getSession();
+          session = data?.session || null;
+        } catch (e) {
+          console.warn("Session check failed:", e.message);
         }
+
+        if (!session?.user) {
+          // Non connecté → afficher mock + bandeau de connexion
+          showMessagesLoginWall();
+          return;
+        }
+
+        // Connecté → charger depuis Supabase
+        try {
+          const { user: profile } = await SupabaseAPI.auth.getUser();
+          const role = profile?.role || "client";
+
+          let artisanId = null;
+
+          // Fix D3 : pour un artisan, on doit d'abord résoudre l'artisan_id
+          // depuis owner_id, puis filtrer les conversations par cet artisan_id (INT).
+          // On ne peut pas comparer artisan_id (INT) directement avec userId (UUID).
+          if (role !== "client") {
+            try {
+              const { data: artisans } = await SupabaseAPI.artisans.getByOwner(
+                session.user.id,
+              );
+              if (artisans && artisans.length > 0) {
+                artisanId = artisans[0].id;
+              }
+            } catch (e) {
+              console.warn("artisan lookup failed:", e.message);
+            }
+          }
+
+          const { data: conversations, error: convErr } =
+            await SupabaseAPI.messages.getConversations(
+              role === "client" ? session.user.id : artisanId,
+              role,
+            );
+
+          if (!convErr && conversations && conversations.length > 0) {
+            window.conversationsData = [];
+
+            for (const c of conversations) {
+              let msgs = [];
+              try {
+                const { data: msgData } =
+                  await SupabaseAPI.messages.getMessages(c.id);
+                msgs = msgData || [];
+              } catch (e) {
+                console.warn("messages load for conv", c.id, ":", e.message);
+              }
+
+              window.conversationsData.push({
+                id: c.id,
+                artisanId: c.artisan_id,
+                unread: msgs.some((m) => !m.is_read && m.sender_type !== role),
+                messages: msgs.map((m) => ({
+                  from: m.sender_type === role ? "me" : "them",
+                  text: m.content,
+                  time: new Date(m.created_at).toLocaleTimeString("fr-FR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                })),
+              });
+            }
+          } else {
+            // Connecté mais aucune conversation
+            window.conversationsData = [];
+          }
+        } catch (e) {
+          console.warn("Messages load failed, fallback mock:", e.message);
+        }
+
         initMessagingPage();
       }
 

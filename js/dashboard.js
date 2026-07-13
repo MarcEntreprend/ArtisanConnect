@@ -56,9 +56,43 @@ function getCurrentPersonaKey() {
 function getScope(personaKey) {
   const persona = DEMO_PERSONAS[personaKey];
   const artisan = getArtisanById(persona.artisanId);
-  const team = persona.teamId ? getTeamByArtisan(persona.artisanId) : null;
-  const member =
-    persona.memberId && team ? getTeamMember(team.id, persona.memberId) : null;
+
+  // Priorité : équipe chargée depuis Supabase (window.teamData)
+  // Fallback : teamsData mock (dashboard-mock.js)
+  let team = null;
+  if (persona.teamId || artisan?.is_team) {
+    if (window.teamData && window.teamData.artisan_id === artisan?.id) {
+      // Normaliser les champs Supabase vers le format attendu par dashboard.js
+      team = {
+        id: window.teamData.id,
+        artisanId: window.teamData.artisan_id,
+        name: window.teamData.name,
+        members: (window.teamData.members || []).map((m) => ({
+          id: m.id,
+          name: m.name,
+          role: m.role,
+          specialty: m.specialty || "",
+          avatar: m.avatar_url || m.avatar || "",
+          status: m.status,
+          permissions: {
+            voitStats: m.perm_view_stats ?? false,
+            modifieServicesHoraires: m.perm_modify_services ?? false,
+            reponsAvis: m.perm_reply_reviews ?? false,
+          },
+          hasSoloActivity: m.has_solo_activity ?? false,
+        })),
+      };
+    } else if (persona.teamId) {
+      // Fallback mock
+      team = getTeamByArtisan(persona.artisanId);
+    }
+  }
+
+  let member = null;
+  if (persona.memberId && team) {
+    member = team.members.find((m) => m.id === persona.memberId) || null;
+  }
+
   return { persona, artisan, team, member };
 }
 
@@ -852,15 +886,53 @@ function readImageFile(file, personaKey, scope) {
     showToast("Merci de choisir un fichier image.");
     return;
   }
+
+  // Prévisualisation immédiate (data URL) — indépendant de Supabase
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     vitrinePhotoDataUrl = reader.result;
     renderVitrinePanel(
       document.getElementById("dashPanels"),
       personaKey,
       scope,
     );
-    showToast("Photo mise à jour. Pensez à enregistrer.");
+    showToast("Photo chargée. Enregistrez pour sauvegarder.");
+
+    // Upload vers Supabase Storage si compte réel
+    if (
+      typeof SupabaseAPI !== "undefined" &&
+      scope.artisan._isLive &&
+      scope.artisan.id
+    ) {
+      try {
+        const ext = file.name.split(".").pop() || "jpg";
+        const bucket = "artisan-avatars";
+        const path = `${scope.artisan.id}/avatar.${ext}`;
+
+        const { publicUrl, error: uploadError } =
+          await SupabaseAPI.storage.uploadAvatar(bucket, path, file);
+
+        if (uploadError) {
+          console.warn("Upload avatar error:", uploadError.message);
+          showToast(
+            "Photo visible en local. Erreur upload : " + uploadError.message,
+          );
+        } else if (publicUrl) {
+          // Mettre à jour l'URL dans Supabase
+          await SupabaseAPI.artisans.update(scope.artisan.id, {
+            avatar_url: publicUrl,
+          });
+          scope.artisan.avatar = publicUrl;
+          vitrinePhotoDataUrl = publicUrl;
+          showToast("Photo enregistrée ✓");
+        }
+      } catch (e) {
+        console.warn("Storage upload failed:", e.message);
+        showToast(
+          "Photo visible en local. Connexion requise pour sauvegarder.",
+        );
+      }
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -1317,7 +1389,6 @@ function handleDashClick(e, personaKey, scope) {
           scope,
           canEditServices(personaKey, scope),
         );
-        // Supabase
         if (
           svcToDelete &&
           typeof SupabaseAPI !== "undefined" &&
@@ -1331,15 +1402,12 @@ function handleDashClick(e, personaKey, scope) {
         } else {
           showToast("Service supprimé.");
         }
-        break;
       }
-      showToast("Service supprimé.");
-      renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
       break;
     case "service-add": {
       const editable = canEditServices(personaKey, scope);
       const newSvc = {
-        id: Date.now(), // ID temporaire, remplacé par Supabase si connecté
+        id: Date.now(),
         name: "Nouveau service",
         desc: "",
         price: 0,
@@ -1361,7 +1429,6 @@ function handleDashClick(e, personaKey, scope) {
         showToast("Demande envoyée à votre responsable.");
       } else {
         scope.artisan.services.push(newSvc);
-        // Persister dans Supabase si compte réel
         if (typeof SupabaseAPI !== "undefined" && scope.artisan._isLive) {
           SupabaseAPI.services
             .create({
@@ -1373,7 +1440,6 @@ function handleDashClick(e, personaKey, scope) {
             })
             .then(({ data, error }) => {
               if (!error && data && data.length > 0) {
-                // Mettre à jour l'ID local avec le vrai ID Supabase
                 newSvc.id = data[0].id;
                 showToast("Service ajouté ✓");
               } else {
