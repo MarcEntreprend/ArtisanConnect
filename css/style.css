@@ -4588,3 +4588,53 @@ body.dark .finance-row-amount.positive {
   background: #a0372400;
   filter: brightness(0.88);
 }
+
+.theme-switch {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 0;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.theme-switch:hover {
+  border-color: var(--primary);
+}
+.theme-switch-track {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+.theme-switch-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+  color: var(--ink-soft);
+}
+.theme-switch-icon.sun {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+.theme-switch-icon.moon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0);
+}
+body.dark .theme-switch-icon.sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0);
+}
+body.dark .theme-switch-icon.moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
