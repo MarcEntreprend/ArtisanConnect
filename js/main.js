@@ -597,7 +597,14 @@ function serviceRowHTML(s, artisan) {
           <span class="service-duration">${icon("clock", 14)} ${s.duration} min</span>
         </div>
       </div>
-      <button class="service-book booking-trigger" data-artisan-name="${artisan.name}" data-service-name="${s.name}">
+      <button
+        class="service-book booking-trigger"
+        data-artisan-id="${artisan.id}"
+        data-service-id="${s.id}"
+        data-artisan-name="${artisan.name}"
+        data-service-name="${s.name}"
+        data-deposit-percent="${window._artisanDepositPercent || 0}"
+      >
         Réserver
       </button>
     </div>

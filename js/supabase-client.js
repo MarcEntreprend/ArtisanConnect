@@ -117,18 +117,18 @@
           .eq("owner_id", ownerId);
         return { data, error };
       },
+      create: async (artisanData) => {
+        const { data, error } = await supabase
+          .from("artisans")
+          .insert(artisanData)
+          .select();
+        return { data, error };
+      },
       update: async (id, updates) => {
         const { data, error } = await supabase
           .from("artisans")
           .update(updates)
           .eq("id", id)
-          .select();
-        return { data, error };
-      },
-      create: async (artisan) => {
-        const { data, error } = await supabase
-          .from("artisans")
-          .insert(artisan)
           .select();
         return { data, error };
       },
@@ -161,8 +161,11 @@
         return { data, error };
       },
       delete: async (id) => {
-        const { error } = await supabase.from("services").delete().eq("id", id);
-        return { error };
+        const { data, error } = await supabase
+          .from("services")
+          .delete()
+          .eq("id", id);
+        return { data, error };
       },
     },
 
@@ -173,18 +176,15 @@
           .from("artisan_hours")
           .select("*")
           .eq("artisan_id", artisanId)
-          .order("day_index");
+          .order("day_index", { ascending: true });
         return { data, error };
       },
       upsert: async (artisanId, hoursArray) => {
-        // Supprime les anciennes et insère les nouvelles (ou upsert avec contrainte unique)
-        await supabase
-          .from("artisan_hours")
-          .delete()
-          .eq("artisan_id", artisanId);
+        // Prépare un tableau avec artisan_id sur chaque ligne
+        const rows = hoursArray.map((h) => ({ ...h, artisan_id: artisanId }));
         const { data, error } = await supabase
           .from("artisan_hours")
-          .insert(hoursArray.map((h) => ({ artisan_id: artisanId, ...h })))
+          .upsert(rows, { onConflict: "artisan_id,day_index" })
           .select();
         return { data, error };
       },

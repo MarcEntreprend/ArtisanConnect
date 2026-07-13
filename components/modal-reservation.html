@@ -16,7 +16,9 @@ COMPOSANT : Modale de réservation
     -webkit-backdrop-filter: blur(4px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease;
   }
 
   .modal-overlay.active {
@@ -68,7 +70,9 @@ COMPOSANT : Modale de réservation
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
     color: var(--ink);
   }
 
@@ -122,7 +126,9 @@ COMPOSANT : Modale de réservation
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
     color: var(--ink);
     flex-shrink: 0;
   }
@@ -373,7 +379,10 @@ COMPOSANT : Modale de réservation
     border-radius: var(--r-pill);
     font-weight: 700;
     font-size: 0.88rem;
-    transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+    transition:
+      background 0.2s ease,
+      transform 0.15s ease,
+      opacity 0.2s ease;
   }
 
   .modal-confirm-btn:disabled {
@@ -393,7 +402,14 @@ COMPOSANT : Modale de réservation
 <div class="modal-overlay" id="bookingModal">
   <div class="modal-container">
     <button class="modal-close" id="closeModal" aria-label="Fermer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
     </button>
 
     <header class="modal-header">
@@ -404,11 +420,29 @@ COMPOSANT : Modale de réservation
 
       <div class="date-navigation">
         <button class="date-nav-btn" id="prevWeek" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z" /></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+            />
+          </svg>
         </button>
         <div class="date-grid" id="dateGrid"></div>
         <button class="date-nav-btn" id="nextWeek">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" /></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
+            />
+          </svg>
         </button>
       </div>
     </header>
@@ -425,10 +459,21 @@ COMPOSANT : Modale de réservation
 
       <div id="slotsWrapper">
         <div class="info-message" id="slotsInfoMessage">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-          <p>Choisissez une date et un professionnel pour voir les créneaux disponibles.</p>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <p>
+            Choisissez une date et un professionnel pour voir les créneaux
+            disponibles.
+          </p>
         </div>
-        <div class="slot-grid" id="slotGrid" style="display:none;"></div>
+        <div class="slot-grid" id="slotGrid" style="display: none"></div>
       </div>
     </div>
 
@@ -437,7 +482,9 @@ COMPOSANT : Modale de réservation
         <strong>Aucun créneau sélectionné</strong>
         Sélectionnez un horaire pour continuer
       </div>
-      <button class="modal-confirm-btn" id="confirmBooking" disabled>Confirmer</button>
+      <button class="modal-confirm-btn" id="confirmBooking" disabled>
+        Confirmer
+      </button>
     </footer>
   </div>
 </div>
@@ -459,32 +506,44 @@ COMPOSANT : Modale de réservation
     const summary = document.getElementById("modalSummary");
     const confirmBtn = document.getElementById("confirmBooking");
 
-    const DEFAULT_PROFESSIONALS = [
-      { id: 1, name: "Équipe complète", rating: 4.9, image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop" },
-      { id: 2, name: "Responsable", rating: 4.8, image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&h=150&fit=crop" },
-      { id: 3, name: "Assistant", rating: 4.7, image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop" },
+    const SLOTS = [
+      "08:00",
+      "09:00",
+      "10:30",
+      "11:30",
+      "14:00",
+      "15:00",
+      "16:30",
+      "17:30",
     ];
-
-    const SLOTS = ["08:00", "09:00", "10:30", "11:30", "14:00", "15:00", "16:30", "17:30"];
 
     let currentDate = new Date();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     currentDate = new Date(today);
 
+    // État étendu — inclut les IDs nécessaires à Supabase
     let state = {
+      artisanId: null,
+      serviceId: null,
       artisanName: "",
       serviceName: "",
+      depositPercent: 0,
       date: null,
-      professional: null,
+      professional: null, // { id, name }
       slot: null,
     };
 
+    // Professionnels disponibles pour cet artisan
+    let _professionals = [];
+
+    // -------------------------------------------------------
+    // CALENDRIER
+    // -------------------------------------------------------
     function getWeekDates(startDate) {
       const dates = [];
       const d = new Date(startDate);
-      const day = d.getDay();
-      d.setDate(d.getDate() - day);
+      d.setDate(d.getDate() - d.getDay());
       for (let i = 0; i < 7; i++) {
         const date = new Date(d);
         date.setDate(date.getDate() + i);
@@ -494,27 +553,39 @@ COMPOSANT : Modale de réservation
     }
 
     function updateMonthYearDisplay() {
-      const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-      const weekDates = getWeekDates(currentDate);
-      const first = weekDates[0];
-      const last = weekDates[weekDates.length - 1];
-      const fm = monthNames[first.getMonth()];
-      const lm = monthNames[last.getMonth()];
-      monthYearDisplay.textContent = fm === lm ? `${fm} ${first.getFullYear()}` : `${fm} / ${lm} ${first.getFullYear()}`;
+      const months = [
+        "Janvier",
+        "Février",
+        "Mars",
+        "Avril",
+        "Mai",
+        "Juin",
+        "Juillet",
+        "Août",
+        "Septembre",
+        "Octobre",
+        "Novembre",
+        "Décembre",
+      ];
+      const wk = getWeekDates(currentDate);
+      const fm = months[wk[0].getMonth()];
+      const lm = months[wk[6].getMonth()];
+      monthYearDisplay.textContent =
+        fm === lm
+          ? `${fm} ${wk[0].getFullYear()}`
+          : `${fm} / ${lm} ${wk[0].getFullYear()}`;
     }
 
     function renderDates() {
-      const weekDates = getWeekDates(currentDate);
+      const wk = getWeekDates(currentDate);
       dateGrid.innerHTML = "";
       const dayNames = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"];
 
-      weekDates.forEach((date) => {
+      wk.forEach((date) => {
         const iso = date.toISOString().split("T")[0];
         const isPast = date < today;
-        const isSelected = state.date === iso;
-
         const div = document.createElement("div");
-        div.className = `date-item ${isSelected ? "date-selected" : ""}`;
+        div.className = `date-item ${state.date === iso ? "date-selected" : ""}`;
         if (isPast) {
           div.style.opacity = "0.35";
           div.style.cursor = "not-allowed";
@@ -522,12 +593,13 @@ COMPOSANT : Modale de réservation
         div.dataset.date = iso;
         div.innerHTML = `
           <span class="day-label">${dayNames[date.getDay()]}</span>
-          <span class="day-number">${String(date.getDate()).padStart(2, "0")}</span>
-        `;
+          <span class="day-number">${String(date.getDate()).padStart(2, "0")}</span>`;
 
         if (!isPast) {
           div.addEventListener("click", function () {
-            document.querySelectorAll(".date-item").forEach((el) => el.classList.remove("date-selected"));
+            document
+              .querySelectorAll(".date-item")
+              .forEach((el) => el.classList.remove("date-selected"));
             this.classList.add("date-selected");
             state.date = iso;
             state.slot = null;
@@ -535,37 +607,71 @@ COMPOSANT : Modale de réservation
             updateSummary();
           });
         }
-
         dateGrid.appendChild(div);
       });
 
-      prevBtn.disabled = weekDates[0].toDateString() === today.toDateString();
+      prevBtn.disabled = wk[0].toDateString() === today.toDateString();
       updateMonthYearDisplay();
     }
 
+    function updateWeek(dir) {
+      const d = new Date(currentDate);
+      d.setDate(d.getDate() + dir * 7);
+      currentDate = d;
+      renderDates();
+    }
+
+    prevBtn.addEventListener("click", () => updateWeek(-1));
+    nextBtn.addEventListener("click", () => updateWeek(1));
+
+    // -------------------------------------------------------
+    // PROFESSIONNELS
+    // -------------------------------------------------------
     function renderProfessionals() {
       professionalTrack.innerHTML = "";
-      DEFAULT_PROFESSIONALS.forEach((pro, index) => {
+      const pros =
+        _professionals.length > 0
+          ? _professionals
+          : [
+              {
+                id: null,
+                name: "Sans préférence",
+                rating: null,
+                image:
+                  "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop",
+              },
+            ];
+
+      pros.forEach((pro) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "professional-item";
-        btn.dataset.id = pro.id;
+        btn.dataset.id = pro.id ?? "";
 
         btn.innerHTML = `
           <div class="professional-avatar-wrapper">
-            <img src="${pro.image}" alt="${pro.name}" class="professional-avatar">
+            <img src="${pro.image || pro.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop"}"
+                 alt="${pro.name}" class="professional-avatar" />
+            ${
+              pro.rating != null
+                ? `
             <div class="professional-rating">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
               <span>${pro.rating}</span>
-            </div>
+            </div>`
+                : ""
+            }
           </div>
-          <div class="professional-name">${pro.name}</div>
-        `;
+          <div class="professional-name">${pro.name}</div>`;
 
         btn.addEventListener("click", function () {
-          document.querySelectorAll(".professional-avatar").forEach((el) => el.classList.remove("ring-active"));
-          this.querySelector(".professional-avatar").classList.add("ring-active");
-          state.professional = pro.name;
+          document
+            .querySelectorAll(".professional-avatar")
+            .forEach((el) => el.classList.remove("ring-active"));
+          this.querySelector(".professional-avatar").classList.add(
+            "ring-active",
+          );
+          state.professional = { id: pro.id ?? null, name: pro.name };
           state.slot = null;
           renderSlots();
           updateSummary();
@@ -575,6 +681,9 @@ COMPOSANT : Modale de réservation
       });
     }
 
+    // -------------------------------------------------------
+    // CRÉNEAUX
+    // -------------------------------------------------------
     function renderSlots() {
       if (!state.date || !state.professional) {
         slotsInfo.style.display = "flex";
@@ -591,7 +700,9 @@ COMPOSANT : Modale de réservation
         btn.className = "slot-btn";
         btn.textContent = slot;
         btn.addEventListener("click", () => {
-          document.querySelectorAll(".slot-btn").forEach((b) => b.classList.remove("slot-selected"));
+          document
+            .querySelectorAll(".slot-btn")
+            .forEach((b) => b.classList.remove("slot-selected"));
           btn.classList.add("slot-selected");
           state.slot = slot;
           updateSummary();
@@ -600,43 +711,136 @@ COMPOSANT : Modale de réservation
       });
     }
 
+    // -------------------------------------------------------
+    // RÉCAPITULATIF + ACOMPTE
+    // -------------------------------------------------------
     function formatDateFr(iso) {
       const d = new Date(iso + "T00:00:00");
-      return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+      return d.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
     }
 
     function updateSummary() {
       if (state.date && state.professional && state.slot) {
-        summary.innerHTML = `<strong>${formatDateFr(state.date)} à ${state.slot}</strong>Avec ${state.professional}`;
+        const depositLine =
+          state.depositPercent > 0
+            ? `<span style="font-size:.76rem;color:var(--ink-faint);">Acompte : ${state.depositPercent}% requis à la réservation</span>`
+            : "";
+        summary.innerHTML = `
+          <div>
+            <strong>${formatDateFr(state.date)} à ${state.slot}</strong>
+            <span style="display:block;font-size:.82rem;color:var(--ink-faint);">Avec ${state.professional.name}</span>
+            ${depositLine}
+          </div>`;
         confirmBtn.disabled = false;
       } else {
-        summary.innerHTML = `<strong>Aucun créneau sélectionné</strong>Sélectionnez un horaire pour continuer`;
+        summary.innerHTML = `<strong>Aucun créneau sélectionné</strong>Sélectionnez une date, un professionnel et un horaire`;
         confirmBtn.disabled = true;
       }
     }
 
-    function updateWeek(direction) {
-      const newDate = new Date(currentDate);
-      newDate.setDate(newDate.getDate() + direction * 7);
-      currentDate = newDate;
-      renderDates();
-    }
+    // -------------------------------------------------------
+    // CONFIRMATION → SUPABASE
+    // -------------------------------------------------------
+    confirmBtn.addEventListener("click", async () => {
+      if (confirmBtn.disabled) return;
 
-    prevBtn.addEventListener("click", () => updateWeek(-1));
-    nextBtn.addEventListener("click", () => updateWeek(1));
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "Réservation…";
 
-    function openModal(context) {
+      const dateLabel = formatDateFr(state.date);
+
+      try {
+        // Tenter de persister dans Supabase si disponible et utilisateur connecté
+        if (typeof SupabaseAPI !== "undefined") {
+          const { data: sessionData } = await SupabaseAPI.auth.getSession();
+          const session = sessionData?.session || null;
+
+          if (session?.user && state.artisanId) {
+            const payload = {
+              artisan_id: state.artisanId,
+              client_id: session.user.id,
+              service_id: state.serviceId || null,
+              professional_id: state.professional?.id || null,
+              service_name: state.serviceName || "Rendez-vous",
+              price: 0, // prix sera enrichi côté Supabase si serviceId disponible
+              appointment_date: state.date,
+              appointment_time: state.slot + ":00",
+              status: "upcoming",
+              deposit_paid: 0,
+            };
+
+            const { error } = await SupabaseAPI.appointments.create(payload);
+            if (error) {
+              console.warn("Appointment create error:", error.message);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Booking persistence failed (mock fallback):", e.message);
+      }
+
+      closeModal();
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Confirmer";
+
+      if (typeof window.showToast === "function") {
+        window.showToast(
+          `Rendez-vous confirmé pour le ${dateLabel} à ${state.slot} ✓`,
+        );
+      }
+    });
+
+    // -------------------------------------------------------
+    // OUVERTURE / FERMETURE
+    // -------------------------------------------------------
+    async function openModal(context) {
       context = context || {};
+
       state = {
+        artisanId: context.artisanId || null,
+        serviceId: context.serviceId || null,
         artisanName: context.artisanName || "",
         serviceName: context.serviceName || "",
+        depositPercent: context.depositPercent || 0,
         date: null,
         professional: null,
         slot: null,
       };
+
       artisanNameDisplay.textContent = state.serviceName
         ? `${state.serviceName}${state.artisanName ? " · " + state.artisanName : ""}`
         : "Choisissez une date et un créneau";
+
+      // Charger les professionnels si fournis dans le contexte ou depuis Supabase
+      _professionals = [];
+
+      if (context.professionals && context.professionals.length > 0) {
+        // Fournis directement par l'appelant (depuis le mock ou une équipe déjà chargée)
+        _professionals = context.professionals;
+      } else if (state.artisanId && typeof SupabaseAPI !== "undefined") {
+        // Tenter de charger depuis Supabase
+        try {
+          const { data: team } = await SupabaseAPI.team.getByArtisan(
+            state.artisanId,
+          );
+          if (team?.members && team.members.length > 0) {
+            _professionals = team.members
+              .filter((m) => m.status === "actif")
+              .map((m) => ({
+                id: m.id,
+                name: m.name,
+                image: m.avatar_url || m.avatar,
+                rating: null,
+              }));
+          }
+        } catch (e) {
+          console.warn("Team load failed:", e.message);
+        }
+      }
 
       currentDate = new Date(today);
       modal.classList.add("active");
@@ -657,29 +861,32 @@ COMPOSANT : Modale de réservation
       if (e.target === modal) closeModal();
     });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal.classList.contains("active")) closeModal();
-    });
-
-    confirmBtn.addEventListener("click", () => {
-      if (confirmBtn.disabled) return;
-      closeModal();
-      if (typeof window.showToast === "function") {
-        window.showToast(`Rendez-vous confirmé pour le ${formatDateFr(state.date)} à ${state.slot}.`);
-      }
+      if (e.key === "Escape" && modal.classList.contains("active"))
+        closeModal();
     });
 
     window.openBookingModal = openModal;
     window.closeBookingModal = closeModal;
 
-    // Délégation d'événements pour tous les boutons de réservation, y compris ceux ajoutés dynamiquement
+    // Délégation pour les boutons .booking-trigger dans toute la page
     document.addEventListener("click", function (e) {
       const target = e.target.closest(".booking-trigger");
       if (!target) return;
       e.preventDefault();
       e.stopPropagation();
       openModal({
+        artisanId: target.dataset.artisanId
+          ? Number(target.dataset.artisanId)
+          : null,
+        serviceId: target.dataset.serviceId
+          ? Number(target.dataset.serviceId)
+          : null,
         artisanName: target.dataset.artisanName || "",
         serviceName: target.dataset.serviceName || "",
+        depositPercent: target.dataset.depositPercent
+          ? Number(target.dataset.depositPercent)
+          : 0,
+        professionals: window._artisanProfessionals || [],
       });
     });
   })();

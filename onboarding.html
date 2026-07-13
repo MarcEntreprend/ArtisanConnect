@@ -1,5 +1,4 @@
 <!-- onboarding.html -->
-
 <!doctype html>
 <html lang="fr">
   <head>
@@ -11,11 +10,19 @@
   <body>
     <div class="onboarding-overlay" id="onboardingOverlay">
       <div class="onboarding-modal" id="onboardingModal">
-        <!-- injecté par JS -->
+        <div
+          style="
+            text-align: center;
+            padding: 2rem;
+            color: var(--ink-faint);
+            font-size: 0.9rem;
+          "
+        >
+          Chargement…
+        </div>
       </div>
     </div>
 
-    <!-- supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/data/artisans.js"></script>
@@ -23,27 +30,77 @@
     <script src="js/main.js"></script>
     <script>
       loadTheme();
+      // Un seul loadIncludes
       loadIncludes({ activePage: "dashboard.html" });
-      const IS_FIRST_LOGIN = true;
 
+      // État de l'onboarding
       const ob = {
         step: 1,
-        type: null,
+        type: null, // "solo" | "entreprise"
         category: null,
         service: { name: "", price: "", duration: "" },
       };
 
+      // Sera rempli depuis Supabase (vrai artisan connecté)
+      let _session = null;
+      let _realArtisanId = null;
+
+      // -------------------------------------------------------
+      // Initialisation : vérifier la session et l'artisan existant
+      // -------------------------------------------------------
+      async function initOnboarding() {
+        const modal = document.getElementById("onboardingModal");
+
+        try {
+          const { data: sessionData } = await SupabaseAPI.auth.getSession();
+          _session = sessionData?.session || null;
+
+          if (!_session) {
+            // Pas connecté → rediriger vers auth
+            window.location.href = "auth.html";
+            return;
+          }
+
+          // Vérifie si l'artisan a déjà des services (= déjà passé par l'onboarding)
+          const { data: artisans } = await SupabaseAPI.artisans.getByOwner(
+            _session.user.id,
+          );
+
+          if (artisans && artisans.length > 0) {
+            const existing = artisans[0];
+            _realArtisanId = existing.id;
+
+            const { data: services } = await SupabaseAPI.services.getByArtisan(
+              existing.id,
+              false,
+            );
+
+            if (services && services.length > 0) {
+              // A déjà des services → l'onboarding est terminé, rediriger
+              window.location.href = "dashboard.html?persona=solo";
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn("Erreur init onboarding:", e.message);
+        }
+
+        // Lancer l'affichage
+        renderStep();
+      }
+
+      // -------------------------------------------------------
+      // Rendu des étapes
+      // -------------------------------------------------------
       function renderStep() {
         const modal = document.getElementById("onboardingModal");
-        if (!IS_FIRST_LOGIN) {
-          window.location.href = "dashboard.html";
-          return;
-        }
 
         const dots = [1, 2, 3]
           .map(
             (n) =>
-              `<div class="onboarding-step-dot ${n === ob.step ? "active" : n < ob.step ? "done" : ""}"></div>`,
+              `<div class="onboarding-step-dot ${
+                n === ob.step ? "active" : n < ob.step ? "done" : ""
+              }"></div>`,
           )
           .join("");
 
@@ -88,12 +145,19 @@
               <label>Choisissez votre métier</label>
               <select id="obCatSelect">
                 <option value="">— Sélectionner —</option>
-                ${CATEGORIES.map((c) => `<option value="${c.slug}" ${ob.category === c.slug ? "selected" : ""}>${c.label}</option>`).join("")}
+                ${CATEGORIES.map(
+                  (c) =>
+                    `<option value="${c.slug}" ${
+                      ob.category === c.slug ? "selected" : ""
+                    }>${c.label}</option>`,
+                ).join("")}
               </select>
             </div>
             <div class="onboarding-actions">
               <button type="button" class="btn btn-ghost" id="obBack2">← Retour</button>
-              <button type="button" class="btn btn-primary" id="obNext2" ${!ob.category ? "disabled" : ""}>Continuer →</button>
+              <button type="button" class="btn btn-primary" id="obNext2" ${
+                !ob.category ? "disabled" : ""
+              }>Continuer →</button>
             </div>`;
 
           const sel = modal.querySelector("#obCatSelect");
@@ -120,13 +184,14 @@
               <input type="text" id="obSvcName" placeholder="Ex. Coupe de cheveux" value="${ob.service.name}" />
             </div>
             <div class="onboarding-field">
-              <label>Prix (Gourdes)</label>
+              <label>Prix (FCFA)</label>
               <input type="number" id="obSvcPrice" placeholder="Ex. 2500" value="${ob.service.price}" min="0" step="500" />
             </div>
             <div class="onboarding-field">
               <label>Durée (minutes)</label>
               <input type="number" id="obSvcDuration" placeholder="Ex. 30" value="${ob.service.duration}" min="5" step="5" />
             </div>
+            <p id="obError" style="color:var(--danger);font-size:.8rem;min-height:1.2rem;"></p>
             <div class="onboarding-actions">
               <button type="button" class="btn btn-ghost" id="obBack3">← Retour</button>
               <button type="button" class="btn btn-primary" id="obFinish">Commencer 🎉</button>
@@ -136,62 +201,80 @@
             ob.step = 2;
             renderStep();
           });
+
           modal
             .querySelector("#obFinish")
             .addEventListener("click", async () => {
-              const name = modal.querySelector("#obSvcName").value.trim();
-              const price = Number(modal.querySelector("#obSvcPrice").value);
-              const duration = Number(
-                modal.querySelector("#obSvcDuration").value,
-              );
+              const nameInput = modal.querySelector("#obSvcName");
+              const priceInput = modal.querySelector("#obSvcPrice");
+              const durationInput = modal.querySelector("#obSvcDuration");
+              const errorEl = modal.querySelector("#obError");
+              const finishBtn = modal.querySelector("#obFinish");
+
+              const name = nameInput.value.trim();
+              const price = Number(priceInput.value) || 0;
+              const duration = Number(durationInput.value) || 30;
+
               if (!name) {
-                modal.querySelector("#obSvcName").focus();
+                errorEl.textContent = "Veuillez nommer votre service.";
+                nameInput.focus();
                 return;
               }
 
-              const personaKey =
-                ob.type === "entreprise" ? "responsable" : "solo";
-              const artisanId = ob.type === "entreprise" ? 7 : 1;
-              const artisan = artisansData.find((a) => a.id === artisanId);
+              finishBtn.disabled = true;
+              finishBtn.textContent = "Création en cours…";
+              errorEl.textContent = "";
 
-              if (artisan && name) {
-                artisan.services.unshift({
-                  id: Date.now(),
-                  name,
-                  desc: "",
-                  price,
-                  duration,
-                  image: artisan.avatar,
-                  active: true,
-                });
-              }
+              try {
+                let artisanId = _realArtisanId;
 
-              const { data: authData } = await SupabaseAPI.auth.getSession();
-              const session = authData?.session || null;
-              if (session?.user && artisanId) {
-                try {
-                  await SupabaseAPI.services.create({
+                // Si l'artisan n'existe pas encore en base, le créer maintenant
+                if (!artisanId && _session?.user) {
+                  const { user: profile } = await SupabaseAPI.auth.getUser();
+                  const { data: newArtisan, error: createErr } =
+                    await SupabaseAPI.artisans.create({
+                      owner_id: _session.user.id,
+                      name: profile?.full_name || "Mon activité",
+                      city: "",
+                      currency: "FCFA",
+                      is_team: ob.type === "entreprise",
+                      status: "actif",
+                    });
+
+                  if (createErr) throw new Error(createErr.message);
+                  artisanId = newArtisan[0].id;
+                  _realArtisanId = artisanId;
+                }
+
+                // Créer le premier service
+                if (artisanId) {
+                  const { error: svcErr } = await SupabaseAPI.services.create({
                     artisan_id: artisanId,
                     name,
                     price,
                     duration_min: duration,
                     is_active: true,
                   });
-                } catch (e) {
-                  console.warn(
-                    "Création service Supabase échouée, mock uniquement :",
-                    e.message,
-                  );
+                  if (svcErr) throw new Error(svcErr.message);
                 }
-              }
 
-              window.location.href = `dashboard.html?persona=${personaKey}`;
+                // Rediriger vers le dashboard
+                const personaKey =
+                  ob.type === "entreprise" ? "responsable" : "solo";
+                window.location.href = `dashboard.html?persona=${personaKey}`;
+              } catch (err) {
+                console.error("Onboarding error:", err);
+                errorEl.textContent =
+                  "Une erreur est survenue : " + err.message + ". Réessayez.";
+                finishBtn.disabled = false;
+                finishBtn.textContent = "Commencer 🎉";
+              }
             });
         }
       }
 
-      loadIncludes({ activePage: "dashboard.html" });
-      renderStep();
+      // Lancer
+      initOnboarding();
     </script>
   </body>
 </html>
