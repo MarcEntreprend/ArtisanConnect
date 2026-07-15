@@ -1,27 +1,36 @@
 @import "tailwindcss";
 
 /* ============================================================
-   DESIGN SYSTEM "TERRAIN & ATELIER" — variables CSS
+   DESIGN SYSTEM "ATELIER" — ArtisanConnect Haïti
+   Palette : terre cuite + lin chaud + forêt tropicale
+   Typo    : Plus Jakarta Sans (texte) · token mono pour prix
+   Motion  : spring physique sur tout, jamais ease-in-out
    ============================================================ */
 :root {
   --bg: #FAF7F2;
-  --bg-elevated: #ffffff;
+  --bg-elevated: #FFFFFF;
   --bg-sunken: #F2ECE2;
+  --bg-deep: #E8DFD0;
+
   --ink: #1F1A17;
   --ink-soft: #5E524A;
   --ink-faint: #968A80;
+
   --border: #EBE3DA;
   --border-strong: #D5C8B9;
 
+  /* Accent : terre cuite haïtienne */
   --accent: #C85A32;
   --accent-strong: #A84622;
   --accent-soft: #FDF2EE;
-  --accent-ink: #ffffff;
+  --accent-ink: #FFFFFF;
 
+  /* Forêt tropicale */
   --forest: #2D5C45;
   --forest-strong: #204231;
   --forest-soft: #EBF3EF;
 
+  /* Ocre soleil */
   --ochre: #D98C2B;
   --ochre-soft: #FAF3E8;
 
@@ -29,17 +38,21 @@
   --danger: #C94A29;
   --danger-soft: #FDF1EE;
 
-  --r-card: 24px;
+  /* Rayons */
+  --r-card: 20px;
   --r-input: 14px;
   --r-pill: 999px;
-  --r-sm: 12px;
+  --r-sm: 10px;
+  --r-lg: 28px;
+  --r-xl: 36px;
 
-  --shadow-sm: 0 2px 4px rgba(31, 26, 23, 0.03);
-  --shadow-md: 0 12px 32px -8px rgba(92, 82, 75, 0.12);
-  --shadow-lg: 0 24px 60px -12px rgba(92, 82, 75, 0.16);
+  /* Ombres teintées vers la palette chaude */
+  --shadow-sm: 0 2px 8px rgba(92, 82, 75, 0.06);
+  --shadow-md: 0 8px 32px -6px rgba(92, 82, 75, 0.14);
+  --shadow-lg: 0 24px 64px -12px rgba(92, 82, 75, 0.20);
+  --shadow-glow: 0 0 40px rgba(200, 90, 50, 0.15);
 
-  --font-sans:
-    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   color-scheme: light;
@@ -49,6 +62,7 @@
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
   --color-bg-sunken: var(--bg-sunken);
+  --color-bg-deep: var(--bg-deep);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
@@ -66,24 +80,23 @@
   --color-star: var(--star);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
-  --radius-card: var(--r-card);
-  --radius-pill: var(--r-pill);
-  --radius-sm: var(--r-sm);
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
 
-/* Mode sombre */
+/* ============================================================
+   MODE SOMBRE
+   ============================================================ */
 .dark {
   --bg: #151210;
   --bg-elevated: #1F1B19;
   --bg-sunken: #181513;
+  --bg-deep: #120F0D;
+
   --ink: #F7F3EF;
   --ink-soft: #C2B3A9;
   --ink-faint: #8F8076;
+
   --border: #2E2521;
   --border-strong: #453A33;
 
@@ -103,9 +116,10 @@
   --danger: #EB604D;
   --danger-soft: #301715;
 
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 12px 32px -8px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 32px -6px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 64px -12px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 40px rgba(226, 116, 83, 0.20);
 
   color-scheme: dark;
 }
@@ -113,7 +127,9 @@
 /* ============================================================
    RESET & BASE
    ============================================================ */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -128,9 +144,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  transition:
-    background 0.25s ease,
-    color 0.25s ease;
+  transition: background 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
 }
 
@@ -138,10 +152,12 @@ img {
   max-width: 100%;
   display: block;
 }
+
 a {
   color: inherit;
   text-decoration: none;
 }
+
 button {
   font-family: inherit;
   border: none;
@@ -149,6 +165,7 @@ button {
   cursor: pointer;
   color: inherit;
 }
+
 input,
 textarea,
 select {
@@ -158,11 +175,12 @@ select {
 
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -181,8 +199,208 @@ select {
   font-variant-numeric: tabular-nums;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Grain subtil en overlay (ne pas attacher à des éléments scrollables) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+.dark body::before {
+  opacity: 0.04;
+}
+
 /* ============================================================
-   SWITCHS
+   BOUTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--r-pill);
+  transition: all 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 2px 12px rgba(200, 90, 50, 0.22);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 90, 50, 0.30);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.97) translateY(0);
+}
+
+.btn-outline {
+  border: 1.5px solid var(--border-strong);
+  color: var(--ink-soft);
+  background: var(--bg-elevated);
+}
+
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  color: var(--ink-soft);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-sunken);
+  color: var(--ink);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   CARTES ARTISAN — Architecture double-bezel
+   ============================================================ */
+.artisan-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border-radius: var(--r-lg);
+  /* Outer shell */
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 0.3s ease;
+  will-change: transform;
+}
+
+.artisan-card:hover {
+  transform: translateY(-6px) scale(1.005);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
+
+.artisan-card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.artisan-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.artisan-card:hover .artisan-card-media img {
+  transform: scale(1.07);
+}
+
+/* ============================================================
+   ANIMATIONS D'ENTRÉE (viewport-safe)
+   ============================================================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.55s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.animate-fade-in-up {
+  animation: fadeUp 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* Stagger helpers */
+.stagger-1 {
+  animation-delay: 0.05s;
+}
+
+.stagger-2 {
+  animation-delay: 0.10s;
+}
+
+.stagger-3 {
+  animation-delay: 0.15s;
+}
+
+.stagger-4 {
+  animation-delay: 0.20s;
+}
+
+.stagger-5 {
+  animation-delay: 0.25s;
+}
+
+/* ============================================================
+   SWITCHES
    ============================================================ */
 .switch {
   position: relative;
@@ -190,19 +408,22 @@ select {
   height: 20px;
   flex-shrink: 0;
 }
+
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .switch-track {
   position: absolute;
   inset: 0;
   background: var(--border-strong);
   border-radius: var(--r-pill);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
 .switch-track::before {
   content: "";
   position: absolute;
@@ -212,122 +433,51 @@ select {
   top: 2px;
   background: var(--bg-elevated);
   border-radius: 50%;
-  transition: transform 0.2s;
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
-.switch input:checked + .switch-track {
+
+.switch input:checked+.switch-track {
   background: var(--accent);
 }
-.switch input:checked + .switch-track::before {
+
+.switch input:checked+.switch-track::before {
   transform: translateX(16px);
 }
+
 .switch-lg {
   width: 48px;
   height: 27px;
 }
+
 .switch-lg .switch-track::before {
   width: 21px;
   height: 21px;
 }
-.switch-lg input:checked + .switch-track::before {
+
+.switch-lg input:checked+.switch-track::before {
   transform: translateX(21px);
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 /* ============================================================
-   BOUTONS & COMPOSANTS REFONDUS
+   SKELETON LOADER
    ============================================================ */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: var(--r-pill);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-}
-.btn-primary {
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: var(--shadow-sm);
-}
-.btn-primary:hover:not(:disabled) {
-  background: var(--accent-strong);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(200, 90, 50, 0.2);
-}
-.btn-outline {
-  border: 1px solid var(--border-strong);
-  color: var(--ink-soft);
-  background: var(--bg-elevated);
-}
-.btn-outline:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
-  transform: translateY(-1px);
-}
-.btn-ghost {
-  color: var(--ink-soft);
-}
-.btn-ghost:hover:not(:disabled) {
-  background: var(--bg-sunken);
-  color: var(--ink);
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Animations et micro-interactions */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  100% {
+    background-position: 400px 0;
   }
 }
-.animate-fade-in-up {
-  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
 
-.artisan-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-elevated);
-  border-radius: var(--r-card);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.artisan-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--border-strong);
-}
-.artisan-card-media {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-}
-.artisan-card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.artisan-card:hover .artisan-card-media img {
-  transform: scale(1.05);
+.skeleton {
+  background: linear-gradient(90deg,
+      var(--bg-sunken) 25%,
+      var(--border) 50%,
+      var(--bg-sunken) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 8px;
 }

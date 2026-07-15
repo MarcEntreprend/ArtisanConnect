@@ -85,9 +85,9 @@ export default function Appointments() {
     .sort((a, b) =>
       tab === "upcoming"
         ? new Date(a.appointment_date).getTime() -
-          new Date(b.appointment_date).getTime()
+        new Date(b.appointment_date).getTime()
         : new Date(b.appointment_date).getTime() -
-          new Date(a.appointment_date).getTime(),
+        new Date(a.appointment_date).getTime(),
     );
 
   return (
@@ -105,11 +105,10 @@ export default function Appointments() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`pb-3.5 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
-              tab === t 
-                ? "text-ink border-accent" 
+            className={`pb-3.5 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${tab === t
+                ? "text-ink border-accent"
                 : "text-ink-faint border-transparent hover:text-ink"
-            }`}
+              }`}
           >
             {t === "upcoming" ? "À venir" : t === "done" ? "Passés" : "Annulés"}
           </button>
@@ -143,7 +142,7 @@ export default function Appointments() {
                 className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-bg-elevated border border-border rounded-2xl p-5 hover:border-border-strong hover:shadow-sm transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-accent-soft text-accent flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-accent-soft text-accent flex items-center justify-center shrink-0">
                     <CalendarIcon size={20} />
                   </div>
                   <div className="min-w-0">
@@ -170,7 +169,7 @@ export default function Appointments() {
                     <StatusIcon size={12} />
                     <span>{Config.label}</span>
                   </span>
-                  
+
                   {tab === "upcoming" && (
                     <button
                       className="text-xs font-bold text-danger hover:bg-danger-soft px-3 py-1.5 rounded-full transition-colors"

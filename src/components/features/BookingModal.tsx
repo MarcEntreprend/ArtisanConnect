@@ -90,7 +90,7 @@ export default function BookingModal() {
     setSelectedSlot(null);
     setCurrentDate(new Date(today));
     setProfessionals([]);
-    
+
     if (ctx.artisanId) {
       const { data: team } = await supabase
         .from("teams")
@@ -177,7 +177,7 @@ export default function BookingModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-9999 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) closeModal();
       }}
@@ -247,13 +247,12 @@ export default function BookingModal() {
                       setSelectedDate(iso);
                       setSelectedSlot(null);
                     }}
-                    className={`flex flex-col items-center py-2.5 rounded-2xl border text-[11px] font-bold transition-all ${
-                      isSelected 
-                        ? "bg-accent text-white border-accent shadow-sm" 
-                        : past 
-                          ? "opacity-30 cursor-not-allowed border-transparent bg-transparent" 
+                    className={`flex flex-col items-center py-2.5 rounded-2xl border text-[11px] font-bold transition-all ${isSelected
+                        ? "bg-accent text-white border-accent shadow-sm"
+                        : past
+                          ? "opacity-30 cursor-not-allowed border-transparent bg-transparent"
                           : "hover:border-border-strong border-border bg-bg-elevated text-ink-soft"
-                    }`}
+                      }`}
                   >
                     <span>{DAY_NAMES[d.getDay()]}</span>
                     <span className="font-mono mt-1 text-xs">
@@ -281,11 +280,10 @@ export default function BookingModal() {
                     className="flex flex-col items-center gap-1.5 min-w-[76px] group focus:outline-none"
                   >
                     <div
-                      className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all ${
-                        isSelected 
-                          ? "ring-2 ring-accent ring-offset-2" 
+                      className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all ${isSelected
+                          ? "ring-2 ring-accent ring-offset-2"
                           : "group-hover:scale-105"
-                      }`}
+                        }`}
                     >
                       {pro.avatar_url ? (
                         <img
@@ -323,11 +321,10 @@ export default function BookingModal() {
                     <button
                       key={s}
                       onClick={() => setSelectedSlot(s)}
-                      className={`py-3 rounded-2xl border text-xs font-mono font-bold transition-all ${
-                        isSelected 
-                          ? "bg-accent text-white border-accent shadow-sm" 
+                      className={`py-3 rounded-2xl border text-xs font-mono font-bold transition-all ${isSelected
+                          ? "bg-accent text-white border-accent shadow-sm"
                           : "border-border bg-bg-elevated hover:border-border-strong text-ink-soft"
-                      }`}
+                        }`}
                     >
                       {s}
                     </button>

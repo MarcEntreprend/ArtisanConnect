@@ -78,8 +78,7 @@ export default function Onboarding() {
       const { data: existing } = await supabase
         .from("artisans")
         .select("id")
-        .eq("owner_id", user!.id)
-        .single();
+        .eq('owner_id', user.id).maybeSingle()
       if (existing) {
         artisanId = existing.id;
       } else {
@@ -131,11 +130,10 @@ export default function Onboarding() {
                 <button
                   key={t}
                   onClick={() => setType(t)}
-                  className={`flex flex-col items-center gap-2 p-6 rounded-2xl border-2 transition-colors text-center ${
-                    type === t
-                      ? "border-accent bg-[var(--color-accent-soft)]"
+                  className={`flex flex-col items-center gap-2 p-6 rounded-2xl border-2 transition-colors text-center ${type === t
+                      ? "border-accent bg-accent-soft"
                       : "border-border hover:border-border-strong"
-                  }`}
+                    }`}
                 >
                   <span className="text-3xl">{t === "solo" ? "🧑‍🔧" : "🏪"}</span>
                   <span className="font-bold text-sm">

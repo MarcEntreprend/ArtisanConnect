@@ -107,9 +107,8 @@ export default function Messages() {
       <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] border border-border bg-bg-elevated rounded-3xl overflow-hidden mt-8 shadow-sm min-h-[550px]">
         {/* Conversation list */}
         <div
-          className={`border-r border-border overflow-y-auto max-h-[600px] bg-bg-elevated/40 ${
-            activeId ? "hidden md:block" : "block"
-          }`}
+          className={`border-r border-border overflow-y-auto max-h-[600px] bg-bg-elevated/40 ${activeId ? "hidden md:block" : "block"
+            }`}
         >
           {loading ? (
             <div className="p-8 text-center text-ink-faint animate-pulse">Chargement…</div>
@@ -126,11 +125,10 @@ export default function Messages() {
                   <button
                     key={c.id}
                     onClick={() => setActiveId(c.id)}
-                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${
-                      active ? "bg-accent-soft text-accent" : "hover:bg-bg-sunken/40"
-                    }`}
+                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${active ? "bg-accent-soft text-accent" : "hover:bg-bg-sunken/40"
+                      }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm shrink-0">
                       {c.artisan_name?.charAt(0).toUpperCase() || "?"}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -141,9 +139,9 @@ export default function Messages() {
                         <span className="text-[10px] text-ink-faint">
                           {lastMsg
                             ? new Date(lastMsg.created_at).toLocaleTimeString("fr-FR", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : ""}
                         </span>
                       </div>
@@ -152,7 +150,7 @@ export default function Messages() {
                       </p>
                     </div>
                     {c.unread && (
-                      <span className="w-2.5 h-2.5 rounded-full bg-accent flex-shrink-0 shadow-sm animate-pulse" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-accent shrink-0 shadow-sm animate-pulse" />
                     )}
                   </button>
                 );
@@ -174,8 +172,8 @@ export default function Messages() {
             <>
               {/* Header */}
               <div className="flex items-center gap-3 p-4 border-b border-border bg-bg-sunken/20">
-                <button 
-                  onClick={() => setActiveId(null)} 
+                <button
+                  onClick={() => setActiveId(null)}
                   className="md:hidden p-1 rounded-full hover:bg-bg-sunken text-ink-soft"
                 >
                   <ArrowLeft size={18} />
@@ -198,11 +196,10 @@ export default function Messages() {
                   return (
                     <div
                       key={m.id}
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
-                        isMe 
-                          ? "ml-auto bg-accent text-white rounded-br-none" 
+                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${isMe
+                          ? "ml-auto bg-accent text-white rounded-br-none"
                           : "mr-auto bg-bg-elevated border border-border text-ink rounded-bl-none"
-                      }`}
+                        }`}
                     >
                       <p className="leading-relaxed">{m.content}</p>
                       <span className={`block text-[9px] mt-1 text-right font-medium ${isMe ? "text-white/70" : "text-ink-faint"}`}>
