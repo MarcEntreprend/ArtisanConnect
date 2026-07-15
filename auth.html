@@ -45,13 +45,14 @@
           height: 36px;
           border-radius: 50%;
           color: var(--ink-soft);
+          background: transparent;
           text-decoration: none;
           transition:
             background 0.2s,
             color 0.2s;
         "
         onmouseover="
-          this.style.background = 'var(--hover)';
+          this.style.background = 'var(--bg-sunken)';
           this.style.color = 'var(--ink)';
         "
         onmouseout="
@@ -127,13 +128,10 @@
               href="#"
               id="showSignup"
               style="
-                color: var(--primary);
+                color: var(--accent);
                 text-decoration: none;
                 font-weight: 500;
-                transition: opacity 0.2s;
               "
-              onmouseover="this.style.opacity = '0.7'"
-              onmouseout="this.style.opacity = '1'"
               >Créer un compte</a
             >
             <span style="color: var(--ink-faint); margin: 0 0.4rem">·</span>
@@ -141,13 +139,10 @@
               href="#"
               id="showRecover"
               style="
-                color: var(--primary);
+                color: var(--accent);
                 text-decoration: none;
                 font-weight: 500;
-                transition: opacity 0.2s;
               "
-              onmouseover="this.style.opacity = '0.7'"
-              onmouseout="this.style.opacity = '1'"
               >Mot de passe oublié</a
             >
           </p>
@@ -231,13 +226,10 @@
               href="#"
               id="showLogin"
               style="
-                color: var(--primary);
+                color: var(--accent);
                 text-decoration: none;
                 font-weight: 500;
-                transition: opacity 0.2s;
               "
-              onmouseover="this.style.opacity = '0.7'"
-              onmouseout="this.style.opacity = '1'"
               >Déjà un compte ? Connectez-vous</a
             >
           </p>
@@ -301,13 +293,10 @@
               href="#"
               id="showLoginFromRecover"
               style="
-                color: var(--primary);
+                color: var(--accent);
                 text-decoration: none;
                 font-weight: 500;
-                transition: opacity 0.2s;
               "
-              onmouseover="this.style.opacity = '0.7'"
-              onmouseout="this.style.opacity = '1'"
               >Retour à la connexion</a
             >
           </p>

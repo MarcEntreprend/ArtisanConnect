@@ -27,14 +27,34 @@
     // --- Auth ---
     auth: {
       signUp: async (email, password, fullName, role = "client") => {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) return { data: null, error };
-        const { error: profileError } = await supabase.from("users").insert({
-          id: data.user.id,
-          role,
-          full_name: fullName,
+        // Stocker full_name et role dans user_metadata pour pouvoir
+        // les relire depuis getUser() si public.users n'est pas encore créé
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              role: role,
+            },
+          },
         });
-        return { data, error: profileError };
+        if (error) return { data: null, error };
+        // Créer le profil dans public.users (peut échouer si email non confirmé)
+        if (data?.user?.id) {
+          await supabase
+            .from("users")
+            .insert({
+              id: data.user.id,
+              role,
+              full_name: fullName,
+            })
+            .then(() => {})
+            .catch(() => {
+              // Silencieux : sera re-créé par getUser() à la prochaine connexion
+            });
+        }
+        return { data, error: null };
       },
       signIn: async (email, password) => {
         const { data, error } = await supabase.auth.signInWithPassword({

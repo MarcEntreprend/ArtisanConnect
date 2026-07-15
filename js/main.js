@@ -1050,13 +1050,22 @@ function renderFavoritesPage() {
    ============================================================ */
 function apptCardHTML(appt) {
   const a = getArtisanById(appt.artisanId);
-  if (!a) return "";
+
+  // Artisan absent du mock (RDV Supabase) → affichage dégradé mais pas de crash
+  const artisanName = a?.name || "Artisan";
+  const artisanCity = a?.city || "";
+  const artisanAvatar =
+    a?.avatar ||
+    "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=300&h=300&fit=crop";
+  const artisanCurrency = a?.currency || "FCFA";
+  const artisanId = a?.id || appt.artisanId;
+
   const statusMeta = {
     upcoming: ["À venir", "upcoming"],
     done: ["Terminé", "done"],
     cancelled: ["Annulé", "cancelled"],
   };
-  const [label, cls] = statusMeta[appt.status];
+  const [label, cls] = statusMeta[appt.status] || ["Inconnu", "done"];
   const dateLabel = formatDateFrLong(appt.date);
 
   let actions = "";
@@ -1065,18 +1074,18 @@ function apptCardHTML(appt) {
       <button type="button" class="btn btn-outline" style="padding:.5rem 1rem;font-size:.8rem;" data-appt-modify="${appt.id}">Modifier</button>
       <button type="button" class="btn btn-ghost" style="padding:.5rem 1rem;font-size:.8rem;" data-appt-cancel="${appt.id}">Annuler</button>`;
   } else if (appt.status === "done") {
-    actions = `<a href="artisan-detail.html?id=${a.id}" class="btn btn-outline" style="padding:.5rem 1rem;font-size:.8rem;">Laisser un avis</a>`;
+    actions = `<a href="artisan-detail.html?id=${artisanId}" class="btn btn-outline" style="padding:.5rem 1rem;font-size:.8rem;">Laisser un avis</a>`;
   } else {
-    actions = `<a href="artisan-detail.html?id=${a.id}" class="btn btn-primary" style="padding:.5rem 1rem;font-size:.8rem;">Réserver à nouveau</a>`;
+    actions = `<a href="artisan-detail.html?id=${artisanId}" class="btn btn-primary" style="padding:.5rem 1rem;font-size:.8rem;">Réserver à nouveau</a>`;
   }
 
   return `
     <div class="appt-card">
-      <img src="${a.avatar}" alt="${a.name}" class="appt-avatar" />
+      <img src="${artisanAvatar}" alt="${artisanName}" class="appt-avatar" />
       <div class="appt-info">
         <div class="appt-service">${appt.serviceName}</div>
-        <div class="appt-artisan">${a.name} · ${a.city}</div>
-        <div class="appt-datetime">${icon("clock", 14)} ${dateLabel} à ${appt.time} · <span class="mono-num">${appt.price.toLocaleString("fr-FR")} ${a.currency}</span></div>
+        <div class="appt-artisan">${artisanName}${artisanCity ? " · " + artisanCity : ""}</div>
+        <div class="appt-datetime">${icon("clock", 14)} ${dateLabel} à ${appt.time} · <span class="mono-num">${(appt.price || 0).toLocaleString("fr-FR")} ${artisanCurrency}</span></div>
       </div>
       <span class="appt-status ${cls}">${label}</span>
       <div class="appt-actions">${actions}</div>
@@ -1144,11 +1153,20 @@ function initAppointmentsPage() {
   document.addEventListener("click", (e) => {
     const cancelBtn = e.target.closest("[data-appt-cancel]");
     if (cancelBtn) {
-      const appt = appointmentsData.find(
-        (a) => a.id === Number(cancelBtn.dataset.apptCancel),
-      );
+      const apptId = Number(cancelBtn.dataset.apptCancel);
+      const appt = appointmentsData.find((a) => a.id === apptId);
       if (appt) {
         appt.status = "cancelled";
+        // Persister en Supabase si connecté
+        if (typeof SupabaseAPI !== "undefined") {
+          SupabaseAPI.auth.getSession().then(({ data }) => {
+            if (data?.session?.user) {
+              SupabaseAPI.appointments
+                .cancel(apptId)
+                .catch((e) => console.warn("Cancel error:", e.message));
+            }
+          });
+        }
         showToast("Rendez-vous annulé.");
         render();
       }
@@ -1177,13 +1195,24 @@ function initMessagingPage() {
     convListEl.innerHTML = conversationsData
       .map((c) => {
         const a = getArtisanById(c.artisanId);
-        const last = c.messages[c.messages.length - 1];
+        // Guard : si pas de messages, afficher un placeholder
+        const msgs = c.messages || [];
+        const last = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+        const artisanName = a?.name || "Artisan";
+        const artisanAvatar =
+          a?.avatar ||
+          "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop";
         return `
           <div class="conv-item ${c.id === activeConvId ? "active" : ""}" data-id="${c.id}">
-            <img src="${a.avatar}" alt="${a.name}" class="conv-avatar" />
+            <img src="${artisanAvatar}" alt="${artisanName}" class="conv-avatar" />
             <div class="conv-info">
-              <div class="conv-name"><span>${a.name}</span><span class="conv-time">${last.time}</span></div>
-              <div class="conv-preview">${last.from === "me" ? "Vous : " : ""}${last.text}</div>
+              <div class="conv-name">
+                <span>${artisanName}</span>
+                <span class="conv-time">${last ? last.time : ""}</span>
+              </div>
+              <div class="conv-preview">
+                ${last ? (last.from === "me" ? "Vous : " : "") + last.text : "Commencez la conversation…"}
+              </div>
             </div>
             ${c.unread ? '<span class="conv-unread"></span>' : ""}
           </div>`;

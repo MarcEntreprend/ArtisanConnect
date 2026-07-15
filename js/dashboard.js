@@ -676,7 +676,6 @@ function applyOrQueueChange(
     showToast("Modification envoyée à votre responsable pour validation.");
   } else {
     applyFn();
-    // Si on a une opération Supabase et que c'est un vrai compte
     if (
       supabaseOp &&
       typeof SupabaseAPI !== "undefined" &&
@@ -1347,7 +1346,15 @@ function handleDashClick(e, personaKey, scope) {
       break;
     case "appt-cancel-yes": {
       const appt = appointmentsData.find((a) => a.id === id);
-      if (appt) appt.status = "cancelled";
+      if (appt) {
+        appt.status = "cancelled";
+        // Persister en Supabase si compte réel
+        if (typeof SupabaseAPI !== "undefined" && scope.artisan._isLive) {
+          SupabaseAPI.appointments.cancel(id).then(({ error }) => {
+            if (error) console.warn("Cancel appt error:", error.message);
+          });
+        }
+      }
       confirmingApptId = null;
       showToast("Rendez-vous annulé.");
       renderApptList(personaKey, scope, scopedAppointments(personaKey, scope));
@@ -1378,32 +1385,27 @@ function handleDashClick(e, personaKey, scope) {
       editingServiceId = null;
       renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
       break;
-    case "service-delete":
-      {
-        const svcToDelete = scope.artisan.services.find((sv) => sv.id === id);
-        scope.artisan.services = scope.artisan.services.filter(
-          (sv) => sv.id !== id,
-        );
-        renderServicesList(
-          personaKey,
-          scope,
-          canEditServices(personaKey, scope),
-        );
-        if (
-          svcToDelete &&
-          typeof SupabaseAPI !== "undefined" &&
-          scope.artisan._isLive
-        ) {
-          SupabaseAPI.services.delete(id).then(({ error }) => {
-            if (error)
-              showToast("Supprimé en local. Erreur réseau : " + error.message);
-            else showToast("Service supprimé ✓");
-          });
-        } else {
-          showToast("Service supprimé.");
-        }
+    case "service-delete": {
+      const svcToDelete = scope.artisan.services.find((sv) => sv.id === id);
+      scope.artisan.services = scope.artisan.services.filter(
+        (sv) => sv.id !== id,
+      );
+      renderServicesList(personaKey, scope, canEditServices(personaKey, scope));
+      if (
+        svcToDelete &&
+        typeof SupabaseAPI !== "undefined" &&
+        scope.artisan._isLive
+      ) {
+        SupabaseAPI.services.delete(id).then(({ error }) => {
+          if (error)
+            showToast("Supprimé en local. Erreur réseau : " + error.message);
+          else showToast("Service supprimé ✓");
+        });
+      } else {
+        showToast("Service supprimé.");
       }
       break;
+    }
     case "service-add": {
       const editable = canEditServices(personaKey, scope);
       const newSvc = {
