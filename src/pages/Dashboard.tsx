@@ -505,7 +505,7 @@ export default function Dashboard() {
                         <div>
                           <h3 className="font-semibold">{s.name}</h3>
                           <p className="text-sm text-ink-faint">
-                            {s.price?.toLocaleString("fr-FR")} FCFA ·{" "}
+                            {s.price?.toLocaleString("fr-FR")} Gourdes ·{" "}
                             {s.duration_min} min
                           </p>
                         </div>

@@ -1058,7 +1058,7 @@ function apptCardHTML(appt) {
   const artisanAvatar =
     a?.avatar ||
     "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=300&h=300&fit=crop";
-  const artisanCurrency = a?.currency || "FCFA";
+  const artisanCurrency = a?.currency || "Gourdes";
   const artisanId = a?.id || appt.artisanId;
 
   const statusMeta = {

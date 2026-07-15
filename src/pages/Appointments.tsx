@@ -137,7 +137,7 @@ export default function Appointments() {
                     month: "short",
                   })}{" "}
                   à {a.appointment_time?.slice(0, 5)} ·{" "}
-                  {a.price.toLocaleString("fr-FR")} FCFA
+                  {a.price.toLocaleString("fr-FR")} Gourdes
                 </p>
               </div>
               <span

@@ -1655,7 +1655,7 @@ function handleDashSubmit(e, personaKey, scope) {
     applyOrQueueChange(
       personaKey,
       scope,
-      `Modification du service « ${s.name} » → ${name}, ${price.toLocaleString("fr-FR")} FCFA, ${duration} min`,
+      `Modification du service « ${s.name} » → ${name}, ${price.toLocaleString("fr-FR")} Gourdes, ${duration} min`,
       s.id,
       () => {
         s.name = name;

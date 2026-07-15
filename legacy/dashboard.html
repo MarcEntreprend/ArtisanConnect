@@ -147,7 +147,7 @@
                     verified: a.verified || false,
                     availableToday: a.available_today || false,
                     priceFrom: a.price_from || 0,
-                    currency: a.currency || "FCFA",
+                    currency: a.currency || "Gourdes",
                     hours: [
                       { day: "Lundi", time: "08:00 - 18:00" },
                       { day: "Mardi", time: "08:00 - 18:00" },
@@ -182,7 +182,7 @@
                 mockArtisan.verified = a.verified || false;
                 mockArtisan.availableToday = a.available_today || false;
                 mockArtisan.priceFrom = a.price_from || 0;
-                mockArtisan.currency = a.currency || "FCFA";
+                mockArtisan.currency = a.currency || "Gourdes";
                 if (a.avatar_url) mockArtisan.avatar = a.avatar_url;
                 mockArtisan._isLive = true;
 
@@ -302,7 +302,7 @@
                     owner_id: session.user.id,
                     name: profile.full_name || "Mon activité",
                     city: "",
-                    currency: "FCFA",
+                    currency: "Gourdes",
                     status: "actif",
                   });
                 if (!createErr && newArtisan && newArtisan.length > 0) {
@@ -326,7 +326,7 @@
                     verified: false,
                     availableToday: false,
                     priceFrom: 0,
-                    currency: "FCFA",
+                    currency: "Gourdes",
                     hours: [
                       { day: "Lundi", time: "08:00 - 18:00" },
                       { day: "Mardi", time: "08:00 - 18:00" },

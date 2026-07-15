@@ -184,7 +184,7 @@
               <input type="text" id="obSvcName" placeholder="Ex. Coupe de cheveux" value="${ob.service.name}" />
             </div>
             <div class="onboarding-field">
-              <label>Prix (FCFA)</label>
+              <label>Prix (Gourdes)</label>
               <input type="number" id="obSvcPrice" placeholder="Ex. 2500" value="${ob.service.price}" min="0" step="500" />
             </div>
             <div class="onboarding-field">
@@ -236,7 +236,7 @@
                       owner_id: _session.user.id,
                       name: profile?.full_name || "Mon activité",
                       city: "",
-                      currency: "FCFA",
+                      currency: "Gourdes",
                       is_team: ob.type === "entreprise",
                       status: "actif",
                     });

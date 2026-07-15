@@ -89,7 +89,7 @@ export default function Onboarding() {
             owner_id: user!.id,
             name: user?.full_name || "Mon activité",
             city: "",
-            currency: "FCFA",
+            currency: "Gourdes",
             is_team: type === "entreprise",
             status: "actif",
           })
@@ -226,7 +226,7 @@ export default function Onboarding() {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">
-                  Prix (FCFA)
+                  Prix (Gourdes)
                 </label>
                 <input
                   type="number"
