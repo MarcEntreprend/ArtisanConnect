@@ -92,9 +92,9 @@ export default function ArtisanDetail() {
           {/* Hero */}
           <div className="flex flex-col sm:flex-row items-start gap-5 mb-8">
             <img
-              src={artisan.avatar_url ?? ""}
+              src={artisan.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
               alt={artisan.name}
-              className="w-24 h-24 rounded-3xl object-cover border-4 border-bg-elevated shadow-md flex-shrink-0"
+              className="w-24 h-24 rounded-3xl object-cover border-4 border-bg-elevated shadow-md shrink-0"
             />
             <div className="flex-1 w-full">
               <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -119,7 +119,7 @@ export default function ArtisanDetail() {
                   >
                     <Heart size={18} fill={isFav ? "currentColor" : "none"} />
                   </button>
-                  <button 
+                  <button
                     onClick={() => triggerBooking()}
                     className="btn btn-primary px-6 py-2 text-sm font-bold shadow-sm"
                   >
@@ -143,7 +143,7 @@ export default function ArtisanDetail() {
 
           {/* Cover */}
           {artisan.cover_url && (
-            <div className="rounded-3xl overflow-hidden mb-8 shadow-sm aspect-[21/9]">
+            <div className="rounded-3xl overflow-hidden mb-8 shadow-sm aspect-21/9">
               <img
                 src={artisan.cover_url}
                 alt={artisan.name}
@@ -158,11 +158,10 @@ export default function ArtisanDetail() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-3.5 text-sm font-bold transition-all border-b-2 whitespace-nowrap ${
-                  activeTab === tab 
-                    ? "text-ink border-accent" 
-                    : "text-ink-faint border-transparent hover:text-ink"
-                }`}
+                className={`pb-3.5 text-sm font-bold transition-all border-b-2 whitespace-nowrap ${activeTab === tab
+                  ? "text-ink border-accent"
+                  : "text-ink-faint border-transparent hover:text-ink"
+                  }`}
               >
                 {tab === "services"
                   ? "Services & Tarifs"
@@ -192,11 +191,10 @@ export default function ArtisanDetail() {
                     return (
                       <div
                         key={key}
-                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border text-center transition-all ${
-                          available 
-                            ? "border-border bg-bg-elevated text-ink-soft shadow-sm" 
-                            : "border-border/30 opacity-40 bg-bg-sunken/10 line-through text-ink-faint"
-                        }`}
+                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border text-center transition-all ${available
+                          ? "border-border bg-bg-elevated text-ink-soft shadow-sm"
+                          : "border-border/30 opacity-40 bg-bg-sunken/10 line-through text-ink-faint"
+                          }`}
                       >
                         <Icon size={24} className={available ? "text-accent" : "text-ink-faint"} />
                         <span className="text-xs font-semibold mt-2.5">
@@ -222,15 +220,15 @@ export default function ArtisanDetail() {
                 ) : (
                   <div className="space-y-3">
                     {services.map((s) => (
-                      <div 
-                        key={s.id} 
+                      <div
+                        key={s.id}
                         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-border bg-bg-elevated hover:border-border-strong hover:shadow-sm transition-all"
                       >
                         <div className="flex items-start gap-4">
                           <img
-                            src={s.image_url ?? artisan.avatar_url ?? ""}
+                            src={s.image_url || artisan.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
                             alt=""
-                            className="w-16 h-16 rounded-2xl object-cover flex-shrink-0 border border-border/50"
+                            className="w-16 h-16 rounded-2xl object-cover shrink-0 border border-border/50"
                           />
                           <div className="min-w-0">
                             <h3 className="font-bold text-ink text-base">{s.name}</h3>
@@ -248,7 +246,7 @@ export default function ArtisanDetail() {
                             </div>
                           </div>
                         </div>
-                        <button 
+                        <button
                           onClick={() => triggerBooking(s.id, s.name)}
                           className="btn btn-outline py-2 px-5 text-xs font-bold"
                         >
@@ -288,7 +286,7 @@ export default function ArtisanDetail() {
           <div>
             <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-2">Localisation</h3>
             <p className="text-sm text-ink-soft flex items-start gap-1.5 leading-relaxed">
-              <MapPin size={16} className="text-ink-faint flex-shrink-0 mt-0.5" />
+              <MapPin size={16} className="text-ink-faint shrink-0 mt-0.5" />
               <span>{artisan.address || "Adresse non spécifiée, " + artisan.city}</span>
             </p>
           </div>

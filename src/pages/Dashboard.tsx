@@ -148,7 +148,8 @@ export default function Dashboard() {
         .from("payouts")
         .select("*")
         .eq("artisan_id", art.id)
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => (error ? { data: [] } : { data })),
       supabase
         .from("payment_settings")
         .select("*")
@@ -995,11 +996,17 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 mt-8">
         <aside className="bg-bg-elevated border border-border rounded-3xl p-5 sticky top-24 self-start shadow-sm">
           <div className="flex items-center gap-3 pb-5 mb-5 border-b border-border/60">
-            <img
-              src={photoUrl || ""}
-              alt=""
-              className="w-11 h-11 rounded-2xl object-cover border border-border"
-            />
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt=""
+                className="w-11 h-11 rounded-2xl object-cover border border-border"
+              />
+            ) : (
+              <div className="w-11 h-11 rounded-2xl bg-[var(--bg-sunken)] border border-[var(--border)] flex items-center justify-center">
+                <User size={18} className="text-[var(--ink-faint)]" />
+              </div>
+            )}
             <div className="min-w-0">
               <p className="font-bold text-sm text-ink truncate">{artisan?.name}</p>
               <p className="text-xs text-ink-faint">{artisan?.city}</p>

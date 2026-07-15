@@ -256,7 +256,7 @@ export default function Search() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="rounded-card border border-border bg-bg-elevated animate-pulse">
-                  <div className="aspect-[4/3] bg-bg-sunken rounded-t-card" />
+                  <div className="aspect-4/3 bg-bg-sunken rounded-t-card" />
                   <div className="p-5 space-y-3">
                     <div className="h-4 bg-bg-sunken rounded w-3/4" />
                     <div className="h-3 bg-bg-sunken rounded w-1/2" />
@@ -286,7 +286,11 @@ export default function Search() {
                     className="artisan-card"
                   >
                     <div className="artisan-card-media">
-                      <img src={a.avatar_url || ""} alt={a.name} loading="lazy" />
+                      <img
+                        src={a.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
+                        alt={a.name}
+                        loading="lazy"
+                      />
                       {a.available_today && (
                         <span className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest text-white text-[10px] font-bold tracking-wide uppercase shadow-sm">
                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -318,7 +322,7 @@ export default function Search() {
                               {a.name}
                             </h3>
                           </div>
-                          <div className="flex items-center gap-1 text-sm font-semibold text-ochre flex-shrink-0 bg-ochre-soft px-2 py-0.5 rounded-lg">
+                          <div className="flex items-center gap-1 text-sm font-semibold text-ochre shrink-0 bg-ochre-soft px-2 py-0.5 rounded-lg">
                             <Star size={13} fill="currentColor" />
                             <span>{a.rating.toFixed(1)}</span>
                           </div>

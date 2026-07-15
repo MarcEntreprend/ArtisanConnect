@@ -20,7 +20,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
     >
       <div className="artisan-card-media">
         <img
-          src={artisan.avatar_url || ""}
+          src={artisan.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
           alt={artisan.name}
           loading="lazy"
         />
@@ -55,7 +55,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
                 {artisan.name}
               </h3>
             </div>
-            <div className="flex items-center gap-1 text-sm font-semibold text-ochre flex-shrink-0 bg-ochre-soft px-2 py-0.5 rounded-lg">
+            <div className="flex items-center gap-1 text-sm font-semibold text-ochre shrink-0 bg-ochre-soft px-2 py-0.5 rounded-lg">
               <Star size={13} fill="currentColor" />
               <span>{artisan.rating.toFixed(1)}</span>
             </div>
@@ -99,15 +99,15 @@ export default function Home() {
     selectedCategory === "all"
       ? artisans
       : artisans.filter(
-          (a) =>
-            a.category_id ===
-            CATEGORIES.find((c) => c.slug === selectedCategory)?.id,
-        );
+        (a) =>
+          a.category_id ===
+          CATEGORIES.find((c) => c.slug === selectedCategory)?.id,
+      );
 
   return (
     <div className="py-4 animate-fade-in-up">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent-soft/80 via-bg-elevated/40 to-bg-sunken/40 border border-border/60 p-8 md:p-14 lg:p-20 mt-6 mb-12 shadow-sm">
+      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-accent-soft/80 via-bg-elevated/40 to-bg-sunken/40 border border-border/60 p-8 md:p-14 lg:p-20 mt-6 mb-12 shadow-sm">
         <div className="absolute right-0 top-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-accent/5 blur-3xl" />
         <div className="absolute left-1/3 bottom-0 -mb-20 w-96 h-96 rounded-full bg-forest-soft/40 blur-3xl" />
 
@@ -151,11 +151,10 @@ export default function Home() {
         <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide">
           <button
             onClick={() => setSelectedCategory("all")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
-              selectedCategory === "all"
-                ? "bg-accent border-accent text-white shadow-sm"
-                : "bg-bg-elevated border-border text-ink-soft hover:border-border-strong hover:bg-bg-sunken"
-            }`}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${selectedCategory === "all"
+              ? "bg-accent border-accent text-white shadow-sm"
+              : "bg-bg-elevated border-border text-ink-soft hover:border-border-strong hover:bg-bg-sunken"
+              }`}
           >
             🌟 Tous les métiers
           </button>
@@ -163,11 +162,10 @@ export default function Home() {
             <button
               key={cat.slug}
               onClick={() => setSelectedCategory(cat.slug)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
-                selectedCategory === cat.slug
-                  ? "bg-accent border-accent text-white shadow-sm"
-                  : "bg-bg-elevated border-border text-ink-soft hover:border-border-strong hover:bg-bg-sunken"
-              }`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${selectedCategory === cat.slug
+                ? "bg-accent border-accent text-white shadow-sm"
+                : "bg-bg-elevated border-border text-ink-soft hover:border-border-strong hover:bg-bg-sunken"
+                }`}
             >
               <span className="text-base">{cat.icon}</span>
               <span>{cat.label}</span>
@@ -200,7 +198,7 @@ export default function Home() {
                 key={i}
                 className="rounded-card border border-border bg-bg-elevated animate-pulse"
               >
-                <div className="aspect-[4/3] bg-bg-sunken rounded-t-card" />
+                <div className="aspect-4/3 bg-bg-sunken rounded-t-card" />
                 <div className="p-5 space-y-3">
                   <div className="h-4 bg-bg-sunken rounded w-3/4" />
                   <div className="h-3 bg-bg-sunken rounded w-1/2" />
