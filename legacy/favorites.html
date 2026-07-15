@@ -1,0 +1,189 @@
+<!--favorites.html -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mes favoris — ArtisanConnect</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Aller au contenu</a>
+    <div id="header-container"></div>
+
+    <main class="main-content" id="main">
+      <div class="container">
+        <div class="page-header">
+          <h1>Mes favoris</h1>
+          <p id="favoritesSubtitle">
+            Retrouvez ici les artisans que vous avez enregistrés.
+          </p>
+        </div>
+
+        <div
+          class="artisans-grid stagger"
+          id="favoritesGrid"
+          style="margin-top: 1.5rem"
+        ></div>
+
+        <div class="empty-state" id="favoritesEmptyState" style="display: none">
+          <div class="empty-state-icon">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.6z"
+              />
+            </svg>
+          </div>
+          <h3>Aucun favori pour l'instant</h3>
+          <p>
+            Ajoutez des artisans à vos favoris en cliquant sur le cœur de leur
+            profil pour les retrouver ici.
+          </p>
+          <a href="search.html" class="btn btn-primary"
+            >Découvrir des artisans</a
+          >
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom" style="margin-top: 0; padding-top: 1.5rem">
+          <p>© 2026 ArtisanConnect. Tous droits réservés.</p>
+          <button class="back-to-top" aria-label="Retourner en haut de la page">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <div id="bottom-nav-container"></div>
+    <div id="booking-modal-container"></div>
+    <div id="login-modal-container"></div>
+    <div class="toast-stack" id="toastStack"></div>
+
+    <!-- <script src="js/data/artisans.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+      loadIncludes({ activePage: "favorites.html" });
+      renderFavoritesPage();
+    </script> -->
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+
+    <script src="js/data/artisans.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+      loadIncludes({ activePage: "favorites.html" });
+
+      function showFavoritesLoginWall() {
+        document.getElementById("favoritesGrid").style.display = "none";
+        document.getElementById("favoritesGrid").innerHTML = "";
+        document.getElementById("favoritesEmptyState").style.display = "flex";
+        const subtitle = document.getElementById("favoritesSubtitle");
+        if (subtitle)
+          subtitle.textContent =
+            "Connectez-vous pour retrouver vos artisans favoris sur tous vos appareils.";
+        // Remplacer le CTA
+        const cta = document.querySelector("#favoritesEmptyState .btn");
+        if (cta) {
+          cta.textContent = "Se connecter";
+          cta.href = "auth.html";
+        }
+      }
+
+      async function loadFavoritesSupabase() {
+        let session = null;
+        try {
+          const { data } = await SupabaseAPI.auth.getSession();
+          session = data?.session || null;
+        } catch (e) {
+          console.warn("Session check failed:", e.message);
+        }
+
+        if (!session?.user) {
+          // Non connecté : afficher les favoris localStorage (règle métier mock)
+          // + mention de connexion dans le subtitle
+          const subtitle = document.getElementById("favoritesSubtitle");
+          const favIds = JSON.parse(localStorage.getItem("favorites") || "[]");
+          if (subtitle && favIds.length === 0) {
+            subtitle.textContent =
+              "Connectez-vous pour synchroniser vos favoris sur tous vos appareils.";
+          } else if (subtitle) {
+            subtitle.textContent = `${favIds.length} favori${favIds.length > 1 ? "s" : ""} en local · Connectez-vous pour les sauvegarder.`;
+          }
+          renderFavoritesPage();
+          return;
+        }
+
+        // Connecté → charger depuis Supabase et synchroniser localStorage
+        try {
+          const { data: favorites, error } =
+            await SupabaseAPI.favorites.getByUser(session.user.id);
+
+          if (!error && favorites && favorites.length > 0) {
+            // Mettre à jour localStorage avec les IDs Supabase (source de vérité)
+            const ids = favorites.map((f) => f.artisan_id);
+            localStorage.setItem("favorites", JSON.stringify(ids));
+
+            // Enrichir artisansData avec les artisans qui ne sont pas dans le mock
+            favorites.forEach((f) => {
+              if (!f.artisans) return;
+              const exists = artisansData.find((a) => a.id === f.artisan_id);
+              if (!exists) {
+                const cat = CATEGORIES.find(
+                  (c) => c.id === f.artisans.category_id,
+                );
+                artisansData.push({
+                  id: f.artisans.id,
+                  name: f.artisans.name,
+                  category: cat?.label || "",
+                  categorySlug: cat?.slug || "",
+                  city: f.artisans.city,
+                  avatar: f.artisans.avatar_url || "",
+                  rating: f.artisans.rating || 0,
+                  reviews: f.artisans.reviews_count || 0,
+                  verified: f.artisans.verified || false,
+                  availableToday: f.artisans.available_today || false,
+                  priceFrom: f.artisans.price_from || 0,
+                  currency: f.artisans.currency || "FCFA",
+                  distance: "—",
+                });
+              }
+            });
+          } else if (!error) {
+            // Connecté mais aucun favori → vider localStorage aussi pour cohérence
+            localStorage.setItem("favorites", "[]");
+          }
+        } catch (e) {
+          console.warn(
+            "Favorites load failed, fallback localStorage:",
+            e.message,
+          );
+        }
+
+        renderFavoritesPage();
+      }
+
+      loadFavoritesSupabase();
+    </script>
+  </body>
+</html>

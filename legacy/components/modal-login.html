@@ -1,0 +1,515 @@
+<!-- components\modal-login.html -->
+<!-- 
+============================================
+COMPOSANT : Modale de connexion / inscription
+============================================
+-->
+<style>
+  .auth-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 20, 15, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
+    padding: 1rem;
+  }
+
+  .auth-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .auth-modal {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-elevated);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem 1.75rem 1.75rem;
+    position: relative;
+    transform: translateY(16px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+
+  .auth-modal-overlay.active .auth-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .auth-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--r-pill);
+    background: var(--bg-sunken);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+  }
+
+  .auth-modal-close:hover {
+    background: var(--border);
+  }
+
+  .auth-modal-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-logo-mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    margin: 0 auto 1rem;
+  }
+
+  .auth-header h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .auth-header p {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
+
+  .auth-tabs {
+    display: flex;
+    background: var(--bg-sunken);
+    border-radius: var(--r-pill);
+    padding: 0.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 0.55rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--r-pill);
+    color: var(--ink-faint);
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .auth-tab.active {
+    background: var(--bg-elevated);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .auth-form.active {
+    display: flex;
+  }
+
+  .auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .auth-field label {
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .auth-field input {
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--r-input);
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-size: 0.9rem;
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .auth-field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .auth-field input.invalid {
+    border-color: var(--danger);
+  }
+
+  .auth-error {
+    font-size: 0.76rem;
+    color: var(--danger);
+    display: none;
+  }
+
+  .auth-error.visible {
+    display: block;
+  }
+
+  .auth-submit {
+    margin-top: 0.3rem;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 0.8rem;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    font-size: 0.92rem;
+    transition:
+      background 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  .auth-submit:hover {
+    background: var(--accent-strong);
+  }
+
+  .auth-submit:active {
+    transform: scale(0.98);
+  }
+
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    color: var(--ink-faint);
+    font-size: 0.78rem;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .auth-social {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .auth-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.7rem;
+    border-radius: var(--r-pill);
+    border: 1.5px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .auth-social-btn:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-sunken);
+  }
+
+  .auth-social-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .auth-footer-note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .auth-footer-note a {
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>
+
+<div class="auth-modal-overlay" id="loginModal">
+  <div class="auth-modal">
+    <button class="auth-modal-close" id="closeLoginModal" aria-label="Fermer">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
+    </button>
+
+    <div class="auth-header">
+      <div class="auth-logo-mark">AC</div>
+      <h2 id="authTitle">Bon retour</h2>
+      <p id="authSubtitle">
+        Connectez-vous pour réserver et suivre vos rendez-vous
+      </p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="signin">Connexion</button>
+      <button class="auth-tab" data-tab="signup">Inscription</button>
+    </div>
+
+    <form class="auth-form active" id="signinForm" data-form="signin">
+      <div class="auth-field">
+        <label for="signinEmail">Adresse e-mail</label>
+        <input
+          type="email"
+          id="signinEmail"
+          placeholder="vous@exemple.com"
+          required
+          autocomplete="email"
+        />
+        <span class="auth-error" data-error-for="signinEmail"
+          >Adresse e-mail invalide.</span
+        >
+      </div>
+      <div class="auth-field">
+        <label for="signinPassword">Mot de passe</label>
+        <input
+          type="password"
+          id="signinPassword"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+          minlength="6"
+        />
+        <span class="auth-error" data-error-for="signinPassword"
+          >6 caractères minimum.</span
+        >
+      </div>
+      <button type="submit" class="auth-submit">Se connecter</button>
+    </form>
+
+    <form class="auth-form" id="signupForm" data-form="signup">
+      <div class="auth-field">
+        <label for="signupName">Nom complet</label>
+        <input
+          type="text"
+          id="signupName"
+          placeholder="Votre nom"
+          required
+          autocomplete="name"
+        />
+        <span class="auth-error" data-error-for="signupName"
+          >Veuillez indiquer votre nom.</span
+        >
+      </div>
+      <div class="auth-field">
+        <label for="signupEmail">Adresse e-mail</label>
+        <input
+          type="email"
+          id="signupEmail"
+          placeholder="vous@exemple.com"
+          required
+          autocomplete="email"
+        />
+        <span class="auth-error" data-error-for="signupEmail"
+          >Adresse e-mail invalide.</span
+        >
+      </div>
+      <div class="auth-field">
+        <label for="signupPassword">Mot de passe</label>
+        <input
+          type="password"
+          id="signupPassword"
+          placeholder="6 caractères minimum"
+          required
+          autocomplete="new-password"
+          minlength="6"
+        />
+        <span class="auth-error" data-error-for="signupPassword"
+          >6 caractères minimum.</span
+        >
+      </div>
+      <button type="submit" class="auth-submit">Créer mon compte</button>
+    </form>
+
+    <div class="auth-divider">ou continuer avec</div>
+
+    <div class="auth-social">
+      <button type="button" class="auth-social-btn" data-provider="google">
+        <svg viewBox="0 0 24 24">
+          <path
+            fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.85A11 11 0 0 0 12 23z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.09V7.06H2.18A11 11 0 0 0 1 12c0 1.77.43 3.45 1.18 4.94z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.82 6.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"
+          />
+        </svg>
+        Continuer avec Google
+      </button>
+      <button type="button" class="auth-social-btn" data-provider="apple">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M17.05 12.04c-.02-2.24 1.83-3.32 1.91-3.37-1.05-1.53-2.68-1.74-3.26-1.76-1.39-.14-2.71.82-3.42.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.89-3.71 2.25-1.58 2.75-.4 6.82 1.14 9.05.75 1.09 1.65 2.32 2.83 2.28 1.14-.05 1.57-.74 2.94-.74s1.76.74 2.97.71c1.22-.02 2-1.11 2.75-2.21.87-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.92-2.4-3.65z"
+          />
+          <path
+            d="M14.83 5.24c.63-.77 1.05-1.83 .94-2.9-.9.04-2.01.6-2.66 1.36-.58.67-1.09 1.75-.95 2.79 1.01.08 2.05-.51 2.67-1.25z"
+          />
+        </svg>
+        Continuer avec Apple
+      </button>
+    </div>
+
+    <p class="auth-footer-note">
+      En continuant, vous acceptez nos
+      <a href="#">conditions d'utilisation</a> et notre politique de
+      confidentialité.
+    </p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    "use strict";
+
+    const overlay = document.getElementById("loginModal");
+    const closeBtn = document.getElementById("closeLoginModal");
+    const tabs = overlay.querySelectorAll(".auth-tab");
+    const forms = overlay.querySelectorAll(".auth-form");
+    const title = document.getElementById("authTitle");
+    const subtitle = document.getElementById("authSubtitle");
+
+    const copy = {
+      signin: {
+        title: "Bon retour",
+        subtitle: "Connectez-vous pour réserver et suivre vos rendez-vous",
+      },
+      signup: {
+        title: "Créer un compte",
+        subtitle: "Rejoignez ArtisanConnect en moins d'une minute",
+      },
+    };
+
+    function switchTab(tab) {
+      tabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === tab));
+      forms.forEach((f) =>
+        f.classList.toggle("active", f.dataset.form === tab),
+      );
+      title.textContent = copy[tab].title;
+      subtitle.textContent = copy[tab].subtitle;
+    }
+
+    tabs.forEach((t) =>
+      t.addEventListener("click", () => switchTab(t.dataset.tab)),
+    );
+
+    function openModal(tab) {
+      switchTab(tab || "signin");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.classList.contains("active"))
+        closeModal();
+    });
+
+    // Validation simple, sans window.alert
+    function validateForm(form) {
+      let valid = true;
+      form.querySelectorAll("input[required]").forEach((input) => {
+        const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+        const isEmail = input.type === "email";
+        const passesPattern = isEmail
+          ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)
+          : input.value.trim().length >=
+            (input.minLength > 0 ? input.minLength : 1);
+
+        if (!passesPattern) {
+          input.classList.add("invalid");
+          if (errorEl) errorEl.classList.add("visible");
+          valid = false;
+        } else {
+          input.classList.remove("invalid");
+          if (errorEl) errorEl.classList.remove("visible");
+        }
+      });
+      return valid;
+    }
+
+    forms.forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validateForm(form)) return;
+        closeModal();
+        if (typeof window.showToast === "function") {
+          window.showToast(
+            form.dataset.form === "signup"
+              ? "Compte créé. Bienvenue sur ArtisanConnect !"
+              : "Connexion réussie.",
+          );
+        }
+        form.reset();
+      });
+    });
+
+    window.openLoginModal = openModal;
+    window.closeLoginModal = closeModal;
+
+    document.addEventListener("click", (e) => {
+      const trigger = e.target.closest("#openLoginModal, .login-trigger");
+      if (trigger) {
+        e.preventDefault();
+        openModal("signin");
+      }
+    });
+  })();
+</script>

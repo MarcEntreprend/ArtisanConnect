@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN SYSTEM "TERRAIN" — variables CSS (noms historiques)
+   Ces noms sont utilisés par tous les composants React.
+   ============================================================ */
+:root {
+  --bg: #faf9f6;
+  --bg-elevated: #ffffff;
+  --bg-sunken: #f1efe9;
+  --ink: #1c1c1a;
+  --ink-soft: #55534c;
+  --ink-faint: #8c8a80;
+  --border: #e6e3da;
+  --border-strong: #d3cfc2;
+
+  --accent: #2f6b4f;
+  --accent-strong: #24523c;
+  --accent-soft: #e6efe8;
+  --accent-ink: #ffffff;
+
+  --star: #d99a2b;
+  --danger: #c1432f;
+  --danger-soft: #fbe9e5;
+
+  --r-card: 20px;
+  --r-input: 12px;
+  --r-pill: 999px;
+  --r-sm: 10px;
+
+  --shadow-sm: 0 1px 2px rgba(28, 28, 26, 0.06);
+  --shadow-md: 0 8px 24px -8px rgba(36, 82, 60, 0.18);
+  --shadow-lg: 0 24px 48px -16px rgba(36, 82, 60, 0.24);
+
+  --font-sans:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+@theme {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-star: var(--star);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --radius-card: var(--r-card);
+  --radius-pill: var(--r-pill);
+  --radius-sm: var(--r-sm);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+/* Mode sombre */
+.dark {
+  --bg: #14140f;
+  --bg-elevated: #1c1c17;
+  --bg-sunken: #201f1a;
+  --ink: #f2f1ea;
+  --ink-soft: #b8b6ab;
+  --ink-faint: #7d7b70;
+  --border: #302f28;
+  --border-strong: #423f34;
+
+  --accent: #4c9873;
+  --accent-strong: #3c7e5e;
+  --accent-soft: #1c2e24;
+  --accent-ink: #0d1610;
+
+  --star: #e0ac4a;
+  --danger: #e2604a;
+  --danger-soft: #2c1917;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+}
+input,
+textarea,
+select {
+  font-family: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   UTILITAIRES
+   ============================================================ */
+.mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   SWITCHS
+   ============================================================ */
+.switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch-track {
+  position: absolute;
+  inset: 0;
+  background: var(--border-strong);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.switch-track::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  background: var(--bg-elevated);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.switch input:checked + .switch-track {
+  background: var(--accent);
+}
+.switch input:checked + .switch-track::before {
+  transform: translateX(16px);
+}
+.switch-lg {
+  width: 48px;
+  height: 27px;
+}
+.switch-lg .switch-track::before {
+  width: 21px;
+  height: 21px;
+}
+.switch-lg input:checked + .switch-track::before {
+  transform: translateX(21px);
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
