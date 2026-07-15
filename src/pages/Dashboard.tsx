@@ -51,16 +51,16 @@ const NAV_ITEMS: {
   label: string;
   icon: React.FC<{ size?: number }>;
 }[] = [
-  { key: "tableau", label: "Tableau de bord", icon: Home },
-  { key: "rendezvous", label: "Rendez-vous", icon: Calendar },
-  { key: "services", label: "Services", icon: Wrench },
-  { key: "vitrine", label: "Votre vitrine", icon: User },
-  { key: "dispo", label: "Disponibilités", icon: Clock },
-  { key: "stats", label: "Statistiques", icon: ChartLine },
-  { key: "avis", label: "Avis", icon: Star },
-  { key: "messages", label: "Messages", icon: MessageCircle },
-  { key: "paiement", label: "Paiement", icon: CreditCard },
-];
+    { key: "tableau", label: "Tableau de bord", icon: Home },
+    { key: "rendezvous", label: "Rendez-vous", icon: Calendar },
+    { key: "services", label: "Services", icon: Wrench },
+    { key: "vitrine", label: "Votre vitrine", icon: User },
+    { key: "dispo", label: "Disponibilités", icon: Clock },
+    { key: "stats", label: "Statistiques", icon: ChartLine },
+    { key: "avis", label: "Avis", icon: Star },
+    { key: "messages", label: "Messages", icon: MessageCircle },
+    { key: "paiement", label: "Paiement", icon: CreditCard },
+  ];
 
 const COMPLETE_NAV: typeof NAV_ITEMS = [
   ...NAV_ITEMS,
@@ -139,10 +139,10 @@ export default function Dashboard() {
         .order("created_at", { ascending: false }),
       art.is_team
         ? supabase
-            .from("teams")
-            .select("*, team_members(*)")
-            .eq("artisan_id", art.id)
-            .maybeSingle()
+          .from("teams")
+          .select("*, team_members(*)")
+          .eq("artisan_id", art.id)
+          .maybeSingle()
         : Promise.resolve({ data: null }),
       supabase
         .from("payouts")
@@ -281,20 +281,23 @@ export default function Dashboard() {
 
   if (loading)
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center text-ink-faint">
-        Chargement…
+      <div className="py-24 text-center text-ink-faint animate-pulse">
+        Chargement de votre espace artisan…
       </div>
     );
   if (!artisan)
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center">
-        <h2 className="text-xl font-bold mb-2">Aucun profil artisan trouvé</h2>
-        <p className="text-sm text-ink-faint mb-6">
-          Complétez votre onboarding pour créer votre espace.
+      <div className="max-w-4xl mx-auto py-24 text-center animate-fade-in-up">
+        <div className="w-16 h-16 rounded-full bg-accent-soft text-accent flex items-center justify-center mx-auto mb-6">
+          <Wrench size={32} />
+        </div>
+        <h2 className="text-2xl font-bold mb-2 text-ink">Aucun profil artisan trouvé</h2>
+        <p className="text-sm text-ink-soft mb-6 max-w-sm mx-auto leading-relaxed">
+          Complétez votre inscription pour créer votre espace professionnel et commencer à recevoir des clients.
         </p>
         <button
           onClick={() => navigate("/onboarding")}
-          className="btn btn-primary"
+          className="btn btn-primary px-8"
         >
           Créer mon espace
         </button>
@@ -335,32 +338,34 @@ export default function Dashboard() {
               ].map((s, i) => (
                 <div
                   key={i}
-                  className="bg-bg border border-border rounded-xl p-4"
+                  className="bg-bg-elevated border border-border rounded-2xl p-5 hover:border-border-strong hover:shadow-sm transition-all"
                 >
-                  <p className="text-xs text-ink-faint font-semibold">
+                  <p className="text-[10px] text-ink-faint font-extrabold uppercase tracking-wider">
                     {s.label}
                   </p>
-                  <p className="text-2xl font-bold font-mono mt-1">{s.value}</p>
+                  <p className="text-2xl font-bold font-mono mt-2 text-ink">{s.value}</p>
                   {s.sub && (
-                    <p className="text-[10px] text-ink-faint mt-0.5">{s.sub}</p>
+                    <p className="text-xs text-ink-soft mt-1">{s.sub}</p>
                   )}
                 </div>
               ))}
             </div>
             {upcomingAppts.length > 0 && (
-              <div className="bg-bg border border-border rounded-xl p-4">
-                <h3 className="font-bold mb-3">Prochains rendez-vous</h3>
-                {upcomingAppts.slice(0, 5).map((a) => (
-                  <div
-                    key={a.id}
-                    className="flex items-center justify-between py-2 border-b border-border last:border-0 text-sm"
-                  >
-                    <span>{a.service_name}</span>
-                    <span className="font-mono text-ink-faint">
-                      {a.appointment_date} · {a.appointment_time?.slice(0, 5)}
-                    </span>
-                  </div>
-                ))}
+              <div className="bg-bg-elevated border border-border rounded-2xl p-5">
+                <h3 className="font-bold text-ink mb-4">Prochains rendez-vous</h3>
+                <div className="divide-y divide-border/60">
+                  {upcomingAppts.slice(0, 5).map((a) => (
+                    <div
+                      key={a.id}
+                      className="flex items-center justify-between py-3 text-sm"
+                    >
+                      <span className="font-semibold text-ink">{a.service_name}</span>
+                      <span className="font-mono text-xs text-ink-faint bg-bg-sunken px-2.5 py-1 rounded-lg">
+                        {a.appointment_date} · {a.appointment_time?.slice(0, 5)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -390,7 +395,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <span
-                      className={`text-xs font-bold px-2 py-1 rounded-full ${a.status === "upcoming" ? "bg-green-100 text-green-700" : a.status === "done" ? "bg-gray-100 text-gray-500" : "bg-red-100 text-red-600"}`}
+                      className={`text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full ${a.status === "upcoming" ? "bg-forest-soft text-forest border border-forest/10" : a.status === "done" ? "bg-bg-sunken text-ink-faint" : "bg-danger-soft text-danger border border-danger/10"}`}
                     >
                       {a.status === "upcoming"
                         ? "À venir"
@@ -413,7 +418,7 @@ export default function Dashboard() {
                             ),
                           );
                         }}
-                        className="text-sm text-red-500 hover:underline"
+                        className="text-xs font-bold text-danger hover:bg-danger-soft px-3 py-1 rounded-full transition-colors"
                       >
                         Annuler
                       </button>
@@ -569,7 +574,7 @@ export default function Dashboard() {
               {["Vérifié", "Réactif"].map((b) => (
                 <span
                   key={b}
-                  className="px-3 py-1 rounded-full bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)] text-xs font-semibold flex items-center gap-1"
+                  className="px-3 py-1 rounded-full bg-accent-soft text-accent-strong text-xs font-semibold flex items-center gap-1"
                 >
                   <Check size={14} />
                   {b}
@@ -578,7 +583,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-start gap-6 mb-6 p-4 border rounded-2xl flex-wrap">
               <div
-                className="w-28 h-28 rounded-2xl border-2 border-dashed border-[var(--color-border-strong)] flex items-center justify-center overflow-hidden bg-bg-sunken"
+                className="w-28 h-28 rounded-2xl border-2 border-dashed border-border-strong flex items-center justify-center overflow-hidden bg-bg-sunken"
                 onDrop={(e) => {
                   e.preventDefault();
                   const f = e.dataTransfer.files[0];
@@ -702,7 +707,7 @@ export default function Dashboard() {
                           );
                           setHours(updated);
                         }}
-                        className="accent-[var(--color-accent)]"
+                        className="accent-[var(--accent)]"
                       />{" "}
                       Ouvert
                     </label>
@@ -886,7 +891,7 @@ export default function Dashboard() {
                         <input
                           type="checkbox"
                           defaultChecked={m.checked}
-                          className="accent-[var(--color-accent)]"
+                          className="accent-accent"
                         />
                         {m.label}
                       </label>
@@ -917,7 +922,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <span
-                      className={`ml-auto text-xs px-2 py-1 rounded-full ${m.status === "actif" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+                      className={`ml-auto text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full ${m.status === "actif" ? "bg-forest-soft text-forest border border-forest/10" : "bg-bg-sunken text-ink-faint"}`}
                     >
                       {m.status === "actif" ? "Actif" : "En pause"}
                     </span>
@@ -962,7 +967,7 @@ export default function Dashboard() {
                       {p.amount.toLocaleString("fr-FR")} {p.currency}
                     </span>
                     <span
-                      className={`text-xs px-2 py-1 rounded-full ${p.status === "verse" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
+                      className={`text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full ${p.status === "verse" ? "bg-forest-soft text-forest border border-forest/10" : "bg-ochre-soft text-ochre"}`}
                     >
                       {p.status === "verse" ? "Versé" : "En attente"}
                     </span>
@@ -979,22 +984,24 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-extrabold">Espace artisan</h1>
-      <p className="text-sm text-ink-faint mt-1">
-        Gérez votre vitrine, vos services et vos disponibilités.
-      </p>
+    <div className="py-8 animate-fade-in-up">
+      <div className="border-b border-border/40 pb-6 mt-2">
+        <h1 className="text-3xl font-extrabold text-ink">Espace artisan</h1>
+        <p className="text-sm text-ink-faint mt-1">
+          Gérez votre vitrine, vos services et vos disponibilités.
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6 mt-6">
-        <aside className="bg-bg-elevated border border-border rounded-2xl p-4 sticky top-24 self-start">
-          <div className="flex items-center gap-3 pb-4 mb-4 border-b border-border">
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 mt-8">
+        <aside className="bg-bg-elevated border border-border rounded-3xl p-5 sticky top-24 self-start shadow-sm">
+          <div className="flex items-center gap-3 pb-5 mb-5 border-b border-border/60">
             <img
               src={photoUrl || ""}
               alt=""
-              className="w-10 h-10 rounded-xl object-cover"
+              className="w-11 h-11 rounded-2xl object-cover border border-border"
             />
-            <div>
-              <p className="font-semibold text-sm">{artisan?.name}</p>
+            <div className="min-w-0">
+              <p className="font-bold text-sm text-ink truncate">{artisan?.name}</p>
               <p className="text-xs text-ink-faint">{artisan?.city}</p>
             </div>
           </div>
@@ -1003,7 +1010,7 @@ export default function Dashboard() {
               <button
                 key={item.key}
                 onClick={() => setActivePanel(item.key)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${activePanel === item.key ? "bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]" : "text-ink-soft hover:bg-bg-sunken"}`}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${activePanel === item.key ? "bg-accent-soft text-accent-strong shadow-sm" : "text-ink-soft hover:bg-bg-sunken hover:text-ink"}`}
               >
                 <item.icon size={18} /> {item.label}
               </button>
@@ -1011,7 +1018,7 @@ export default function Dashboard() {
           </nav>
         </aside>
 
-        <div className="bg-bg-elevated border border-border rounded-2xl p-6 min-h-[500px]">
+        <div className="bg-bg-elevated border border-border rounded-3xl p-8 min-h-[500px] shadow-sm">
           {renderPanel()}
         </div>
       </div>

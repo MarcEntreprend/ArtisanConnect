@@ -117,7 +117,7 @@ export default function Onboarding() {
 
   return (
     <div className="fixed inset-0 z-50 bg-(--bg)/95 backdrop-blur flex items-center justify-center p-4">
-      <div className="w-full max-w-125 bg-bg-elevated border border-border rounded-card shadow-lg p-10">
+      <div className="w-full max-w-125 bg-bg-elevated border border-border rounded-3xl shadow-lg p-10">
         <div className="flex items-center gap-1 mb-8">{dots}</div>
 
         {step === 1 && (

@@ -1,10 +1,8 @@
-// src/pages/Messages.tsx
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, MessageSquare } from "lucide-react";
 import type { Conversation, Message } from "../lib/types";
 
 interface ConversationWithPreview extends Conversation {
@@ -81,132 +79,159 @@ export default function Messages() {
 
   if (!user)
     return (
-      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <span className="text-4xl mb-4">💬</span>
-        <h2 className="text-xl font-bold mb-2">
+      <div className="max-w-4xl mx-auto py-24 text-center animate-fade-in-up">
+        <div className="w-16 h-16 rounded-full bg-accent-soft text-accent flex items-center justify-center mx-auto mb-6">
+          <MessageSquare size={32} />
+        </div>
+        <h2 className="text-2xl font-bold mb-2 text-ink">
           Connectez-vous pour accéder à vos messages
         </h2>
-        <p className="text-sm text-ink-faint mb-6">
-          Retrouvez ici vos échanges avec les artisans.
+        <p className="text-sm text-ink-soft mb-6 max-w-sm mx-auto leading-relaxed">
+          Échangez en temps réel avec vos artisans et suivez vos chantiers ou commandes en cours.
         </p>
-        <Link to="/auth" className="btn btn-primary">
+        <Link to="/auth" className="btn btn-primary px-8">
           Se connecter
         </Link>
       </div>
     );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-extrabold mb-6">Messagerie</h1>
+    <div className="max-w-5xl mx-auto py-8 animate-fade-in-up">
+      <div className="border-b border-border/40 pb-6 mt-6">
+        <h1 className="text-3xl font-extrabold text-ink">Messagerie</h1>
+        <p className="text-sm text-ink-faint mt-1">
+          Discutez directement et planifiez avec vos artisans locaux.
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] border border-border rounded-2xl overflow-hidden min-h-[500px]">
+      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] border border-border bg-bg-elevated rounded-3xl overflow-hidden mt-8 shadow-sm min-h-[550px]">
         {/* Conversation list */}
         <div
-          className={`border-r border-border overflow-y-auto max-h-[600px] ${activeId ? "hidden md:block" : "block"}`}
+          className={`border-r border-border overflow-y-auto max-h-[600px] bg-bg-elevated/40 ${
+            activeId ? "hidden md:block" : "block"
+          }`}
         >
           {loading ? (
-            <div className="p-6 text-center text-ink-faint">Chargement…</div>
+            <div className="p-8 text-center text-ink-faint animate-pulse">Chargement…</div>
           ) : conversations.length === 0 ? (
-            <div className="p-6 text-center text-ink-faint">
-              Aucune conversation
+            <div className="p-8 text-center text-ink-faint italic">
+              Aucune conversation pour le moment.
             </div>
           ) : (
-            conversations.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setActiveId(c.id)}
-                className={`w-full text-left p-4 flex items-center gap-3 border-b border-border hover:bg-bg-sunken transition-colors ${activeId === c.id ? "bg-bg-sunken" : ""}`}
-              >
-                <div className="w-10 h-10 rounded-full bg-[var(--color-accent-soft)] flex items-center justify-center text-sm font-bold text-[var(--color-accent)]">
-                  {c.artisan_name?.charAt(0) || "?"}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-sm">
-                      {c.artisan_name || "Artisan"}
-                    </span>
-                    <span className="text-[10px] text-ink-faint">
-                      {c.messages.length
-                        ? new Date(
-                            c.messages[c.messages.length - 1].created_at,
-                          ).toLocaleTimeString("fr-FR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </span>
-                  </div>
-                  <p className="text-xs text-ink-faint truncate mt-0.5">
-                    {c.messages.length
-                      ? c.messages[c.messages.length - 1].content
-                      : "Commencez la conversation…"}
-                  </p>
-                </div>
-                {c.unread && (
-                  <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
-                )}
-              </button>
-            ))
+            <div className="divide-y divide-border/60">
+              {conversations.map((c) => {
+                const lastMsg = c.messages[c.messages.length - 1];
+                const active = activeId === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setActiveId(c.id)}
+                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${
+                      active ? "bg-accent-soft text-accent" : "hover:bg-bg-sunken/40"
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                      {c.artisan_name?.charAt(0).toUpperCase() || "?"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`font-bold text-sm ${active ? "text-accent-strong" : "text-ink"}`}>
+                          {c.artisan_name || "Artisan"}
+                        </span>
+                        <span className="text-[10px] text-ink-faint">
+                          {lastMsg
+                            ? new Date(lastMsg.created_at).toLocaleTimeString("fr-FR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : ""}
+                        </span>
+                      </div>
+                      <p className={`text-xs truncate mt-0.5 ${active ? "text-accent-strong/80" : "text-ink-soft"}`}>
+                        {lastMsg ? lastMsg.content : "Commencer la discussion…"}
+                      </p>
+                    </div>
+                    {c.unread && (
+                      <span className="w-2.5 h-2.5 rounded-full bg-accent flex-shrink-0 shadow-sm animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
 
         {/* Thread */}
         <div
-          className={`flex flex-col ${!activeId ? "hidden md:flex" : "flex"}`}
+          className={`flex flex-col bg-bg-elevated ${!activeId ? "hidden md:flex" : "flex"}`}
         >
           {!activeConv ? (
-            <div className="flex-1 flex items-center justify-center text-ink-faint text-sm">
-              Sélectionnez une conversation
+            <div className="flex-1 flex flex-col items-center justify-center text-ink-faint text-sm p-8 bg-bg-sunken/5">
+              <MessageSquare size={36} className="text-ink-faint/30 mb-3" />
+              <span>Sélectionnez un artisan pour démarrer la discussion</span>
             </div>
           ) : (
             <>
               {/* Header */}
-              <div className="flex items-center gap-3 p-4 border-b border-border">
-                <button onClick={() => setActiveId(null)} className="md:hidden">
+              <div className="flex items-center gap-3 p-4 border-b border-border bg-bg-sunken/20">
+                <button 
+                  onClick={() => setActiveId(null)} 
+                  className="md:hidden p-1 rounded-full hover:bg-bg-sunken text-ink-soft"
+                >
                   <ArrowLeft size={18} />
                 </button>
-                <div className="w-8 h-8 rounded-full bg-[var(--color-accent-soft)] flex items-center justify-center text-xs font-bold text-[var(--color-accent)]">
-                  {activeConv.artisan_name?.charAt(0) || "?"}
+                <div className="w-9 h-9 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm">
+                  {activeConv.artisan_name?.charAt(0).toUpperCase() || "?"}
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">
+                  <p className="font-bold text-ink text-sm">
                     {activeConv.artisan_name || "Artisan"}
                   </p>
-                  <p className="text-[10px] text-ink-faint">Conversation</p>
+                  <p className="text-[10px] text-forest font-semibold uppercase tracking-wider">En ligne</p>
                 </div>
               </div>
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[400px]">
-                {activeConv.messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm ${m.sender_id === user.id ? "ml-auto bg-accent text-white rounded-br-md" : "mr-auto bg-bg-sunken rounded-bl-md"}`}
-                  >
-                    {m.content}
-                    <span className="block text-[10px] opacity-60 mt-1">
-                      {new Date(m.created_at).toLocaleTimeString("fr-FR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                ))}
+
+              {/* Messages Thread */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-[400px] min-h-[350px] bg-bg-sunken/5">
+                {activeConv.messages.map((m) => {
+                  const isMe = m.sender_id === user.id;
+                  return (
+                    <div
+                      key={m.id}
+                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                        isMe 
+                          ? "ml-auto bg-accent text-white rounded-br-none" 
+                          : "mr-auto bg-bg-elevated border border-border text-ink rounded-bl-none"
+                      }`}
+                    >
+                      <p className="leading-relaxed">{m.content}</p>
+                      <span className={`block text-[9px] mt-1 text-right font-medium ${isMe ? "text-white/70" : "text-ink-faint"}`}>
+                        {new Date(m.created_at).toLocaleTimeString("fr-FR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
+
               {/* Composer */}
-              <div className="flex items-center gap-2 p-4 border-t border-border">
+              <div className="flex items-center gap-3 p-4 border-t border-border bg-bg-elevated">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Écrire un message…"
-                  className="flex-1 px-4 py-2.5 rounded-full border border-border bg-bg-sunken text-sm focus:outline-none focus:border-accent"
+                  className="flex-1 px-4.5 py-3 rounded-full border border-border bg-bg text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all shadow-inner"
                 />
                 <button
                   onClick={handleSend}
-                  className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center hover:bg-[var(--color-accent-strong)] transition-colors"
+                  disabled={!newMessage.trim()}
+                  className="w-11 h-11 rounded-full bg-accent text-white flex items-center justify-center disabled:opacity-40 hover:bg-accent-strong shadow-md transition-all active:scale-95"
                 >
-                  <Send size={17} />
+                  <Send size={16} />
                 </button>
               </div>
             </>

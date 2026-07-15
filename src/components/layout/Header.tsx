@@ -69,38 +69,38 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-bg/90 backdrop-blur-md border-b border-border transition-transform duration-300 ${
+      className={`sticky top-0 z-50 bg-bg/80 backdrop-blur-md border-b border-border/50 transition-transform duration-300 ${
         headerHidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 h-[68px] flex items-center justify-between gap-6">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-[72px] flex items-center justify-between gap-6">
         <Logo />
 
         {/* Nav desktop */}
-        <nav className="hidden lg:flex items-center gap-8 text-sm font-medium text-ink-soft">
+        <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-ink-soft">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className={`relative transition-colors hover:text-[var(--color-ink)] ${
+              className={`relative py-2 transition-colors hover:text-ink ${
                 location.pathname === link.path ? "text-ink" : ""
               }`}
             >
               {link.label}
               {location.pathname === link.path && (
-                <span className="absolute left-0 right-0 -bottom-5 h-[2px] bg-accent" />
+                <span className="absolute left-0 right-0 bottom-0 h-[2.5px] rounded-full bg-accent animate-fade-in-up" />
               )}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Espace artisan */}
           <Link
             to="/dashboard"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[var(--color-border-strong)] text-sm font-semibold hover:border-accent hover:bg-[var(--color-accent-soft)] transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-full border border-border-strong text-xs font-bold hover:border-accent hover:bg-accent-soft hover:text-accent transition-all duration-200"
           >
-            <Plus size={16} />
+            <Plus size={15} />
             Espace artisan
           </Link>
 
@@ -120,7 +120,7 @@ export default function Header() {
               <span>{lang.short}</span>
             </button>
             {langOpen && (
-              <ul className="absolute right-0 top-full mt-2 min-w-[180px] bg-bg-elevated border border-border rounded-xl shadow-lg p-1 z-50">
+              <ul className="absolute right-0 top-full mt-2.5 min-w-[180px] bg-bg-elevated border border-border rounded-2xl shadow-md p-1.5 z-50 animate-fade-in-up">
                 {LANGUAGES.map((l) => (
                   <li
                     key={l.code}
@@ -128,20 +128,20 @@ export default function Header() {
                       setLang(l);
                       setLangOpen(false);
                     }}
-                    className={`flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-sm cursor-pointer hover:bg-bg-sunken transition-colors ${
-                      lang.code === l.code ? "font-semibold" : ""
+                    className={`flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-sm cursor-pointer hover:bg-bg-sunken transition-colors ${
+                      lang.code === l.code ? "font-semibold text-accent" : "text-ink-soft hover:text-ink"
                     }`}
                   >
                     <span className="flex items-center gap-2">
                       <img
                         src={l.flag}
                         alt=""
-                        className="w-[18px] h-[18px] rounded-full"
+                        className="w-[18px] h-[18px] rounded-full object-cover"
                       />
                       {l.name}
                     </span>
                     {lang.code === l.code && (
-                      <Check size={16} className="text-[var(--color-accent)]" />
+                      <Check size={14} className="text-accent" />
                     )}
                   </li>
                 ))}
@@ -154,54 +154,55 @@ export default function Header() {
             {user ? (
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="w-[38px] h-[38px] rounded-full bg-accent text-white font-bold text-sm flex items-center justify-center hover:opacity-85 transition-opacity"
+                className="w-10 h-10 rounded-full bg-accent text-white font-bold text-sm flex items-center justify-center hover:bg-accent-strong transition-colors"
               >
                 {initials}
               </button>
             ) : (
               <Link
                 to="/auth"
-                className="px-4 py-2 rounded-full border border-border text-sm font-medium hover:bg-bg-sunken transition-colors"
+                className="px-4.5 py-2 rounded-full border border-border hover:border-accent hover:bg-accent-soft text-sm font-semibold hover:text-accent transition-colors"
               >
                 Se connecter
               </Link>
             )}
             {profileOpen && (
-              <div className="absolute right-0 top-full mt-2 min-w-[200px] bg-bg-elevated border border-border rounded-xl shadow-lg p-1 z-50">
+              <div className="absolute right-0 top-full mt-2.5 min-w-[200px] bg-bg-elevated border border-border rounded-2xl shadow-md p-1.5 z-50 animate-fade-in-up">
                 <Link
                   to="/dashboard"
                   onClick={() => setProfileOpen(false)}
-                  className="block px-3 py-2 text-sm hover:bg-bg-sunken rounded-lg"
+                  className="block px-3.5 py-2 text-sm text-ink-soft hover:text-ink hover:bg-bg-sunken rounded-xl transition-colors"
                 >
                   Espace artisan
                 </Link>
                 <Link
                   to="/appointments"
                   onClick={() => setProfileOpen(false)}
-                  className="block px-3 py-2 text-sm hover:bg-bg-sunken rounded-lg"
+                  className="block px-3.5 py-2 text-sm text-ink-soft hover:text-ink hover:bg-bg-sunken rounded-xl transition-colors"
                 >
                   Mes rendez-vous
                 </Link>
                 <Link
                   to="/messages"
                   onClick={() => setProfileOpen(false)}
-                  className="block px-3 py-2 text-sm hover:bg-bg-sunken rounded-lg"
+                  className="block px-3.5 py-2 text-sm text-ink-soft hover:text-ink hover:bg-bg-sunken rounded-xl transition-colors"
                 >
                   Messagerie
                 </Link>
                 <Link
                   to="/favorites"
                   onClick={() => setProfileOpen(false)}
-                  className="block px-3 py-2 text-sm hover:bg-bg-sunken rounded-lg"
+                  className="block px-3.5 py-2 text-sm text-ink-soft hover:text-ink hover:bg-bg-sunken rounded-xl transition-colors"
                 >
                   Favoris
                 </Link>
+                <div className="my-1 border-t border-border/60" />
                 <button
                   onClick={() => {
                     signOut();
                     setProfileOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-bg-sunken rounded-lg"
+                  className="w-full text-left px-3.5 py-2 text-sm text-danger hover:bg-danger-soft rounded-xl transition-colors"
                 >
                   Se déconnecter
                 </button>

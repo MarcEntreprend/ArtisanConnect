@@ -14,20 +14,23 @@ export default function BottomNav() {
   const location = useLocation();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg/90 backdrop-blur-md border-t border-border">
-      <div className="flex items-center justify-around h-16">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg/85 backdrop-blur-lg border-t border-border/60 pb-safe">
+      <div className="flex items-center justify-around h-[62px]">
         {NAV_ITEMS.map((item) => {
           const active = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center gap-0.5 text-xs font-medium transition-colors ${
-                active ? "text-accent" : "text-ink-faint"
+              className={`relative flex flex-col items-center justify-center gap-0.5 w-16 h-full text-[10px] font-bold tracking-wide transition-all duration-200 ${
+                active ? "text-accent scale-105" : "text-ink-faint hover:text-ink"
               }`}
             >
-              <item.icon size={20} />
-              {item.label}
+              <item.icon size={20} className={active ? "stroke-[2.5px]" : "stroke-[2px]"} />
+              <span>{item.label}</span>
+              {active && (
+                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-accent animate-fade-in-up" />
+              )}
             </Link>
           );
         })}

@@ -12,11 +12,11 @@ export default function NotFound() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
-      <span className="font-mono text-7xl font-bold text-[var(--color-accent)]">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 animate-fade-in-up">
+      <span className="font-mono text-8xl font-extrabold text-accent/30">
         404
       </span>
-      <h1 className="text-2xl font-bold mt-4">
+      <h1 className="text-2xl font-extrabold mt-4 text-ink">
         Cette page a pris un jour de congé
       </h1>
       <p className="text-sm text-ink-soft mt-2 max-w-md">

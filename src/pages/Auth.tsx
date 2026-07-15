@@ -97,8 +97,8 @@ export default function Auth() {
       : "/";
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-110 bg-bg-elevated rounded-card p-10 shadow-lg border border-border relative">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 animate-fade-in-up">
+      <div className="w-full max-w-110 bg-bg-elevated rounded-3xl p-10 shadow-lg border border-border relative">
         {/* Flèche retour */}
         <Link
           to={backHref || "#"}
@@ -108,7 +108,7 @@ export default function Auth() {
               window.history.back();
             }
           }}
-          className="absolute top-5 left-5 w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-bg-sunken hover:text-ink transition-colors"
+          className="absolute top-5 left-5 w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-bg-sunken hover:text-ink transition-all active:scale-95"
         >
           <ArrowLeft size={20} />
         </Link>
@@ -153,7 +153,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="w-full mt-6 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-strong disabled:opacity-50 transition-all active:scale-[0.98] shadow-sm"
             >
               {loading ? "Connexion…" : "Connexion"}
             </button>
@@ -177,7 +177,7 @@ export default function Auth() {
             </p>
 
             {error && (
-              <p className="text-center text-sm text-red-500 mt-3">{error}</p>
+              <p className="text-center text-sm text-danger mt-3 font-medium">{error}</p>
             )}
           </form>
         )}
@@ -251,7 +251,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="w-full mt-6 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-strong disabled:opacity-50 transition-all active:scale-[0.98] shadow-sm"
             >
               {loading ? "Création…" : "S'inscrire"}
             </button>
@@ -267,7 +267,7 @@ export default function Auth() {
             </p>
 
             {error && (
-              <p className="text-center text-sm text-red-500 mt-3">{error}</p>
+              <p className="text-center text-sm text-danger mt-3 font-medium">{error}</p>
             )}
           </form>
         )}
@@ -296,7 +296,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="w-full mt-6 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-strong disabled:opacity-50 transition-all active:scale-[0.98] shadow-sm"
             >
               {loading ? "Envoi…" : "Envoyer le lien"}
             </button>
@@ -312,12 +312,12 @@ export default function Auth() {
             </p>
 
             {message && (
-              <p className="text-center text-sm text-green-600 mt-3">
+              <p className="text-center text-sm text-forest mt-3 font-medium">
                 {message}
               </p>
             )}
             {error && (
-              <p className="text-center text-sm text-red-500 mt-3">{error}</p>
+              <p className="text-center text-sm text-danger mt-3 font-medium">{error}</p>
             )}
           </form>
         )}

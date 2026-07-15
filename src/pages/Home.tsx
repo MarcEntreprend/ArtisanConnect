@@ -1,21 +1,9 @@
-// src/pages/Home.tsx — corrigé
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Star, MapPin, ArrowRight } from "lucide-react";
+import { Search, Star, MapPin, ArrowRight, Heart } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import type { Artisan, Category } from "../lib/types";
-
-const CATEGORIES: Category[] = [
-  { id: 1, slug: "menuiserie", label: "Menuiserie", icon: "🔨" },
-  { id: 2, slug: "electricite", label: "Électricité", icon: "⚡" },
-  { id: 3, slug: "plomberie", label: "Plomberie", icon: "🔧" },
-  { id: 4, slug: "maconnerie", label: "Maçonnerie", icon: "🧱" },
-  { id: 5, slug: "peinture", label: "Peinture", icon: "🎨" },
-  { id: 6, slug: "couture", label: "Couture", icon: "✂️" },
-  { id: 7, slug: "coiffure", label: "Coiffure", icon: "💇" },
-  { id: 8, slug: "mecanique", label: "Mécanique auto", icon: "🚗" },
-];
+import type { Artisan } from "../lib/types";
+import { CATEGORIES } from "../lib/constants";
 
 function formatPrice(amount: number | null, currency: string) {
   if (!amount) return "Devis gratuit";
@@ -28,62 +16,61 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
   return (
     <Link
       to={`/artisan/${artisan.id}`}
-      className="group bg-[var(--bg-elevated)] rounded-[var(--r-card)] border border-[var(--border)] overflow-hidden hover:shadow-[var(--shadow-lg)] transition-all duration-300"
+      className="artisan-card animate-fade-in-up"
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="artisan-card-media">
         <img
           src={artisan.avatar_url || ""}
           alt={artisan.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
         {artisan.available_today && (
-          <span className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/90 text-white text-xs font-medium backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            Disponible aujourd'hui
+          <span className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest text-white text-[10px] font-bold tracking-wide uppercase shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            Disponible
+          </span>
+        )}
+        {artisan.verified && (
+          <span className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-bg-elevated/90 text-forest text-[10px] font-extrabold tracking-wide uppercase border border-forest/20 backdrop-blur-sm shadow-sm">
+            Vérifié
           </span>
         )}
         <button
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--ink-soft)] hover:text-red-500 transition-colors"
+          className="absolute top-3 right-3 w-8.5 h-8.5 rounded-full bg-bg-elevated/80 backdrop-blur-sm flex items-center justify-center text-ink-soft hover:text-danger hover:bg-bg-elevated transition-all shadow-sm"
           onClick={(e) => {
             e.preventDefault();
           }}
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.6z" />
-          </svg>
+          <Heart size={15} />
         </button>
       </div>
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="font-semibold text-[var(--ink)] truncate">
-              {artisan.name}
-            </h3>
-            <p className="text-sm text-[var(--ink-soft)] mt-0.5">
-              {category?.label || "Artisan"} · {artisan.city || "—"}
-            </p>
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-accent">
+                {category?.label || "Artisan"}
+              </span>
+              <h3 className="font-bold text-ink text-base mt-0.5 truncate hover:text-accent transition-colors">
+                {artisan.name}
+              </h3>
+            </div>
+            <div className="flex items-center gap-1 text-sm font-semibold text-ochre flex-shrink-0 bg-ochre-soft px-2 py-0.5 rounded-lg">
+              <Star size={13} fill="currentColor" />
+              <span>{artisan.rating.toFixed(1)}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-sm font-medium text-[var(--star)] flex-shrink-0">
-            <Star size={14} fill="currentColor" />
-            {artisan.rating.toFixed(1)}
-            <span className="text-(--ink-faint) font-normal">
-              ({artisan.reviews_count})
-            </span>
-          </div>
+          <p className="text-xs text-ink-soft mt-2 flex items-center gap-1">
+            <MapPin size={12} className="text-ink-faint" />
+            <span>{artisan.city || "Haïti"}</span>
+          </p>
         </div>
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border)] text-xs text-(--ink-faint)">
-          <span className="flex items-center gap-1">
-            <MapPin size={12} />—
+
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/60 text-xs text-ink-soft">
+          <span className="text-ink-faint">
+            {artisan.reviews_count} avis clients
           </span>
-          <span className="font-mono font-medium text-(--ink)">
+          <span className="font-mono font-bold text-ink text-sm">
             {formatPrice(artisan.price_from, artisan.currency)}
           </span>
         </div>
@@ -118,60 +105,72 @@ export default function Home() {
         );
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="py-4 animate-fade-in-up">
       {/* Hero */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent)] mb-4">
-            <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent)]" />8
-            métiers, des centaines d'artisans vérifiés
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent-soft/80 via-bg-elevated/40 to-bg-sunken/40 border border-border/60 p-8 md:p-14 lg:p-20 mt-6 mb-12 shadow-sm">
+        <div className="absolute right-0 top-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-accent/5 blur-3xl" />
+        <div className="absolute left-1/3 bottom-0 -mb-20 w-96 h-96 rounded-full bg-forest-soft/40 blur-3xl" />
+
+        <div className="max-w-2xl relative z-10">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-soft text-xs font-bold text-forest mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
+            Haïti local · 8 métiers certifiés
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-(--ink)ing-tight">
-            Le bon artisan,{" "}
-            <em className="text-(--accent)italic">à côté de chez vous.</em>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-ink leading-[1.15]">
+            Le savoir-faire local, <br />
+            <span className="text-accent italic font-medium">à côté de chez vous.</span>
           </h1>
-          <p className="mt-4 text-lg text-(--ink-soft) leading-relaxed">
-            Comparez les profils, lisez les avis et réservez en ligne.
-            Menuisiers, électriciens, couturières et plus encore.
+          <p className="mt-4 text-base md:text-lg text-ink-soft leading-relaxed max-w-xl">
+            Trouvez des menuisiers, électriciens, couturières et artisans de confiance en Haïti.
+            Comparez les profils, lisez les avis authentiques et réservez en ligne.
           </p>
-          <div className="mt-6 relative max-w-xl">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-(--ink-faint)"
-              size={20}
-            />
-            <input
-              type="search"
-              placeholder="Un électricien à Dakar, une couturière à Lomé…"
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-(--border) bg-(--bg-elevated) text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-shadow"
-            />
+          <div className="mt-8 flex flex-col sm:flex-row gap-2.5 max-w-lg">
+            <div className="relative flex-1">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint"
+                size={18}
+              />
+              <input
+                type="search"
+                placeholder="Un électricien à Pétion-Ville, une couturière à Jacmel…"
+                className="w-full pl-11 pr-4 py-3.5 rounded-full border border-border bg-bg-elevated text-sm text-ink placeholder-ink-faint focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all shadow-sm"
+              />
+            </div>
+            <button className="btn btn-primary px-6 py-3.5 text-sm shadow-md">
+              Rechercher
+            </button>
           </div>
         </div>
       </section>
 
       {/* Catégories */}
-      <section className="pb-8">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <section className="pb-10">
+        <h3 className="text-xs font-extrabold uppercase tracking-widest text-ink-faint mb-4">
+          Filtrer par métier
+        </h3>
+        <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide">
           <button
             onClick={() => setSelectedCategory("all")}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
               selectedCategory === "all"
-                ? "bg-[var(--accent)] text-white"
-                : "bg-(--bg-sunken) text-[var(--ink-soft)] hover:bg-[var(--border)]"
+                ? "bg-accent border-accent text-white shadow-sm"
+                : "bg-bg-elevated border-border text-ink-soft hover:border-border-strong hover:bg-bg-sunken"
             }`}
           >
-            ⭐ Tous les métiers
+            🌟 Tous les métiers
           </button>
           {CATEGORIES.map((cat) => (
             <button
               key={cat.slug}
               onClick={() => setSelectedCategory(cat.slug)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
                 selectedCategory === cat.slug
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-(--bg-sunken) text-[var(--ink-soft)] hover:bg-(--border)"
+                  ? "bg-accent border-accent text-white shadow-sm"
+                  : "bg-bg-elevated border-border text-ink-soft hover:border-border-strong hover:bg-bg-sunken"
               }`}
             >
-              {cat.icon} {cat.label}
+              <span className="text-base">{cat.icon}</span>
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
@@ -179,17 +178,16 @@ export default function Home() {
 
       {/* Grille artisans */}
       <section className="py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-(--ink)">Près de vous</h2>
-            <p className="text-sm text-(--ink-faint) mt-1">
-              {filtered.length} artisan{filtered.length > 1 ? "s" : ""}{" "}
-              disponible{filtered.length > 1 ? "s" : ""}
+            <h2 className="text-2xl font-bold text-ink">Près de vous</h2>
+            <p className="text-sm text-ink-faint mt-1">
+              {filtered.length} artisan{filtered.length > 1 ? "s" : ""} disponible{filtered.length > 1 ? "s" : ""}
             </p>
           </div>
           <Link
             to="/search"
-            className="flex items-center gap-1 text-sm font-medium text-[var(--accent)] hover:underline"
+            className="flex items-center gap-1 text-sm font-bold text-accent hover:text-accent-strong transition-colors"
           >
             Voir tout <ArrowRight size={15} />
           </Link>
@@ -200,12 +198,12 @@ export default function Home() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-[var(--r-card)] border border-[var(--border)] animate-pulse"
+                className="rounded-card border border-border bg-bg-elevated animate-pulse"
               >
-                <div className="aspect-[4/3] bg-(--bg-sunken)" />
-                <div className="p-4 space-y-3">
-                  <div className="h-4 bg-(--bg-sunken) rounded w-3/4" />
-                  <div className="h-3 bg-(--bg-sunken) rounded w-1/2" />
+                <div className="aspect-[4/3] bg-bg-sunken rounded-t-card" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-bg-sunken rounded w-3/4" />
+                  <div className="h-3 bg-bg-sunken rounded w-1/2" />
                 </div>
               </div>
             ))}

@@ -1,36 +1,42 @@
 @import "tailwindcss";
 
 /* ============================================================
-   DESIGN SYSTEM "TERRAIN" — variables CSS (noms historiques)
-   Ces noms sont utilisés par tous les composants React.
+   DESIGN SYSTEM "TERRAIN & ATELIER" — variables CSS
    ============================================================ */
 :root {
-  --bg: #faf9f6;
+  --bg: #FAF7F2;
   --bg-elevated: #ffffff;
-  --bg-sunken: #f1efe9;
-  --ink: #1c1c1a;
-  --ink-soft: #55534c;
-  --ink-faint: #8c8a80;
-  --border: #e6e3da;
-  --border-strong: #d3cfc2;
+  --bg-sunken: #F2ECE2;
+  --ink: #1F1A17;
+  --ink-soft: #5E524A;
+  --ink-faint: #968A80;
+  --border: #EBE3DA;
+  --border-strong: #D5C8B9;
 
-  --accent: #2f6b4f;
-  --accent-strong: #24523c;
-  --accent-soft: #e6efe8;
+  --accent: #C85A32;
+  --accent-strong: #A84622;
+  --accent-soft: #FDF2EE;
   --accent-ink: #ffffff;
 
-  --star: #d99a2b;
-  --danger: #c1432f;
-  --danger-soft: #fbe9e5;
+  --forest: #2D5C45;
+  --forest-strong: #204231;
+  --forest-soft: #EBF3EF;
 
-  --r-card: 20px;
-  --r-input: 12px;
+  --ochre: #D98C2B;
+  --ochre-soft: #FAF3E8;
+
+  --star: #D98C2B;
+  --danger: #C94A29;
+  --danger-soft: #FDF1EE;
+
+  --r-card: 24px;
+  --r-input: 14px;
   --r-pill: 999px;
-  --r-sm: 10px;
+  --r-sm: 12px;
 
-  --shadow-sm: 0 1px 2px rgba(28, 28, 26, 0.06);
-  --shadow-md: 0 8px 24px -8px rgba(36, 82, 60, 0.18);
-  --shadow-lg: 0 24px 48px -16px rgba(36, 82, 60, 0.24);
+  --shadow-sm: 0 2px 4px rgba(31, 26, 23, 0.03);
+  --shadow-md: 0 12px 32px -8px rgba(92, 82, 75, 0.12);
+  --shadow-lg: 0 24px 60px -12px rgba(92, 82, 75, 0.16);
 
   --font-sans:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -52,6 +58,11 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
   --color-accent-ink: var(--accent-ink);
+  --color-forest: var(--forest);
+  --color-forest-strong: var(--forest-strong);
+  --color-forest-soft: var(--forest-soft);
+  --color-ochre: var(--ochre);
+  --color-ochre-soft: var(--ochre-soft);
   --color-star: var(--star);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
@@ -67,27 +78,34 @@
 
 /* Mode sombre */
 .dark {
-  --bg: #14140f;
-  --bg-elevated: #1c1c17;
-  --bg-sunken: #201f1a;
-  --ink: #f2f1ea;
-  --ink-soft: #b8b6ab;
-  --ink-faint: #7d7b70;
-  --border: #302f28;
-  --border-strong: #423f34;
+  --bg: #151210;
+  --bg-elevated: #1F1B19;
+  --bg-sunken: #181513;
+  --ink: #F7F3EF;
+  --ink-soft: #C2B3A9;
+  --ink-faint: #8F8076;
+  --border: #2E2521;
+  --border-strong: #453A33;
 
-  --accent: #4c9873;
-  --accent-strong: #3c7e5e;
-  --accent-soft: #1c2e24;
-  --accent-ink: #0d1610;
+  --accent: #E27453;
+  --accent-strong: #EB8F70;
+  --accent-soft: #301B14;
+  --accent-ink: #151210;
 
-  --star: #e0ac4a;
-  --danger: #e2604a;
-  --danger-soft: #2c1917;
+  --forest: #4EA37E;
+  --forest-strong: #64BA95;
+  --forest-soft: #172D23;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.55);
+  --ochre: #E0AB43;
+  --ochre-soft: #2E2211;
+
+  --star: #E0AB43;
+  --danger: #EB604D;
+  --danger-soft: #301715;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, 0.7);
 
   color-scheme: dark;
 }
@@ -219,4 +237,97 @@ select {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ============================================================
+   BOUTONS & COMPOSANTS REFONDUS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--r-pill);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(200, 90, 50, 0.2);
+}
+.btn-outline {
+  border: 1px solid var(--border-strong);
+  color: var(--ink-soft);
+  background: var(--bg-elevated);
+}
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  color: var(--ink-soft);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-sunken);
+  color: var(--ink);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animations et micro-interactions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.artisan-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border-radius: var(--r-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.artisan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
+.artisan-card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.artisan-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.artisan-card:hover .artisan-card-media img {
+  transform: scale(1.05);
 }
