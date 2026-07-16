@@ -115,7 +115,7 @@ export default function Header() {
                 >
                   {link.label}
                   {active && (
-                    <span className="absolute left-0 right-0 -bottom-[20px] h-[2px] bg-(--accent)" />
+                    <span className="absolute left-0 right-0 -bottom-5 h-0.5 bg-(--accent)" />
                   )}
                 </Link>
               );
@@ -147,12 +147,12 @@ export default function Header() {
                 <img
                   src={lang.flag}
                   alt=""
-                  className="w-[18px] h-[18px] rounded-full object-cover"
+                  className="w-4.5 h-4.5 rounded-full object-cover"
                 />
                 <span>{lang.short}</span>
               </button>
               {langOpen && (
-                <ul className="absolute right-0 top-full mt-[10px] min-w-[180px] bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-[0.4rem] z-50">
+                <ul className="absolute right-0 top-full mt-2.5 min-w-45 bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-[0.4rem] z-50">
                   {LANGUAGES.map((l) => (
                     <li
                       key={l.code}
@@ -168,7 +168,7 @@ export default function Header() {
                         <img
                           src={l.flag}
                           alt=""
-                          className="w-[18px] h-[18px] rounded-full"
+                          className="w-4.5 h-4.5 rounded-full"
                         />
                         {l.name}
                       </span>
@@ -202,7 +202,7 @@ export default function Header() {
                 </Link>
               )}
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-[10px] min-w-[220px] bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-[0.5rem] z-50">
+                <div className="absolute right-0 top-full mt-2.5 min-w-55 bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-2 z-50">
                   {[
                     { to: "/dashboard", label: "Espace artisan" },
                     { to: "/appointments", label: "Mes rendez-vous" },

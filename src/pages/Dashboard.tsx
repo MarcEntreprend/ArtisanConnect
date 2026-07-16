@@ -51,16 +51,16 @@ const NAV_ITEMS: {
   label: string;
   icon: React.FC<{ size?: number }>;
 }[] = [
-    { key: "tableau", label: "Tableau de bord", icon: Home },
-    { key: "rendezvous", label: "Rendez-vous", icon: Calendar },
-    { key: "services", label: "Services", icon: Wrench },
-    { key: "vitrine", label: "Votre vitrine", icon: User },
-    { key: "dispo", label: "Disponibilités", icon: Clock },
-    { key: "stats", label: "Statistiques", icon: ChartLine },
-    { key: "avis", label: "Avis", icon: Star },
-    { key: "messages", label: "Messages", icon: MessageCircle },
-    { key: "paiement", label: "Paiement", icon: CreditCard },
-  ];
+  { key: "tableau", label: "Tableau de bord", icon: Home },
+  { key: "rendezvous", label: "Rendez-vous", icon: Calendar },
+  { key: "services", label: "Services", icon: Wrench },
+  { key: "vitrine", label: "Votre vitrine", icon: User },
+  { key: "dispo", label: "Disponibilités", icon: Clock },
+  { key: "stats", label: "Statistiques", icon: ChartLine },
+  { key: "avis", label: "Avis", icon: Star },
+  { key: "messages", label: "Messages", icon: MessageCircle },
+  { key: "paiement", label: "Paiement", icon: CreditCard },
+];
 
 const COMPLETE_NAV: typeof NAV_ITEMS = [
   ...NAV_ITEMS,
@@ -103,7 +103,10 @@ export default function Dashboard() {
 
   // ---- Load all data ----
   const loadAll = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     const { data: art } = await supabase
       .from("artisans")
       .select("*")
@@ -116,7 +119,8 @@ export default function Dashboard() {
     setArtisan(art as Artisan);
     setIsTeam(art.is_team);
     setPhotoUrl(art.avatar_url || null);
-    const [svc, hrs, appts, revs, tm, pays, paySet] = await Promise.all([
+
+    const [svc, hrs, appts, revs, tm, paySet] = await Promise.all([
       supabase
         .from("services")
         .select("*")
@@ -139,29 +143,23 @@ export default function Dashboard() {
         .order("created_at", { ascending: false }),
       art.is_team
         ? supabase
-          .from("teams")
-          .select("*, team_members(*)")
-          .eq("artisan_id", art.id)
-          .maybeSingle()
+            .from("teams")
+            .select("*, team_members(*)")
+            .eq("artisan_id", art.id)
+            .maybeSingle()
         : Promise.resolve({ data: null }),
-      supabase
-        .from("payouts")
-        .select("*")
-        .eq("artisan_id", art.id)
-        .order("created_at", { ascending: false })
-        .then(({ data, error }) => (error ? { data: [] } : { data })),
       supabase
         .from("payment_settings")
         .select("*")
         .eq("artisan_id", art.id)
         .maybeSingle(),
     ]);
+
     setServices((svc.data || []) as Service[]);
     setHours((hrs.data || []) as ArtisanHours[]);
     setAppointments((appts.data || []) as Appointment[]);
     setReviews((revs.data || []) as Review[]);
     if (tm.data) setTeam(tm.data as unknown as Team);
-    setPayouts((pays.data || []) as Payout[]);
     if (paySet.data) {
       setOnlinePayment(paySet.data.online_payment);
       setDepositPercent(paySet.data.deposit_percent);
@@ -172,6 +170,19 @@ export default function Dashboard() {
   useEffect(() => {
     loadAll();
   }, [loadAll]);
+
+  useEffect(() => {
+    if (activePanel === "finances" && artisan) {
+      supabase
+        .from("payouts")
+        .select("*")
+        .eq("artisan_id", artisan.id)
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) setPayouts(data as Payout[]);
+        });
+    }
+  }, [activePanel, artisan]);
 
   // ---- Services CRUD ----
   async function addService() {
@@ -292,9 +303,12 @@ export default function Dashboard() {
         <div className="w-16 h-16 rounded-full bg-accent-soft text-accent flex items-center justify-center mx-auto mb-6">
           <Wrench size={32} />
         </div>
-        <h2 className="text-2xl font-bold mb-2 text-ink">Aucun profil artisan trouvé</h2>
+        <h2 className="text-2xl font-bold mb-2 text-ink">
+          Aucun profil artisan trouvé
+        </h2>
         <p className="text-sm text-ink-soft mb-6 max-w-sm mx-auto leading-relaxed">
-          Complétez votre inscription pour créer votre espace professionnel et commencer à recevoir des clients.
+          Complétez votre inscription pour créer votre espace professionnel et
+          commencer à recevoir des clients.
         </p>
         <button
           onClick={() => navigate("/onboarding")}
@@ -344,7 +358,9 @@ export default function Dashboard() {
                   <p className="text-[10px] text-ink-faint font-extrabold uppercase tracking-wider">
                     {s.label}
                   </p>
-                  <p className="text-2xl font-bold font-mono mt-2 text-ink">{s.value}</p>
+                  <p className="text-2xl font-bold font-mono mt-2 text-ink">
+                    {s.value}
+                  </p>
                   {s.sub && (
                     <p className="text-xs text-ink-soft mt-1">{s.sub}</p>
                   )}
@@ -353,14 +369,18 @@ export default function Dashboard() {
             </div>
             {upcomingAppts.length > 0 && (
               <div className="bg-bg-elevated border border-border rounded-2xl p-5">
-                <h3 className="font-bold text-ink mb-4">Prochains rendez-vous</h3>
+                <h3 className="font-bold text-ink mb-4">
+                  Prochains rendez-vous
+                </h3>
                 <div className="divide-y divide-border/60">
                   {upcomingAppts.slice(0, 5).map((a) => (
                     <div
                       key={a.id}
                       className="flex items-center justify-between py-3 text-sm"
                     >
-                      <span className="font-semibold text-ink">{a.service_name}</span>
+                      <span className="font-semibold text-ink">
+                        {a.service_name}
+                      </span>
                       <span className="font-mono text-xs text-ink-faint bg-bg-sunken px-2.5 py-1 rounded-lg">
                         {a.appointment_date} · {a.appointment_time?.slice(0, 5)}
                       </span>
@@ -1008,7 +1028,9 @@ export default function Dashboard() {
               </div>
             )}
             <div className="min-w-0">
-              <p className="font-bold text-sm text-ink truncate">{artisan?.name}</p>
+              <p className="font-bold text-sm text-ink truncate">
+                {artisan?.name}
+              </p>
               <p className="text-xs text-ink-faint">{artisan?.city}</p>
             </div>
           </div>

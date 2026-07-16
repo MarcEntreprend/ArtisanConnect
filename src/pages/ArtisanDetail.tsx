@@ -1,3 +1,4 @@
+// src\pages\ArtisanDetail.tsx
 import { useParams, Link } from "react-router-dom";
 import { useArtisan } from "../hooks/useArtisans";
 import { useState } from "react";
@@ -16,7 +17,10 @@ import {
 import { CATEGORIES } from "../lib/constants";
 
 // Mapping des icônes d’amenities
-const amenityIcons: Record<string, React.FC<{ size?: number; className?: string }>> = {
+const amenityIcons: Record<
+  string,
+  React.FC<{ size?: number; className?: string }>
+> = {
   wifi: Wifi,
   parking: ParkingCircle,
   accessibility: Accessibility,
@@ -41,7 +45,7 @@ export default function ArtisanDetail() {
           serviceName: serviceName || "Consultation générale",
           depositPercent: 0,
         },
-      })
+      }),
     );
   };
 
@@ -92,7 +96,10 @@ export default function ArtisanDetail() {
           {/* Hero */}
           <div className="flex flex-col sm:flex-row items-start gap-5 mb-8">
             <img
-              src={artisan.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
+              src={
+                artisan.avatar_url ||
+                "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"
+              }
               alt={artisan.name}
               className="w-24 h-24 rounded-3xl object-cover border-4 border-bg-elevated shadow-md shrink-0"
             />
@@ -104,13 +111,18 @@ export default function ArtisanDetail() {
                       {artisan.name}
                     </h1>
                     {artisan.verified && (
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-forest-soft text-forest text-[11px] font-bold shadow-sm" title="Profil vérifié">
+                      <span
+                        className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-forest-soft text-forest text-[11px] font-bold shadow-sm"
+                        title="Profil vérifié"
+                      >
                         ✓
                       </span>
                     )}
                   </div>
                   <p className="text-sm font-semibold text-accent mt-0.5">
-                    {CATEGORIES.find((c) => c.id === artisan.category_id)?.label ?? "Artisan"} · {artisan.city}
+                    {CATEGORIES.find((c) => c.id === artisan.category_id)
+                      ?.label ?? "Artisan"}{" "}
+                    · {artisan.city}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -130,12 +142,16 @@ export default function ArtisanDetail() {
 
               <div className="flex flex-wrap items-center gap-1.5 text-sm text-ink-soft mt-3">
                 <span className="flex items-center gap-1 font-semibold text-ochre bg-ochre-soft px-2.5 py-0.5 rounded-lg">
-                  <Star size={13} fill="currentColor" /> {artisan.rating.toFixed(1)}
+                  <Star size={13} fill="currentColor" />{" "}
+                  {artisan.rating.toFixed(1)}
                 </span>
-                <span className="text-ink-faint">({artisan.reviews_count} avis clients)</span>
+                <span className="text-ink-faint">
+                  ({artisan.reviews_count} avis clients)
+                </span>
                 <span className="text-border-strong mx-1.5">·</span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} className="text-ink-faint" /> {artisan.city || "Haïti"}
+                  <MapPin size={14} className="text-ink-faint" />{" "}
+                  {artisan.city || "Haïti"}
                 </span>
               </div>
             </div>
@@ -158,10 +174,11 @@ export default function ArtisanDetail() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-3.5 text-sm font-bold transition-all border-b-2 whitespace-nowrap ${activeTab === tab
-                  ? "text-ink border-accent"
-                  : "text-ink-faint border-transparent hover:text-ink"
-                  }`}
+                className={`pb-3.5 text-sm font-bold transition-all border-b-2 whitespace-nowrap ${
+                  activeTab === tab
+                    ? "text-ink border-accent"
+                    : "text-ink-faint border-transparent hover:text-ink"
+                }`}
               >
                 {tab === "services"
                   ? "Services & Tarifs"
@@ -176,27 +193,38 @@ export default function ArtisanDetail() {
           {activeTab === "services" && (
             <div className="space-y-10">
               <div>
-                <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider mb-3">Description</h2>
+                <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider mb-3">
+                  Description
+                </h2>
                 <p className="text-ink-soft leading-relaxed max-w-prose">
-                  {artisan.description || "Aucune description fournie par l'artisan."}
+                  {artisan.description ||
+                    "Aucune description fournie par l'artisan."}
                 </p>
               </div>
 
               {/* Amenities */}
               <div>
-                <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider mb-4">Commodités de l'atelier</h2>
+                <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider mb-4">
+                  Commodités de l'atelier
+                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {Object.entries(amenityIcons).map(([key, Icon]) => {
                     const available = (artisan as any)[key] ?? false;
                     return (
                       <div
                         key={key}
-                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border text-center transition-all ${available
-                          ? "border-border bg-bg-elevated text-ink-soft shadow-sm"
-                          : "border-border/30 opacity-40 bg-bg-sunken/10 line-through text-ink-faint"
-                          }`}
+                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border text-center transition-all ${
+                          available
+                            ? "border-border bg-bg-elevated text-ink-soft shadow-sm"
+                            : "border-border/30 opacity-40 bg-bg-sunken/10 line-through text-ink-faint"
+                        }`}
                       >
-                        <Icon size={24} className={available ? "text-accent" : "text-ink-faint"} />
+                        <Icon
+                          size={24}
+                          className={
+                            available ? "text-accent" : "text-ink-faint"
+                          }
+                        />
                         <span className="text-xs font-semibold mt-2.5">
                           {key === "kids"
                             ? "Enfants bienvenus"
@@ -214,9 +242,13 @@ export default function ArtisanDetail() {
 
               {/* Services list */}
               <div>
-                <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider mb-4">Services proposés</h2>
+                <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider mb-4">
+                  Services proposés
+                </h2>
                 {services.length === 0 ? (
-                  <p className="text-sm text-ink-faint italic py-4">Aucun service spécifique renseigné pour le moment.</p>
+                  <p className="text-sm text-ink-faint italic py-4">
+                    Aucun service spécifique renseigné pour le moment.
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {services.map((s) => (
@@ -226,18 +258,29 @@ export default function ArtisanDetail() {
                       >
                         <div className="flex items-start gap-4">
                           <img
-                            src={s.image_url || artisan.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
+                            src={
+                              s.image_url ||
+                              artisan.avatar_url ||
+                              "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"
+                            }
                             alt=""
                             className="w-16 h-16 rounded-2xl object-cover shrink-0 border border-border/50"
                           />
                           <div className="min-w-0">
-                            <h3 className="font-bold text-ink text-base">{s.name}</h3>
+                            <h3 className="font-bold text-ink text-base">
+                              {s.name}
+                            </h3>
                             <p className="text-xs text-ink-soft mt-1 leading-relaxed max-w-md">
-                              {s.description || "Aucune description supplémentaire."}
+                              {s.description ||
+                                "Aucune description supplémentaire."}
                             </p>
                             <div className="flex items-center gap-3 mt-2 text-xs text-ink-faint">
                               <span className="flex items-center gap-1 font-mono font-bold text-accent">
-                                {s.price ? s.price.toLocaleString("fr-FR") + " " + artisan.currency : "Devis gratuit"}
+                                {s.price
+                                  ? s.price.toLocaleString("fr-FR") +
+                                    " " +
+                                    artisan.currency
+                                  : "Devis gratuit"}
                               </span>
                               <span>·</span>
                               <span className="flex items-center gap-1">
@@ -262,7 +305,9 @@ export default function ArtisanDetail() {
 
           {activeTab === "about" && (
             <div className="bg-bg-elevated border border-border rounded-3xl p-6 shadow-sm space-y-4">
-              <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider">À propos de {artisan.name}</h2>
+              <h2 className="font-extrabold text-sm text-ink uppercase tracking-wider">
+                À propos de {artisan.name}
+              </h2>
               <p className="text-ink-soft leading-relaxed max-w-prose">
                 {artisan.description || "Aucune description disponible."}
               </p>
@@ -274,7 +319,8 @@ export default function ArtisanDetail() {
               <Star size={36} className="text-ochre/40 mx-auto mb-3" />
               <h3 className="font-bold text-lg text-ink">Avis des clients</h3>
               <p className="text-sm text-ink-soft mt-1 max-w-md mx-auto leading-relaxed">
-                Les avis détaillés et notes laissés par les clients ayant réservé sur ArtisanConnect s'afficheront ici.
+                Les avis détaillés et notes laissés par les clients ayant
+                réservé sur ArtisanConnect s'afficheront ici.
               </p>
             </div>
           )}
@@ -284,27 +330,39 @@ export default function ArtisanDetail() {
         <aside className="bg-bg-elevated border border-border rounded-3xl shadow-sm p-6 space-y-6 self-start">
           {/* Location */}
           <div>
-            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-2">Localisation</h3>
+            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-2">
+              Localisation
+            </h3>
             <p className="text-sm text-ink-soft flex items-start gap-1.5 leading-relaxed">
               <MapPin size={16} className="text-ink-faint shrink-0 mt-0.5" />
-              <span>{artisan.address || "Adresse non spécifiée, " + artisan.city}</span>
+              <span>
+                {artisan.address || "Adresse non spécifiée, " + artisan.city}
+              </span>
             </p>
           </div>
 
           {/* Hours */}
           <div className="border-t border-border/60 pt-6">
-            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-3">Horaires d'ouverture</h3>
+            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-3">
+              Horaires d'ouverture
+            </h3>
             <div className="space-y-2">
               {hours.length === 0 ? (
-                <p className="text-xs text-ink-faint italic">Horaires non disponibles.</p>
+                <p className="text-xs text-ink-faint italic">
+                  Horaires non disponibles.
+                </p>
               ) : (
                 hours.map((h) => (
                   <div
                     key={h.day_index}
                     className="flex items-center justify-between text-xs py-0.5"
                   >
-                    <span className="font-semibold text-ink-soft">{h.day_label}</span>
-                    <span className={`font-mono ${h.is_open ? "text-forest font-semibold" : "text-ink-faint"}`}>
+                    <span className="font-semibold text-ink-soft">
+                      {h.day_label}
+                    </span>
+                    <span
+                      className={`font-mono ${h.is_open ? "text-forest font-semibold" : "text-ink-faint"}`}
+                    >
                       {h.is_open
                         ? `${h.opens_at?.slice(0, 5)} - ${h.closes_at?.slice(0, 5)}`
                         : "Fermé"}
@@ -317,22 +375,28 @@ export default function ArtisanDetail() {
 
           {/* Payment */}
           <div className="border-t border-border/60 pt-6">
-            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-3">Moyens de paiement</h3>
+            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-3">
+              Moyens de paiement
+            </h3>
             <div className="flex flex-wrap gap-1.5">
-              {["Espèces", "Mobile Money (MonCash)", "Virement bancaire"].map((m) => (
-                <span
-                  key={m}
-                  className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-bg-sunken text-ink-soft border border-border/40"
-                >
-                  {m}
-                </span>
-              ))}
+              {["Espèces", "Mobile Money (MonCash)", "Virement bancaire"].map(
+                (m) => (
+                  <span
+                    key={m}
+                    className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-bg-sunken text-ink-soft border border-border/40"
+                  >
+                    {m}
+                  </span>
+                ),
+              )}
             </div>
           </div>
 
           {/* Contact */}
           <div className="border-t border-border/60 pt-6">
-            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-3">Contact direct</h3>
+            <h3 className="font-extrabold text-xs text-ink uppercase tracking-wider mb-3">
+              Contact direct
+            </h3>
             <a
               href={`tel:${artisan.phone || ""}`}
               className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-accent-soft text-accent hover:bg-accent hover:text-white transition-all font-bold text-xs uppercase tracking-wider"

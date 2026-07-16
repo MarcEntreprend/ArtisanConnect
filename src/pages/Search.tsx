@@ -1,4 +1,6 @@
-﻿import { useState, useEffect, useMemo } from "react";
+﻿// src\pages\Search.tsx
+
+import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search as SearchIcon, Star, MapPin, Heart } from "lucide-react";
 import { supabase } from "../lib/supabase";

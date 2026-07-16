@@ -327,8 +327,13 @@ select {
   transform: translateX(16px);
 }
 .switch-lg {
+  position: relative;
+  display: inline-block;
   width: 48px;
   height: 27px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--r-pill);
 }
 .switch-lg .switch-track::before {
   width: 21px;

@@ -1,4 +1,6 @@
-﻿import { useState, useEffect } from "react";
+﻿// src\pages\Messages.tsx
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -29,7 +31,7 @@ export default function Messages() {
     supabase
       .from("conversations")
       .select("*")
-      .or(`client_id.eq.${user.id},artisan_id.eq.${user.id}`)
+      .or(`client_id.eq.${user.id}`)
       .order("last_message_at", { ascending: false })
       .then(async ({ data, error }) => {
         if (!error && data) {
@@ -87,7 +89,8 @@ export default function Messages() {
           Connectez-vous pour accéder à vos messages
         </h2>
         <p className="text-sm text-ink-soft mb-6 max-w-sm mx-auto leading-relaxed">
-          Échangez en temps réel avec vos artisans et suivez vos chantiers ou commandes en cours.
+          Échangez en temps réel avec vos artisans et suivez vos chantiers ou
+          commandes en cours.
         </p>
         <Link to="/auth" className="btn btn-primary px-8">
           Se connecter
@@ -107,11 +110,14 @@ export default function Messages() {
       <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] border border-border bg-bg-elevated rounded-3xl overflow-hidden mt-8 shadow-sm min-h-137.5">
         {/* Conversation list */}
         <div
-          className={`border-r border-border overflow-y-auto max-h-150 bg-bg-elevated/40 ${activeId ? "hidden md:block" : "block"
-            }`}
+          className={`border-r border-border overflow-y-auto max-h-150 bg-bg-elevated/40 ${
+            activeId ? "hidden md:block" : "block"
+          }`}
         >
           {loading ? (
-            <div className="p-8 text-center text-ink-faint animate-pulse">Chargement…</div>
+            <div className="p-8 text-center text-ink-faint animate-pulse">
+              Chargement…
+            </div>
           ) : conversations.length === 0 ? (
             <div className="p-8 text-center text-ink-faint italic">
               Aucune conversation pour le moment.
@@ -125,27 +131,37 @@ export default function Messages() {
                   <button
                     key={c.id}
                     onClick={() => setActiveId(c.id)}
-                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${active ? "bg-accent-soft text-accent" : "hover:bg-bg-sunken/40"
-                      }`}
+                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${
+                      active
+                        ? "bg-accent-soft text-accent"
+                        : "hover:bg-bg-sunken/40"
+                    }`}
                   >
                     <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm shrink-0">
                       {c.artisan_name?.charAt(0).toUpperCase() || "?"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <span className={`font-bold text-sm ${active ? "text-accent-strong" : "text-ink"}`}>
+                        <span
+                          className={`font-bold text-sm ${active ? "text-accent-strong" : "text-ink"}`}
+                        >
                           {c.artisan_name || "Artisan"}
                         </span>
                         <span className="text-[10px] text-ink-faint">
                           {lastMsg
-                            ? new Date(lastMsg.created_at).toLocaleTimeString("fr-FR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                            ? new Date(lastMsg.created_at).toLocaleTimeString(
+                                "fr-FR",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                             : ""}
                         </span>
                       </div>
-                      <p className={`text-xs truncate mt-0.5 ${active ? "text-accent-strong/80" : "text-ink-soft"}`}>
+                      <p
+                        className={`text-xs truncate mt-0.5 ${active ? "text-accent-strong/80" : "text-ink-soft"}`}
+                      >
                         {lastMsg ? lastMsg.content : "Commencer la discussion…"}
                       </p>
                     </div>
@@ -185,7 +201,9 @@ export default function Messages() {
                   <p className="font-bold text-ink text-sm">
                     {activeConv.artisan_name || "Artisan"}
                   </p>
-                  <p className="text-[10px] text-forest font-semibold uppercase tracking-wider">En ligne</p>
+                  <p className="text-[10px] text-forest font-semibold uppercase tracking-wider">
+                    En ligne
+                  </p>
                 </div>
               </div>
 
@@ -196,13 +214,16 @@ export default function Messages() {
                   return (
                     <div
                       key={m.id}
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${isMe
+                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                        isMe
                           ? "ml-auto bg-accent text-white rounded-br-none"
                           : "mr-auto bg-bg-elevated border border-border text-ink rounded-bl-none"
-                        }`}
+                      }`}
                     >
                       <p className="leading-relaxed">{m.content}</p>
-                      <span className={`block text-[9px] mt-1 text-right font-medium ${isMe ? "text-white/70" : "text-ink-faint"}`}>
+                      <span
+                        className={`block text-[9px] mt-1 text-right font-medium ${isMe ? "text-white/70" : "text-ink-faint"}`}
+                      >
                         {new Date(m.created_at).toLocaleTimeString("fr-FR", {
                           hour: "2-digit",
                           minute: "2-digit",

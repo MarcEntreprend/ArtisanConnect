@@ -40,7 +40,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
         </button>
         {artisan.available_today && (
           <span className="absolute bottom-[0.65rem] left-[0.65rem] flex items-center gap-[0.35rem] px-[0.3rem] py-[0.6rem] rounded-full bg-[color-mix(in_srgb,var(--bg-elevated)_88%,transparent)] backdrop-blur-[6px] text-[0.7rem] font-semibold">
-            <span className="w-[6px] h-[6px] rounded-full bg-(--accent)" />
+            <span className="w-1.5 h-1.5 rounded-full bg-(--accent)" />
             Disponible aujourd'hui
           </span>
         )}
@@ -79,7 +79,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
 function SkeletonCard() {
   return (
     <div className="rounded-(--r-card) border border-(--border) bg-(--bg-elevated) overflow-hidden">
-      <div className="skeleton aspect-[4/3]" />
+      <div className="skeleton aspect-4/3" />
       <div className="p-4 space-y-3">
         <div className="skeleton h-3 w-3/4 rounded" />
         <div className="skeleton h-3 w-1/2 rounded" />
@@ -129,10 +129,10 @@ export default function Home() {
           {/* Texte */}
           <div>
             <span className="inline-flex items-center gap-[0.4rem] text-[0.78rem] font-semibold text-(--accent-strong) bg-(--accent-soft) px-[0.35rem] py-[0.8rem] rounded-full mb-[1.1rem]">
-              <span className="w-[13px] h-[13px] rounded-full bg-(--accent)" />
+              <span className="w-3.25 h-3.25 rounded-full bg-(--accent)" />
               8 métiers, des centaines d'artisans vérifiés
             </span>
-            <h1 className="text-[clamp(2.1rem,4.6vw,3.4rem)] font-extrabold tracking-[-0.025em] leading-[1.05] max-w-[15ch] text-(--ink)">
+            <h1 className="text-[clamp(2.1rem,4.6vw,3.4rem)] font-extrabold tracking-tight leading-[1.05] max-w-[15ch] text-(--ink)">
               Le bon artisan,{" "}
               <em className="italic text-(--accent)">
                 à côté de chez vous.
@@ -153,8 +153,8 @@ export default function Home() {
             </p>
 
             {/* Barre de recherche */}
-            <div className="mt-[1.75rem] max-w-[560px]">
-              <div className="flex items-center gap-[0.7rem] bg-(--bg-elevated) border-[1.5px] border-(--border) rounded-full py-[0.35rem] pl-[1.15rem] pr-[0.35rem] shadow-(--shadow-sm) focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_4px_var(--accent-soft)] transition-shadow">
+            <div className="mt-7 max-w-140">
+              <div className="flex items-center gap-[0.7rem] bg-(--bg-elevated) border-[1.5px] border-(--border) rounded-full py-[0.35rem] pl-[1.15rem] pr-[0.35rem] shadow-(--shadow-sm) focus-within:border-(--accent) focus-within:shadow-[0_0_0_4px_var(--accent-soft)] transition-shadow">
                 <Search
                   size={19}
                   className="text-(--ink-faint) shrink-0"
@@ -165,7 +165,7 @@ export default function Home() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   placeholder="Un électricien à Dakar, une couturière à Lomé…"
-                  className="flex-1 bg-transparent text-[0.95rem] py-[0.65rem] outline-none placeholder-[var(--ink-faint)]"
+                  className="flex-1 bg-transparent text-[0.95rem] py-[0.65rem] outline-none placeholder-(--ink-faint)"
                 />
                 <button
                   onClick={handleSearch}
@@ -179,24 +179,24 @@ export default function Home() {
 
           {/* Mosaïque */}
           <div className="hidden md:grid grid-cols-2 gap-4">
-            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) hover:-translate-y-[6px] transition-transform duration-400 relative">
+            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) hover:-translate-y-1.5 transition-transform duration-400 relative">
               <img
                 src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=500&h=500&fit=crop"
                 alt=""
                 className="w-full h-full object-cover"
               />
-              <span className="absolute bottom-3 left-3 bg-[color-mix(in_srgb,var(--bg-elevated)_88%,transparent)] backdrop-blur-[8px] px-[0.3rem] py-[0.65rem] rounded-full text-[0.72rem] font-semibold flex items-center gap-[0.3rem]">
+              <span className="absolute bottom-3 left-3 bg-[color-mix(in_srgb,var(--bg-elevated)_88%,transparent)] backdrop-blur-sm px-[0.3rem] py-[0.65rem] rounded-full text-[0.72rem] font-semibold flex items-center gap-[0.3rem]">
                 <Star size={12} fill="var(--star)" /> 4.9
               </span>
             </div>
-            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) mt-8 hover:-translate-y-[6px] transition-transform duration-400">
+            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) mt-8 hover:-translate-y-1.5 transition-transform duration-400">
               <img
                 src="https://images.unsplash.com/photo-1601058268499-e52658b8bb88?w=500&h=500&fit=crop"
                 alt=""
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) -mt-8 hover:-translate-y-[6px] transition-transform duration-400">
+            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) -mt-8 hover:-translate-y-1.5 transition-transform duration-400">
               <img
                 src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=500&h=500&fit=crop"
                 alt=""
@@ -214,7 +214,7 @@ export default function Home() {
             onClick={() => setSelectedCategory("all")}
             className={`flex items-center gap-[0.45rem] px-[0.6rem] py-[1.05rem] rounded-full border-[1.5px] text-[0.85rem] font-semibold whitespace-nowrap transition-all shrink-0 ${
               selectedCategory === "all"
-                ? "bg-[var(--ink)] border-[var(--ink)] text-[var(--bg)]"
+                ? "bg-(--ink) border-(--ink) text-(--bg)"
                 : "bg-(--bg-elevated) border-(--border) text-(--ink-soft) hover:border-(--border-strong)"
             }`}
           >
@@ -226,7 +226,7 @@ export default function Home() {
               onClick={() => setSelectedCategory(cat.slug)}
               className={`flex items-center gap-[0.45rem] px-[0.6rem] py-[1.05rem] rounded-full border-[1.5px] text-[0.85rem] font-semibold whitespace-nowrap transition-all shrink-0 ${
                 selectedCategory === cat.slug
-                  ? "bg-(--accent) border-[var(--accent)] text-(--accent-ink)"
+                  ? "bg-(--accent) border-(--accent) text-(--accent-ink)"
                   : "bg-(--bg-elevated) border-(--border) text-(--ink-soft) hover:border-(--border-strong)"
               }`}
             >
@@ -251,7 +251,7 @@ export default function Home() {
           </div>
           <Link
             to="/search"
-            className="flex items-center gap-[0.25rem] text-[0.85rem] font-semibold text-(--accent) hover:gap-[0.45rem] transition-all whitespace-nowrap"
+            className="flex items-center gap-1 text-[0.85rem] font-semibold text-(--accent) hover:gap-[0.45rem] transition-all whitespace-nowrap"
           >
             Voir tout <ArrowRight size={15} />
           </Link>
