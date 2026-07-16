@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -104,10 +104,10 @@ export default function Messages() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] border border-border bg-bg-elevated rounded-3xl overflow-hidden mt-8 shadow-sm min-h-[550px]">
+      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] border border-border bg-bg-elevated rounded-3xl overflow-hidden mt-8 shadow-sm min-h-137.5">
         {/* Conversation list */}
         <div
-          className={`border-r border-border overflow-y-auto max-h-[600px] bg-bg-elevated/40 ${activeId ? "hidden md:block" : "block"
+          className={`border-r border-border overflow-y-auto max-h-150 bg-bg-elevated/40 ${activeId ? "hidden md:block" : "block"
             }`}
         >
           {loading ? (
@@ -190,7 +190,7 @@ export default function Messages() {
               </div>
 
               {/* Messages Thread */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-[400px] min-h-[350px] bg-bg-sunken/5">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-100 min-h-87.5 bg-bg-sunken/5">
                 {activeConv.messages.map((m) => {
                   const isMe = m.sender_id === user.id;
                   return (

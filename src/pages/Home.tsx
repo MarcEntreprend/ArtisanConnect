@@ -1,4 +1,4 @@
-// src/pages/Home.tsx
+﻿// src/pages/Home.tsx
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,7 +29,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
         />
         <button
           className={`absolute top-[0.65rem] right-[0.65rem] w-9 h-9 rounded-full bg-[color-mix(in_srgb,var(--bg-elevated)_82%,transparent)] backdrop-blur-[6px] flex items-center justify-center transition-transform hover:scale-[1.08] ${
-            fav ? "text-[var(--danger)]" : "text-[var(--ink)]"
+            fav ? "text-(--danger)" : "text-(--ink)"
           }`}
           onClick={(e) => {
             e.preventDefault();
@@ -40,7 +40,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
         </button>
         {artisan.available_today && (
           <span className="absolute bottom-[0.65rem] left-[0.65rem] flex items-center gap-[0.35rem] px-[0.3rem] py-[0.6rem] rounded-full bg-[color-mix(in_srgb,var(--bg-elevated)_88%,transparent)] backdrop-blur-[6px] text-[0.7rem] font-semibold">
-            <span className="w-[6px] h-[6px] rounded-full bg-[var(--accent)]" />
+            <span className="w-[6px] h-[6px] rounded-full bg-(--accent)" />
             Disponible aujourd'hui
           </span>
         )}
@@ -48,26 +48,26 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
       <div className="p-[1.1rem] flex-1 flex flex-col gap-[0.55rem]">
         <div className="flex items-start justify-between gap-[0.6rem]">
           <div className="min-w-0">
-            <h3 className="font-bold text-[1rem] leading-[1.3] text-[var(--ink)]">
+            <h3 className="font-bold text-[1rem] leading-[1.3] text-(--ink)">
               {artisan.name}
             </h3>
-            <p className="text-[0.8rem] text-[var(--ink-faint)] mt-[0.1rem]">
+            <p className="text-[0.8rem] text-(--ink-faint) mt-[0.1rem]">
               {category?.label || "Artisan"} · {artisan.city || "—"}
             </p>
           </div>
-          <div className="flex items-center gap-[0.3rem] text-[0.82rem] font-semibold text-[var(--star)] shrink-0">
+          <div className="flex items-center gap-[0.3rem] text-[0.82rem] font-semibold text-(--star) shrink-0">
             <Star size={15} fill="currentColor" />
             {artisan.rating.toFixed(1)}
-            <span className="text-[var(--ink-faint)] font-normal">
+            <span className="text-(--ink-faint) font-normal">
               ({artisan.reviews_count})
             </span>
           </div>
         </div>
-        <div className="flex items-center justify-between pt-[0.55rem] border-t border-[var(--border)] text-[0.8rem] text-[var(--ink-soft)]">
+        <div className="flex items-center justify-between pt-[0.55rem] border-t border-(--border) text-[0.8rem] text-(--ink-soft)">
           <span className="flex items-center gap-[0.3rem]">
-            <MapPin size={14} className="text-[var(--ink-faint)]" />—
+            <MapPin size={14} className="text-(--ink-faint)" />—
           </span>
-          <span className="font-mono font-semibold text-[var(--ink)]">
+          <span className="font-mono font-semibold text-(--ink)">
             {formatPrice(artisan.price_from, artisan.currency)}
           </span>
         </div>
@@ -78,7 +78,7 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
 
 function SkeletonCard() {
   return (
-    <div className="rounded-[var(--r-card)] border border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden">
+    <div className="rounded-(--r-card) border border-(--border) bg-(--bg-elevated) overflow-hidden">
       <div className="skeleton aspect-[4/3]" />
       <div className="p-4 space-y-3">
         <div className="skeleton h-3 w-3/4 rounded" />
@@ -128,22 +128,22 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-[1.05fr_0.95fr] gap-10 md:gap-12 items-center">
           {/* Texte */}
           <div>
-            <span className="inline-flex items-center gap-[0.4rem] text-[0.78rem] font-semibold text-[var(--accent-strong)] bg-[var(--accent-soft)] px-[0.35rem] py-[0.8rem] rounded-full mb-[1.1rem]">
-              <span className="w-[13px] h-[13px] rounded-full bg-[var(--accent)]" />
+            <span className="inline-flex items-center gap-[0.4rem] text-[0.78rem] font-semibold text-(--accent-strong) bg-(--accent-soft) px-[0.35rem] py-[0.8rem] rounded-full mb-[1.1rem]">
+              <span className="w-[13px] h-[13px] rounded-full bg-(--accent)" />
               8 métiers, des centaines d'artisans vérifiés
             </span>
-            <h1 className="text-[clamp(2.1rem,4.6vw,3.4rem)] font-extrabold tracking-[-0.025em] leading-[1.05] max-w-[15ch] text-[var(--ink)]">
+            <h1 className="text-[clamp(2.1rem,4.6vw,3.4rem)] font-extrabold tracking-[-0.025em] leading-[1.05] max-w-[15ch] text-(--ink)">
               Le bon artisan,{" "}
-              <em className="italic text-[var(--accent)]">
+              <em className="italic text-(--accent)">
                 à côté de chez vous.
               </em>
             </h1>
-            <p className="mt-[1.1rem] text-[1.05rem] text-[var(--ink-soft)] max-w-[46ch] leading-[1.6]">
+            <p className="mt-[1.1rem] text-[1.05rem] text-(--ink-soft) max-w-[46ch] leading-[1.6]">
               Comparez les profils, lisez les avis et réservez en ligne.
               Menuisiers, électriciens, couturières et plus encore, prêts à
               intervenir aujourd'hui.
             </p>
-            <p className="text-[var(--ink-faint)] text-[0.85rem] mt-[0.35rem] capitalize">
+            <p className="text-(--ink-faint) text-[0.85rem] mt-[0.35rem] capitalize">
               {new Date().toLocaleDateString("fr-FR", {
                 weekday: "long",
                 year: "numeric",
@@ -154,10 +154,10 @@ export default function Home() {
 
             {/* Barre de recherche */}
             <div className="mt-[1.75rem] max-w-[560px]">
-              <div className="flex items-center gap-[0.7rem] bg-[var(--bg-elevated)] border-[1.5px] border-[var(--border)] rounded-full py-[0.35rem] pl-[1.15rem] pr-[0.35rem] shadow-[var(--shadow-sm)] focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_4px_var(--accent-soft)] transition-shadow">
+              <div className="flex items-center gap-[0.7rem] bg-(--bg-elevated) border-[1.5px] border-(--border) rounded-full py-[0.35rem] pl-[1.15rem] pr-[0.35rem] shadow-(--shadow-sm) focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_4px_var(--accent-soft)] transition-shadow">
                 <Search
                   size={19}
-                  className="text-[var(--ink-faint)] shrink-0"
+                  className="text-(--ink-faint) shrink-0"
                 />
                 <input
                   type="search"
@@ -169,7 +169,7 @@ export default function Home() {
                 />
                 <button
                   onClick={handleSearch}
-                  className="shrink-0 w-[42px] h-[42px] rounded-full bg-[var(--accent)] text-[var(--accent-ink)] flex items-center justify-center hover:bg-[var(--accent-strong)] active:scale-[0.94] transition-all"
+                  className="shrink-0 w-10.5 h-10.5 rounded-full bg-(--accent) text-(--accent-ink) flex items-center justify-center hover:bg-(--accent-strong) active:scale-[0.94] transition-all"
                 >
                   <ArrowRight size={18} />
                 </button>
@@ -179,7 +179,7 @@ export default function Home() {
 
           {/* Mosaïque */}
           <div className="hidden md:grid grid-cols-2 gap-4">
-            <div className="rounded-[var(--r-card)] overflow-hidden aspect-square shadow-[var(--shadow-md)] hover:-translate-y-[6px] transition-transform duration-400 relative">
+            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) hover:-translate-y-[6px] transition-transform duration-400 relative">
               <img
                 src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=500&h=500&fit=crop"
                 alt=""
@@ -189,14 +189,14 @@ export default function Home() {
                 <Star size={12} fill="var(--star)" /> 4.9
               </span>
             </div>
-            <div className="rounded-[var(--r-card)] overflow-hidden aspect-square shadow-[var(--shadow-md)] mt-8 hover:-translate-y-[6px] transition-transform duration-400">
+            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) mt-8 hover:-translate-y-[6px] transition-transform duration-400">
               <img
                 src="https://images.unsplash.com/photo-1601058268499-e52658b8bb88?w=500&h=500&fit=crop"
                 alt=""
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="rounded-[var(--r-card)] overflow-hidden aspect-square shadow-[var(--shadow-md)] -mt-8 hover:-translate-y-[6px] transition-transform duration-400">
+            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) -mt-8 hover:-translate-y-[6px] transition-transform duration-400">
               <img
                 src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=500&h=500&fit=crop"
                 alt=""
@@ -215,7 +215,7 @@ export default function Home() {
             className={`flex items-center gap-[0.45rem] px-[0.6rem] py-[1.05rem] rounded-full border-[1.5px] text-[0.85rem] font-semibold whitespace-nowrap transition-all shrink-0 ${
               selectedCategory === "all"
                 ? "bg-[var(--ink)] border-[var(--ink)] text-[var(--bg)]"
-                : "bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--ink-soft)] hover:border-[var(--border-strong)]"
+                : "bg-(--bg-elevated) border-(--border) text-(--ink-soft) hover:border-(--border-strong)"
             }`}
           >
             ⭐ Tous les métiers
@@ -226,8 +226,8 @@ export default function Home() {
               onClick={() => setSelectedCategory(cat.slug)}
               className={`flex items-center gap-[0.45rem] px-[0.6rem] py-[1.05rem] rounded-full border-[1.5px] text-[0.85rem] font-semibold whitespace-nowrap transition-all shrink-0 ${
                 selectedCategory === cat.slug
-                  ? "bg-[var(--accent)] border-[var(--accent)] text-[var(--accent-ink)]"
-                  : "bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--ink-soft)] hover:border-[var(--border-strong)]"
+                  ? "bg-(--accent) border-[var(--accent)] text-(--accent-ink)"
+                  : "bg-(--bg-elevated) border-(--border) text-(--ink-soft) hover:border-(--border-strong)"
               }`}
             >
               {cat.icon} {cat.label}
@@ -240,10 +240,10 @@ export default function Home() {
       <section className="py-6 md:py-8">
         <div className="flex items-end justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-[1.5rem] font-bold tracking-[-0.01em] text-[var(--ink)]">
+            <h2 className="text-[1.5rem] font-bold tracking-[-0.01em] text-(--ink)">
               Près de vous
             </h2>
-            <p className="text-[var(--ink-faint)] text-[0.88rem] mt-[0.2rem]">
+            <p className="text-(--ink-faint) text-[0.88rem] mt-[0.2rem]">
               {loading
                 ? "Chargement…"
                 : `${filtered.length} artisan${filtered.length > 1 ? "s" : ""} disponible${filtered.length > 1 ? "s" : ""}`}
@@ -251,7 +251,7 @@ export default function Home() {
           </div>
           <Link
             to="/search"
-            className="flex items-center gap-[0.25rem] text-[0.85rem] font-semibold text-[var(--accent)] hover:gap-[0.45rem] transition-all whitespace-nowrap"
+            className="flex items-center gap-[0.25rem] text-[0.85rem] font-semibold text-(--accent) hover:gap-[0.45rem] transition-all whitespace-nowrap"
           >
             Voir tout <ArrowRight size={15} />
           </Link>
@@ -265,13 +265,13 @@ export default function Home() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center text-center py-20 gap-4">
-            <div className="w-16 h-16 rounded-full bg-[var(--bg-sunken)] flex items-center justify-center text-2xl">
+            <div className="w-16 h-16 rounded-full bg-(--bg-sunken) flex items-center justify-center text-2xl">
               🔍
             </div>
-            <h3 className="text-lg font-bold text-[var(--ink)]">
+            <h3 className="text-lg font-bold text-(--ink)">
               Aucun artisan dans cette catégorie
             </h3>
-            <p className="text-sm text-[var(--ink-faint)] max-w-xs">
+            <p className="text-sm text-(--ink-faint) max-w-xs">
               Revenez bientôt ou explorez les autres métiers disponibles.
             </p>
             <button
@@ -292,13 +292,13 @@ export default function Home() {
 
       {/* Témoignages */}
       <section className="py-12 md:py-16">
-        <div className="bg-[var(--bg-sunken)] rounded-[var(--r-card)] p-8 md:p-10">
+        <div className="bg-(--bg-sunken) rounded-(--r-card) p-8 md:p-10">
           <div className="flex items-end justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-[1.5rem] font-bold tracking-[-0.01em] text-[var(--ink)]">
+              <h2 className="text-[1.5rem] font-bold tracking-[-0.01em] text-(--ink)">
                 Ils ont trouvé leur artisan
               </h2>
-              <p className="text-[var(--ink-faint)] text-[0.88rem] mt-[0.2rem]">
+              <p className="text-(--ink-faint) text-[0.88rem] mt-[0.2rem]">
                 Des retours vérifiés, publiés après chaque prestation
               </p>
             </div>
@@ -332,7 +332,7 @@ export default function Home() {
             ].map((t, i) => (
               <div
                 key={i}
-                className="shrink-0 w-[min(340px,82vw)] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-card)] p-6 flex flex-col gap-4"
+                className="shrink-0 w-[min(340px,82vw)] bg-(--bg-elevated) border border-(--border) rounded-(--r-card) p-6 flex flex-col gap-4"
               >
                 <div className="flex gap-[0.15rem]">
                   {Array.from({ length: t.rating }).map((_, si) => (
@@ -340,22 +340,22 @@ export default function Home() {
                       key={si}
                       size={15}
                       fill="currentColor"
-                      className="text-[var(--star)]"
+                      className="text-(--star)"
                     />
                   ))}
                 </div>
-                <p className="text-[0.92rem] leading-[1.55] text-[var(--ink)]">
+                <p className="text-[0.92rem] leading-[1.55] text-(--ink)">
                   « {t.text} »
                 </p>
                 <div className="flex items-center gap-[0.65rem] mt-auto">
                   <img
                     src={t.avatar}
                     alt={t.name}
-                    className="w-[38px] h-[38px] rounded-full object-cover"
+                    className="w-9.5 h-9.5 rounded-full object-cover"
                   />
                   <div>
                     <p className="font-semibold text-[0.85rem]">{t.name}</p>
-                    <p className="text-[0.76rem] text-[var(--ink-faint)]">
+                    <p className="text-[0.76rem] text-(--ink-faint)">
                       {t.role}
                     </p>
                   </div>

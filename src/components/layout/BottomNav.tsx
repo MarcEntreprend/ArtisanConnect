@@ -1,4 +1,4 @@
-// src/components/layout/BottomNav.tsx
+﻿// src/components/layout/BottomNav.tsx
 
 import { Link, useLocation } from "react-router-dom";
 import { House, Search, Calendar, Heart } from "lucide-react";
@@ -15,7 +15,7 @@ export default function BottomNav() {
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg/85 backdrop-blur-lg border-t border-border/60 pb-safe">
-      <div className="flex items-center justify-around h-[62px]">
+      <div className="flex items-center justify-around h-15.5">
         {NAV_ITEMS.map((item) => {
           const active = location.pathname === item.path;
           return (

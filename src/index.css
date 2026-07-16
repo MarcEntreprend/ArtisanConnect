@@ -360,7 +360,7 @@ select {
   animation: shimmer 1.6s ease-in-out infinite;
 }
 
-/* À SUPPRIMER après diagnostic */
-main * {
+/* RED COLOR TO TEST ITEMS - À SUPPRIMER après diagnostic */
+/* main * {
   outline: 1px solid rgba(255, 0, 0, 0.1) !important;
-}
+} */

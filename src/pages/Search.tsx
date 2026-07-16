@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search as SearchIcon, Star, MapPin, Heart } from "lucide-react";
 import { supabase } from "../lib/supabase";
@@ -133,7 +133,7 @@ export default function Search() {
             <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">
               Métier
             </h3>
-            <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-45 overflow-y-auto pr-1">
               {CATEGORIES.map((c) => (
                 <label
                   key={c.slug}
@@ -162,7 +162,7 @@ export default function Search() {
             <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">
               Ville
             </h3>
-            <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
               {cities.length === 0 ? (
                 <p className="text-xs text-ink-faint italic">
                   Aucune ville disponible

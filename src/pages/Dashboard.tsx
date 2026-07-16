@@ -1,4 +1,4 @@
-// src/pages/Dashboard.tsx
+﻿// src/pages/Dashboard.tsx
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -708,7 +708,7 @@ export default function Dashboard() {
                           );
                           setHours(updated);
                         }}
-                        className="accent-[var(--accent)]"
+                        className="accent-(--accent)"
                       />{" "}
                       Ouvert
                     </label>
@@ -1003,8 +1003,8 @@ export default function Dashboard() {
                 className="w-11 h-11 rounded-2xl object-cover border border-border"
               />
             ) : (
-              <div className="w-11 h-11 rounded-2xl bg-[var(--bg-sunken)] border border-[var(--border)] flex items-center justify-center">
-                <User size={18} className="text-[var(--ink-faint)]" />
+              <div className="w-11 h-11 rounded-2xl bg-(--bg-sunken) border border-(--border) flex items-center justify-center">
+                <User size={18} className="text-(--ink-faint)" />
               </div>
             )}
             <div className="min-w-0">
@@ -1025,7 +1025,7 @@ export default function Dashboard() {
           </nav>
         </aside>
 
-        <div className="bg-bg-elevated border border-border rounded-3xl p-8 min-h-[500px] shadow-sm">
+        <div className="bg-bg-elevated border border-border rounded-3xl p-8 min-h-125 shadow-sm">
           {renderPanel()}
         </div>
       </div>

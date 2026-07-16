@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, Calendar as CalendarIcon, User as UserIcon, Clock } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../hooks/useAuth";
@@ -277,7 +277,7 @@ export default function BookingModal() {
                       setSelectedPro(pro);
                       setSelectedSlot(null);
                     }}
-                    className="flex flex-col items-center gap-1.5 min-w-[76px] group focus:outline-none"
+                    className="flex flex-col items-center gap-1.5 min-w-19 group focus:outline-none"
                   >
                     <div
                       className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all ${isSelected

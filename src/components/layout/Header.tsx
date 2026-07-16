@@ -1,4 +1,4 @@
-// src/components/layout/Header.tsx
+﻿// src/components/layout/Header.tsx
 
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -91,31 +91,31 @@ export default function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-[14px] border-b border-[var(--border)] transition-transform duration-300 ${
+        className={`sticky top-0 z-40 bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-[14px] border-b border-(--border) transition-transform duration-300 ${
           headerHidden ? "-translate-y-full" : "translate-y-0"
         }`}
       >
         <div
-          className="max-w-7xl mx-auto px-4 md:px-10 h-[68px] flex items-center justify-between gap-6"
+          className="max-w-7xl mx-auto px-4 md:px-10 h-17 flex items-center justify-between gap-6"
           style={{ marginLeft: "auto", marginRight: "auto" }}
         >
           <Logo />
 
           {/* Nav desktop */}
-          <nav className="hidden lg:flex items-center gap-8 text-[0.9rem] font-medium text-[var(--ink-soft)]">
+          <nav className="hidden lg:flex items-center gap-8 text-[0.9rem] font-medium text-(--ink-soft)">
             {NAV_LINKS.map((link) => {
               const active = location.pathname === link.path;
               return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative transition-colors hover:text-[var(--ink)] ${
-                    active ? "text-[var(--ink)]" : ""
+                  className={`relative transition-colors hover:text-(--ink) ${
+                    active ? "text-(--ink)" : ""
                   }`}
                 >
                   {link.label}
                   {active && (
-                    <span className="absolute left-0 right-0 -bottom-[20px] h-[2px] bg-[var(--accent)]" />
+                    <span className="absolute left-0 right-0 -bottom-[20px] h-[2px] bg-(--accent)" />
                   )}
                 </Link>
               );
@@ -127,7 +127,7 @@ export default function Header() {
             {/* Espace artisan */}
             <Link
               to="/dashboard"
-              className="hidden sm:inline-flex items-center gap-1.5 px-[0.55rem] py-[0.55rem] rounded-full border border-[var(--border-strong)] text-[0.85rem] font-semibold hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-[0.55rem] py-[0.55rem] rounded-full border border-(--border-strong) text-[0.85rem] font-semibold hover:border-(--accent) hover:bg-(--accent-soft) transition-colors"
             >
               <Plus size={16} />
               Espace artisan
@@ -142,7 +142,7 @@ export default function Header() {
                   e.stopPropagation();
                   setLangOpen(!langOpen);
                 }}
-                className="flex items-center gap-[0.35rem] px-[0.45rem] py-[0.6rem] rounded-full text-[0.8rem] font-semibold hover:bg-[var(--bg-sunken)] transition-colors"
+                className="flex items-center gap-[0.35rem] px-[0.45rem] py-[0.6rem] rounded-full text-[0.8rem] font-semibold hover:bg-(--bg-sunken) transition-colors"
               >
                 <img
                   src={lang.flag}
@@ -152,7 +152,7 @@ export default function Header() {
                 <span>{lang.short}</span>
               </button>
               {langOpen && (
-                <ul className="absolute right-0 top-full mt-[10px] min-w-[180px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-sm)] shadow-[var(--shadow-lg)] p-[0.4rem] z-50">
+                <ul className="absolute right-0 top-full mt-[10px] min-w-[180px] bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-[0.4rem] z-50">
                   {LANGUAGES.map((l) => (
                     <li
                       key={l.code}
@@ -160,7 +160,7 @@ export default function Header() {
                         setLang(l);
                         setLangOpen(false);
                       }}
-                      className={`flex items-center justify-between gap-2 px-[0.55rem] py-[0.6rem] rounded-lg text-[0.85rem] cursor-pointer hover:bg-[var(--bg-sunken)] transition-colors ${
+                      className={`flex items-center justify-between gap-2 px-[0.55rem] py-[0.6rem] rounded-lg text-[0.85rem] cursor-pointer hover:bg-(--bg-sunken) transition-colors ${
                         lang.code === l.code ? "font-semibold" : ""
                       }`}
                     >
@@ -173,7 +173,7 @@ export default function Header() {
                         {l.name}
                       </span>
                       {lang.code === l.code && (
-                        <Check size={16} className="text-[var(--accent)]" />
+                        <Check size={16} className="text-(--accent)" />
                       )}
                     </li>
                   ))}
@@ -189,20 +189,20 @@ export default function Header() {
                     e.stopPropagation();
                     setProfileOpen(!profileOpen);
                   }}
-                  className="w-10 h-10 rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)] font-bold text-[0.85rem] flex items-center justify-center border border-[var(--border)] hover:scale-[1.04] transition-transform"
+                  className="w-10 h-10 rounded-full bg-(--accent-soft) text-(--accent-strong) font-bold text-[0.85rem] flex items-center justify-center border border-(--border) hover:scale-[1.04] transition-transform"
                 >
                   {initials}
                 </button>
               ) : (
                 <Link
                   to="/auth"
-                  className="px-[0.4rem] py-1 rounded-full border border-[var(--border)] text-[0.85rem] font-medium text-[var(--ink)] hover:bg-[var(--bg-sunken)] transition-colors"
+                  className="px-[0.4rem] py-1 rounded-full border border-(--border) text-[0.85rem] font-medium text-(--ink) hover:bg-(--bg-sunken) transition-colors"
                 >
                   Se connecter
                 </Link>
               )}
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-[10px] min-w-[220px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-sm)] shadow-[var(--shadow-lg)] p-[0.5rem] z-50">
+                <div className="absolute right-0 top-full mt-[10px] min-w-[220px] bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-[0.5rem] z-50">
                   {[
                     { to: "/dashboard", label: "Espace artisan" },
                     { to: "/appointments", label: "Mes rendez-vous" },
@@ -213,7 +213,7 @@ export default function Header() {
                       key={item.to}
                       to={item.to}
                       onClick={() => setProfileOpen(false)}
-                      className="block px-[0.6rem] py-[0.7rem] text-[0.85rem] font-medium hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+                      className="block px-[0.6rem] py-[0.7rem] text-[0.85rem] font-medium hover:bg-(--bg-sunken) rounded-lg transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -223,7 +223,7 @@ export default function Header() {
                       signOut();
                       setProfileOpen(false);
                     }}
-                    className="w-full text-left px-[0.6rem] py-[0.7rem] text-[0.85rem] font-medium hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+                    className="w-full text-left px-[0.6rem] py-[0.7rem] text-[0.85rem] font-medium hover:bg-(--bg-sunken) rounded-lg transition-colors"
                   >
                     Se déconnecter
                   </button>
@@ -233,7 +233,7 @@ export default function Header() {
 
             {/* Burger mobile */}
             <button
-              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-[var(--bg-sunken)] transition-colors"
+              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-(--bg-sunken) transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
             >
@@ -249,11 +249,11 @@ export default function Header() {
 
       {/* Menu mobile */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-30 lg:hidden bg-[var(--bg)]/98 backdrop-blur-2xl flex flex-col">
-          <div className="h-[68px] flex items-center justify-between px-5 border-b border-[var(--border)]">
+        <div className="fixed inset-0 z-30 lg:hidden bg-(--bg)/98 backdrop-blur-2xl flex flex-col">
+          <div className="h-17 flex items-center justify-between px-5 border-b border-(--border)">
             <Logo />
             <button
-              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-[var(--bg-sunken)] transition-colors"
+              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-(--bg-sunken) transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               <X size={18} strokeWidth={2.5} />
@@ -268,8 +268,8 @@ export default function Header() {
                   to={link.path}
                   className={`px-5 py-4 rounded-2xl text-xl font-bold transition-all ${
                     active
-                      ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
-                      : "text-[var(--ink-soft)] hover:bg-[var(--bg-sunken)] hover:text-[var(--ink)]"
+                      ? "bg-(--accent-soft) text-(--accent-strong)"
+                      : "text-(--ink-soft) hover:bg-(--bg-sunken) hover:text-(--ink)"
                   }`}
                 >
                   {link.label}
@@ -277,7 +277,7 @@ export default function Header() {
               );
             })}
           </nav>
-          <div className="px-8 py-8 border-t border-[var(--border)]">
+          <div className="px-8 py-8 border-t border-(--border)">
             <Link
               to="/dashboard"
               className="btn btn-primary w-full justify-center text-sm"
