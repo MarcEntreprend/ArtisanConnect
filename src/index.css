@@ -1,3 +1,4 @@
+/* src/index.css */
 @import "tailwindcss";
 
 /* ============================================================
@@ -7,36 +8,36 @@
    Motion  : spring physique sur tout, jamais ease-in-out
    ============================================================ */
 :root {
-  --bg: #FAF7F2;
-  --bg-elevated: #FFFFFF;
-  --bg-sunken: #F2ECE2;
-  --bg-deep: #E8DFD0;
+  --bg: #faf7f2;
+  --bg-elevated: #ffffff;
+  --bg-sunken: #f2ece2;
+  --bg-deep: #e8dfd0;
 
-  --ink: #1F1A17;
-  --ink-soft: #5E524A;
-  --ink-faint: #968A80;
+  --ink: #1f1a17;
+  --ink-soft: #5e524a;
+  --ink-faint: #968a80;
 
-  --border: #EBE3DA;
-  --border-strong: #D5C8B9;
+  --border: #ebe3da;
+  --border-strong: #d5c8b9;
 
   /* Accent : terre cuite haïtienne */
-  --accent: #C85A32;
-  --accent-strong: #A84622;
-  --accent-soft: #FDF2EE;
-  --accent-ink: #FFFFFF;
+  --accent: #c85a32;
+  --accent-strong: #a84622;
+  --accent-soft: #fdf2ee;
+  --accent-ink: #ffffff;
 
   /* Forêt tropicale */
-  --forest: #2D5C45;
+  --forest: #2d5c45;
   --forest-strong: #204231;
-  --forest-soft: #EBF3EF;
+  --forest-soft: #ebf3ef;
 
   /* Ocre soleil */
-  --ochre: #D98C2B;
-  --ochre-soft: #FAF3E8;
+  --ochre: #d98c2b;
+  --ochre-soft: #faf3e8;
 
-  --star: #D98C2B;
-  --danger: #C94A29;
-  --danger-soft: #FDF1EE;
+  --star: #d98c2b;
+  --danger: #c94a29;
+  --danger-soft: #fdf1ee;
 
   /* Rayons */
   --r-card: 20px;
@@ -49,10 +50,11 @@
   /* Ombres teintées vers la palette chaude */
   --shadow-sm: 0 2px 8px rgba(92, 82, 75, 0.06);
   --shadow-md: 0 8px 32px -6px rgba(92, 82, 75, 0.14);
-  --shadow-lg: 0 24px 64px -12px rgba(92, 82, 75, 0.20);
+  --shadow-lg: 0 24px 64px -12px rgba(92, 82, 75, 0.2);
   --shadow-glow: 0 0 40px rgba(200, 90, 50, 0.15);
 
-  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   color-scheme: light;
@@ -89,37 +91,37 @@
    ============================================================ */
 .dark {
   --bg: #151210;
-  --bg-elevated: #1F1B19;
+  --bg-elevated: #1f1b19;
   --bg-sunken: #181513;
-  --bg-deep: #120F0D;
+  --bg-deep: #120f0d;
 
-  --ink: #F7F3EF;
-  --ink-soft: #C2B3A9;
-  --ink-faint: #8F8076;
+  --ink: #f7f3ef;
+  --ink-soft: #c2b3a9;
+  --ink-faint: #8f8076;
 
-  --border: #2E2521;
-  --border-strong: #453A33;
+  --border: #2e2521;
+  --border-strong: #453a33;
 
-  --accent: #E27453;
-  --accent-strong: #EB8F70;
-  --accent-soft: #301B14;
+  --accent: #e27453;
+  --accent-strong: #eb8f70;
+  --accent-soft: #301b14;
   --accent-ink: #151210;
 
-  --forest: #4EA37E;
-  --forest-strong: #64BA95;
-  --forest-soft: #172D23;
+  --forest: #4ea37e;
+  --forest-strong: #64ba95;
+  --forest-soft: #172d23;
 
-  --ochre: #E0AB43;
-  --ochre-soft: #2E2211;
+  --ochre: #e0ab43;
+  --ochre-soft: #2e2211;
 
-  --star: #E0AB43;
-  --danger: #EB604D;
+  --star: #e0ab43;
+  --danger: #eb604d;
   --danger-soft: #301715;
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 8px 32px -6px rgba(0, 0, 0, 0.55);
   --shadow-lg: 0 24px 64px -12px rgba(0, 0, 0, 0.7);
-  --shadow-glow: 0 0 40px rgba(226, 116, 83, 0.20);
+  --shadow-glow: 0 0 40px rgba(226, 116, 83, 0.2);
 
   color-scheme: dark;
 }
@@ -144,7 +146,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
   overflow-x: hidden;
 }
 
@@ -180,7 +184,6 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -250,7 +253,7 @@ body::before {
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-strong);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(200, 90, 50, 0.30);
+  box-shadow: 0 6px 20px rgba(200, 90, 50, 0.3);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -294,9 +297,12 @@ body::before {
   border-radius: var(--r-lg);
   /* Outer shell */
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+  transition:
+    transform 0.4s cubic-bezier(0.32, 0.72, 0, 1),
     box-shadow 0.4s cubic-bezier(0.32, 0.72, 0, 1),
     border-color 0.3s ease;
   will-change: transform;
@@ -384,7 +390,7 @@ body::before {
 }
 
 .stagger-2 {
-  animation-delay: 0.10s;
+  animation-delay: 0.1s;
 }
 
 .stagger-3 {
@@ -392,7 +398,7 @@ body::before {
 }
 
 .stagger-4 {
-  animation-delay: 0.20s;
+  animation-delay: 0.2s;
 }
 
 .stagger-5 {
@@ -437,11 +443,11 @@ body::before {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
-.switch input:checked+.switch-track {
+.switch input:checked + .switch-track {
   background: var(--accent);
 }
 
-.switch input:checked+.switch-track::before {
+.switch input:checked + .switch-track::before {
   transform: translateX(16px);
 }
 
@@ -455,7 +461,7 @@ body::before {
   height: 21px;
 }
 
-.switch-lg input:checked+.switch-track::before {
+.switch-lg input:checked + .switch-track::before {
   transform: translateX(21px);
 }
 
@@ -473,10 +479,12 @@ body::before {
 }
 
 .skeleton {
-  background: linear-gradient(90deg,
-      var(--bg-sunken) 25%,
-      var(--border) 50%,
-      var(--bg-sunken) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-sunken) 25%,
+    var(--border) 50%,
+    var(--bg-sunken) 75%
+  );
   background-size: 800px 100%;
   animation: shimmer 1.6s infinite;
   border-radius: 8px;
