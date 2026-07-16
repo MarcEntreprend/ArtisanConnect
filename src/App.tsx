@@ -1,3 +1,5 @@
+// src\App.tsx
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import Header from "./components/layout/Header";
@@ -15,26 +17,28 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import BookingModal from "./components/features/BookingModal";
 
+// src/App.tsx
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Header />
-        <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)] pb-20 lg:pb-0">
-          <div className="max-w-7xl mx-auto px-4 md:px-10">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/artisan/:id" element={<ArtisanDetail />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/favorites" element={<Favorites />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/appointments" element={<Appointments />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+        <main
+          className="min-h-screen bg-[var(--bg)] text-[var(--ink)] max-w-7xl mx-auto px-4 md:px-10 pt-4 pb-20 lg:pb-0"
+          style={{ marginLeft: "auto", marginRight: "auto" }}
+        >
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/artisan/:id" element={<ArtisanDetail />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </main>
         <Footer />
         <BottomNav />

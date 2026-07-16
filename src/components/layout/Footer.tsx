@@ -6,26 +6,50 @@ import Logo from "../ui/Logo";
 
 export default function Footer() {
   return (
-    <footer className="bg-bg-sunken/50 border-t border-border/80 mt-32 pb-24 lg:pb-12 text-ink-soft">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+    <footer
+      className="border-t border-[var(--border)] bg-[var(--bg-sunken)] pb-6 mt-6"
+      style={{ paddingTop: "4rem" }}
+    >
+      <div
+        className="max-w-7xl mx-auto px-4 md:px-10"
+        style={{ marginLeft: "auto", marginRight: "auto" }}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_1.4fr] gap-10 mb-8">
           {/* Brand */}
-          <div className="space-y-4">
-            <Logo />
-            <p className="text-sm leading-relaxed">
-              La plateforme qui connecte les artisans locaux d'Haïti à leurs clients, un
+          <div className="flex flex-col gap-[0.9rem]">
+            <div className="flex items-center gap-[0.55rem] font-bold">
+              <img
+                src="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%232f6b4f%22/><text x=%2250%22 y=%2266%22 font-size=%2252%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22800%22>AC</text></svg>"
+                alt=""
+                className="w-[34px] h-[34px] rounded-[var(--r-sm)]"
+              />
+              <span>ArtisanConnect</span>
+            </div>
+            <p className="text-[0.85rem] text-[var(--ink-soft)] leading-[1.55] max-w-[32ch]">
+              La plateforme qui connecte les artisans locaux à leurs clients, un
               rendez-vous à la fois.
             </p>
+            <div className="flex gap-[0.6rem] mt-[0.3rem]">
+              {["facebook", "instagram", "youtube"].map((s) => (
+                <a
+                  key={s}
+                  href="#"
+                  className="w-9 h-9 rounded-full border border-[var(--border)] flex items-center justify-center hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] transition-colors"
+                >
+                  <span className="text-xs font-bold uppercase">{s[0]}</span>
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Accès rapide */}
           <div>
-            <h3 className="font-semibold text-sm mb-4 text-ink">Accès rapide</h3>
-            <ul className="space-y-2 text-sm text-ink-soft">
+            <h3 className="text-[0.82rem] font-bold mb-4">Accès rapide</h3>
+            <ul className="flex flex-col gap-[0.65rem] text-[0.85rem] text-[var(--ink-soft)]">
               <li>
                 <Link
                   to="/"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Accueil
                 </Link>
@@ -33,7 +57,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/search"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Trouver un artisan
                 </Link>
@@ -41,7 +65,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/appointments"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Mes rendez-vous
                 </Link>
@@ -49,7 +73,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/favorites"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Favoris
                 </Link>
@@ -57,7 +81,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/messages"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Messagerie
                 </Link>
@@ -67,12 +91,12 @@ export default function Footer() {
 
           {/* Plus */}
           <div>
-            <h3 className="font-semibold text-sm mb-4 text-ink">Plus</h3>
-            <ul className="space-y-2 text-sm text-ink-soft">
+            <h3 className="text-[0.82rem] font-bold mb-4">Plus</h3>
+            <ul className="flex flex-col gap-[0.65rem] text-[0.85rem] text-[var(--ink-soft)]">
               <li>
                 <a
                   href="#"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Conditions d'utilisation
                 </a>
@@ -80,13 +104,13 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-[var(--ink)] transition-colors"
                 >
                   Politique de confidentialité
                 </a>
               </li>
               <li>
-                <button className="hover:text-accent transition-colors">
+                <button className="hover:text-[var(--ink)] transition-colors">
                   Préférences des cookies
                 </button>
               </li>
@@ -95,27 +119,26 @@ export default function Footer() {
 
           {/* Artisan */}
           <div>
-            <h3 className="font-semibold text-sm mb-4 text-ink">
+            <h3 className="text-[0.82rem] font-bold mb-4">
               Vous êtes un artisan ?
             </h3>
-            <p className="text-sm text-ink-soft mb-4 leading-relaxed">
+            <p className="text-[0.82rem] text-[var(--ink-soft)] leading-[1.5] mb-[0.6rem]">
               Créez votre vitrine, gérez vos disponibilités et recevez des
               réservations en ligne.
             </p>
             <Link
               to="/auth"
-              className="text-sm font-semibold text-accent hover:underline inline-flex items-center gap-1"
+              className="text-[0.85rem] font-semibold text-[var(--accent)] hover:underline"
             >
               Inscrire mon activité →
             </Link>
           </div>
         </div>
-
-        <div className="flex items-center justify-between mt-16 pt-8 border-t border-border/80 text-xs text-ink-faint">
+        <div className="flex items-center justify-between pt-6 border-t border-[var(--border)] text-[0.8rem] text-[var(--ink-faint)]">
           <p>© 2026 ArtisanConnect. Tous droits réservés.</p>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-bg hover:text-accent hover:border-accent-strong transition-all duration-200"
+            className="w-[38px] h-[38px] rounded-full border border-[var(--border)] flex items-center justify-center hover:-translate-y-[2px] hover:border-[var(--accent)] transition-all"
           >
             <ArrowUp size={16} />
           </button>

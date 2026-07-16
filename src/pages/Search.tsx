@@ -93,7 +93,9 @@ export default function Search() {
     <div className="py-4 animate-fade-in-up">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/40 pb-6 mt-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-ink">Trouver un artisan</h1>
+          <h1 className="text-3xl font-extrabold text-ink">
+            Trouver un artisan
+          </h1>
           <p className="text-sm text-ink-faint mt-1">
             Découvrez les talents locaux certifiés près de chez vous
           </p>
@@ -128,7 +130,9 @@ export default function Search() {
 
           {/* Categories */}
           <div className="pb-5 border-b border-border">
-            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">Métier</h3>
+            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">
+              Métier
+            </h3>
             <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
               {CATEGORIES.map((c) => (
                 <label
@@ -145,7 +149,9 @@ export default function Search() {
                     }}
                     className="accent-accent"
                   />
-                  <span>{c.icon} {c.label}</span>
+                  <span>
+                    {c.icon} {c.label}
+                  </span>
                 </label>
               ))}
             </div>
@@ -153,10 +159,14 @@ export default function Search() {
 
           {/* Cities */}
           <div className="py-5 border-b border-border">
-            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">Ville</h3>
+            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">
+              Ville
+            </h3>
             <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
               {cities.length === 0 ? (
-                <p className="text-xs text-ink-faint italic">Aucune ville disponible</p>
+                <p className="text-xs text-ink-faint italic">
+                  Aucune ville disponible
+                </p>
               ) : (
                 cities.map((city) => (
                   <label
@@ -182,7 +192,9 @@ export default function Search() {
 
           {/* Rating */}
           <div className="py-5 border-b border-border">
-            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">Note minimale</h3>
+            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-3">
+              Note minimale
+            </h3>
             <div className="space-y-2">
               {[0, 4, 4.5].map((r) => (
                 <label
@@ -204,7 +216,9 @@ export default function Search() {
 
           {/* Price */}
           <div className="py-5 border-b border-border">
-            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-2">Budget max</h3>
+            <h3 className="font-bold text-xs text-ink uppercase tracking-wider mb-2">
+              Budget max
+            </h3>
             <input
               type="range"
               min="0"
@@ -216,7 +230,9 @@ export default function Search() {
             />
             <div className="flex justify-between text-xs text-ink-faint font-mono mt-2">
               <span>0 G</span>
-              <span className="font-semibold text-accent">{maxPrice.toLocaleString("fr-FR")} G</span>
+              <span className="font-semibold text-accent">
+                {maxPrice.toLocaleString("fr-FR")} G
+              </span>
             </div>
           </div>
 
@@ -229,7 +245,9 @@ export default function Search() {
                 onChange={(e) => setAvailableToday(e.target.checked)}
                 className="accent-accent"
               />
-              <span className="font-semibold text-xs uppercase tracking-wider text-forest">Disponible aujourd'hui</span>
+              <span className="font-semibold text-xs uppercase tracking-wider text-forest">
+                Disponible aujourd'hui
+              </span>
             </label>
           </div>
         </aside>
@@ -238,7 +256,10 @@ export default function Search() {
         <div>
           <div className="flex items-center justify-between gap-4 flex-wrap mb-6">
             <p className="text-sm text-ink-soft">
-              <strong className="text-ink font-extrabold">{filtered.length}</strong> artisans trouvés
+              <strong className="text-ink font-extrabold">
+                {filtered.length}
+              </strong>{" "}
+              artisans trouvés
             </p>
             <select
               value={sort}
@@ -255,7 +276,10 @@ export default function Search() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="rounded-card border border-border bg-bg-elevated animate-pulse">
+                <div
+                  key={i}
+                  className="rounded-card border border-border bg-bg-elevated animate-pulse"
+                >
                   <div className="aspect-4/3 bg-bg-sunken rounded-t-card" />
                   <div className="p-5 space-y-3">
                     <div className="h-4 bg-bg-sunken rounded w-3/4" />
@@ -269,7 +293,8 @@ export default function Search() {
               <SearchIcon size={48} className="text-ink-faint mb-4" />
               <h3 className="font-bold text-lg text-ink">Aucun résultat</h3>
               <p className="text-sm text-ink-soft mt-1">
-                Aucun artisan ne correspond à ces critères. Essayez d'élargir vos filtres.
+                Aucun artisan ne correspond à ces critères. Essayez d'élargir
+                vos filtres.
               </p>
               <button onClick={resetFilters} className="btn btn-outline mt-6">
                 Réinitialiser les filtres
@@ -287,7 +312,10 @@ export default function Search() {
                   >
                     <div className="artisan-card-media">
                       <img
-                        src={a.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"}
+                        src={
+                          a.avatar_url ||
+                          "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"
+                        }
                         alt={a.name}
                         loading="lazy"
                       />
