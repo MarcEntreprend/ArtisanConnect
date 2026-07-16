@@ -333,7 +333,8 @@ export default function Dashboard() {
                 {
                   label: "Aujourd'hui",
                   value: String(todayCount),
-                  sub: "rendez-vous",
+                  sub: "rendez-vous prévus",
+                  accent: false,
                 },
                 {
                   label: "Cette semaine",
@@ -341,29 +342,45 @@ export default function Dashboard() {
                     appointments.filter((a) => a.status === "upcoming").length,
                   ),
                   sub: "à venir",
+                  accent: true,
                 },
                 {
-                  label: "Prochain créneau",
+                  label: "Prochain",
                   value: nextAppt
-                    ? `${nextAppt.appointment_time?.slice(0, 5)}`
+                    ? (nextAppt.appointment_time?.slice(0, 5) ?? "—")
                     : "Aucun",
-                  sub: nextAppt?.service_name || "",
+                  sub: nextAppt?.service_name || "Rien de prévu",
+                  accent: false,
                 },
-                { label: "Recettes du mois", value: "0 G", sub: "" },
+                {
+                  label: "Recettes",
+                  value: "0 G",
+                  sub: "ce mois",
+                  accent: false,
+                },
               ].map((s, i) => (
                 <div
                   key={i}
-                  className="bg-bg-elevated border border-border rounded-2xl p-5 hover:border-border-strong hover:shadow-sm transition-all"
+                  className="
+                    p-1 rounded-(--r-card)
+                    bg-(--bg-sunken) border border-(--border)
+                  "
                 >
-                  <p className="text-[10px] text-ink-faint font-extrabold uppercase tracking-wider">
-                    {s.label}
-                  </p>
-                  <p className="text-2xl font-bold font-mono mt-2 text-ink">
-                    {s.value}
-                  </p>
-                  {s.sub && (
-                    <p className="text-xs text-ink-soft mt-1">{s.sub}</p>
-                  )}
+                  <div className="bg-(--bg-elevated) rounded-[calc(var(--r-card)-4px)] p-4">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-(--ink-faint)">
+                      {s.label}
+                    </p>
+                    <p
+                      className={`mono-num text-2xl font-extrabold mt-2 ${s.accent ? "text-(--accent)" : "text-(--ink)"}`}
+                    >
+                      {s.value}
+                    </p>
+                    {s.sub && (
+                      <p className="text-xs text-(--ink-faint) mt-1 truncate">
+                        {s.sub}
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1006,21 +1023,21 @@ export default function Dashboard() {
 
   return (
     <div className="py-8 animate-fade-in-up">
-      <div className="border-b border-border/40 pb-6 mt-2">
-        <h1 className="text-3xl font-extrabold text-ink">Espace artisan</h1>
-        <p className="text-sm text-ink-faint mt-1">
+      <div className="border-b border-(--border)/40 pb-6 mt-2">
+        <h1 className="text-3xl font-extrabold text-(--ink)">Espace artisan</h1>
+        <p className="text-sm text-(--ink-faint) mt-1">
           Gérez votre vitrine, vos services et vos disponibilités.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 mt-8">
-        <aside className="bg-bg-elevated border border-border rounded-3xl p-5 sticky top-24 self-start shadow-sm">
-          <div className="flex items-center gap-3 pb-5 mb-5 border-b border-border/60">
+        <aside className="bg-(--bg-elevated) border border-(--border) rounded-3xl p-5 sticky top-24 self-start shadow-(--shadow-sm)">
+          <div className="flex items-center gap-3 pb-5 mb-5 border-b border-(--border)/60">
             {photoUrl ? (
               <img
                 src={photoUrl}
                 alt=""
-                className="w-11 h-11 rounded-2xl object-cover border border-border"
+                className="w-11 h-11 rounded-2xl object-cover border border-(--border)"
               />
             ) : (
               <div className="w-11 h-11 rounded-2xl bg-(--bg-sunken) border border-(--border) flex items-center justify-center">
@@ -1028,10 +1045,10 @@ export default function Dashboard() {
               </div>
             )}
             <div className="min-w-0">
-              <p className="font-bold text-sm text-ink truncate">
+              <p className="font-bold text-sm text-(--ink) truncate">
                 {artisan?.name}
               </p>
-              <p className="text-xs text-ink-faint">{artisan?.city}</p>
+              <p className="text-xs text-(--ink-faint)">{artisan?.city}</p>
             </div>
           </div>
           <nav className="space-y-1">
@@ -1039,7 +1056,11 @@ export default function Dashboard() {
               <button
                 key={item.key}
                 onClick={() => setActivePanel(item.key)}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${activePanel === item.key ? "bg-accent-soft text-accent-strong shadow-sm" : "text-ink-soft hover:bg-bg-sunken hover:text-ink"}`}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
+                  activePanel === item.key
+                    ? "bg-(--accent-soft) text-(--accent-strong) shadow-(--shadow-sm)"
+                    : "text-(--ink-soft) hover:bg-(--bg-sunken) hover:text-(--ink)"
+                }`}
               >
                 <item.icon size={18} /> {item.label}
               </button>
@@ -1047,7 +1068,7 @@ export default function Dashboard() {
           </nav>
         </aside>
 
-        <div className="bg-bg-elevated border border-border rounded-3xl p-8 min-h-125 shadow-sm">
+        <div className="bg-(--bg-elevated) border border-(--border) rounded-3xl p-8 min-h-125 shadow-(--shadow-sm)">
           {renderPanel()}
         </div>
       </div>
