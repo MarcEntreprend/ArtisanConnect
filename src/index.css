@@ -962,6 +962,354 @@ input[type="search"] {
 }
 
 /* ============================================================
+   HEADER — style Terrain original
+   ============================================================ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border-bottom: 1px solid var(--border);
+  transition: transform 0.3s ease;
+}
+.header-hidden {
+  transform: translateY(-100%);
+}
+.header-content {
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.logo-text {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+.header-nav {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+@media (min-width: 1024px) {
+  .header-nav {
+    display: flex;
+  }
+}
+.header-nav a {
+  transition: color 0.2s ease;
+  position: relative;
+}
+.header-nav a:hover,
+.header-nav a.active {
+  color: var(--ink);
+}
+.header-nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -20px;
+  height: 2px;
+  background: var(--accent);
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.artisan-cta {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-strong);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+@media (min-width: 640px) {
+  .artisan-cta {
+    display: inline-flex;
+  }
+}
+.artisan-cta:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+.icon-btn:hover {
+  background: var(--bg-sunken);
+  color: var(--ink);
+}
+.icon-btn:active {
+  transform: scale(0.94);
+}
+.language-wrapper {
+  position: relative;
+}
+.lang-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.lang-trigger:hover {
+  background: var(--bg-sunken);
+}
+.lang-flag-img {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.lang-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 180px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  padding: 0.4rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease;
+}
+.lang-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.lang-dropdown li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.lang-dropdown li:hover {
+  background: var(--bg-sunken);
+}
+.lang-check {
+  opacity: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+}
+.lang-check.active {
+  opacity: 1;
+}
+.profile-wrapper {
+  position: relative;
+}
+.profile-trigger {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  transition: transform 0.15s ease;
+}
+.profile-trigger:hover {
+  transform: scale(1.04);
+}
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 220px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease;
+}
+.profile-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.profile-dropdown a,
+.profile-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+  background: var(--bg-sunken);
+}
+.theme-switch {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 0;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.theme-switch:hover {
+  border-color: var(--accent);
+}
+.theme-switch-track {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+.theme-switch-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+  color: var(--ink-soft);
+  opacity: 0;
+  transform: scale(0);
+}
+.theme-switch-icon.active {
+  opacity: 1;
+  transform: scale(1);
+}
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+@media (min-width: 768px) {
+  .container {
+    padding: 0 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none;
+  }
+}
+
+/* ============================================================
+   FOOTER — styles Terrain
+   ============================================================ */
+.social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.social-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.learn-more {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.back-to-top {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+.back-to-top:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+/* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fade-up {

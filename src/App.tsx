@@ -24,8 +24,13 @@ export default function App() {
       <BrowserRouter>
         <Header />
         <main
-          className="min-h-screen bg-(--bg) text-(--ink) max-w-7xl mx-auto px-4 md:px-10 pt-4 pb-20 lg:pb-0"
-          style={{ marginLeft: "auto", marginRight: "auto" }}
+          className="min-h-screen bg-(--bg) text-(--ink) max-w-7xl mx-auto px-5 md:px-10 pb-20 lg:pb-0"
+          style={{
+            marginLeft: "auto",
+            marginRight: "auto",
+            paddingLeft: "1.25rem",
+            paddingRight: "1.25rem",
+          }}
         >
           <Routes>
             <Route path="/" element={<Home />} />

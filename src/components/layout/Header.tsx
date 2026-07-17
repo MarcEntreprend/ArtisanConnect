@@ -2,11 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, Check, X, Menu } from "lucide-react";
+import { Plus, X, Menu } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
-import Logo from "../ui/Logo";
-import ThemeToggle from "../ui/ThemeToggle";
 
 const NAV_LINKS = [
   { path: "/", label: "Accueil" },
@@ -62,7 +60,7 @@ export default function Header() {
   useEffect(() => {
     const close = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
-      if (!t.closest(".lang-wrapper")) setLangOpen(false);
+      if (!t.closest(".language-wrapper")) setLangOpen(false);
       if (!t.closest(".profile-wrapper")) setProfileOpen(false);
     };
     document.addEventListener("click", close);
@@ -90,140 +88,163 @@ export default function Header() {
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-40 bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-[14px] border-b border-(--border) transition-transform duration-300 ${
-          headerHidden ? "-translate-y-full" : "translate-y-0"
-        }`}
-      >
-        <div
-          className="max-w-7xl mx-auto px-4 md:px-10 h-17 flex items-center justify-between gap-6"
-          style={{ marginLeft: "auto", marginRight: "auto" }}
-        >
-          <Logo />
+      <header className={`header ${headerHidden ? "header-hidden" : ""}`}>
+        <div className="container header-content">
+          <a href="/" className="logo-container">
+            <span className="logo-mark">AC</span>
+            <span className="logo-text">ArtisanConnect</span>
+          </a>
 
-          {/* Nav desktop */}
-          <nav className="hidden lg:flex items-center gap-8 text-[0.9rem] font-medium text-(--ink-soft)">
+          <nav className="header-nav" aria-label="Navigation principale">
             {NAV_LINKS.map((link) => {
               const active = location.pathname === link.path;
               return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative transition-colors hover:text-(--ink) ${
-                    active ? "text-(--ink)" : ""
-                  }`}
+                  className={active ? "active" : ""}
                 >
                   {link.label}
-                  {active && (
-                    <span className="absolute left-0 right-0 -bottom-5 h-0.5 bg-(--accent)" />
-                  )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            {/* Espace artisan */}
-            <Link
-              to="/dashboard"
-              className="hidden sm:inline-flex items-center gap-1.5 px-[0.55rem] py-[0.55rem] rounded-full border border-(--border-strong) text-[0.85rem] font-semibold hover:border-(--accent) hover:bg-(--accent-soft) transition-colors"
-            >
-              <Plus size={16} />
+          <div className="header-actions">
+            <Link to="/dashboard" className="artisan-cta">
+              <Plus size={16} strokeWidth={2} />
               Espace artisan
             </Link>
 
-            <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+            <button
+              className="theme-switch"
+              type="button"
+              role="switch"
+              onClick={toggleTheme}
+              aria-label="Changer de thème"
+            >
+              <span className="theme-switch-track">
+                <span
+                  className={`theme-switch-icon sun ${isDark ? "" : "active"}`}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="5" />
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                  </svg>
+                </span>
+                <span
+                  className={`theme-switch-icon moon ${isDark ? "active" : ""}`}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                </span>
+              </span>
+            </button>
 
-            {/* Langue */}
-            <div className="relative lang-wrapper">
+            <div className="language-wrapper">
               <button
+                className="lang-trigger"
                 onClick={(e) => {
                   e.stopPropagation();
                   setLangOpen(!langOpen);
                 }}
-                className="flex items-center gap-[0.35rem] px-[0.45rem] py-[0.6rem] rounded-full text-[0.8rem] font-semibold hover:bg-(--bg-sunken) transition-colors"
               >
-                <img
-                  src={lang.flag}
-                  alt=""
-                  className="w-4.5 h-4.5 rounded-full object-cover"
-                />
-                <span>{lang.short}</span>
+                <img src={lang.flag} alt="" className="lang-flag-img" />
+                <span className="lang-text">{lang.short}</span>
               </button>
               {langOpen && (
-                <ul className="absolute right-0 top-full mt-2.5 min-w-45 bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-[0.4rem] z-50">
+                <ul className="lang-dropdown open">
                   {LANGUAGES.map((l) => (
                     <li
                       key={l.code}
+                      className={lang.code === l.code ? "active" : ""}
                       onClick={() => {
                         setLang(l);
                         setLangOpen(false);
                       }}
-                      className={`flex items-center justify-between gap-2 px-[0.55rem] py-[0.6rem] rounded-lg text-[0.85rem] cursor-pointer hover:bg-(--bg-sunken) transition-colors ${
-                        lang.code === l.code ? "font-semibold" : ""
-                      }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <img
-                          src={l.flag}
-                          alt=""
-                          className="w-4.5 h-4.5 rounded-full"
-                        />
-                        {l.name}
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <img src={l.flag} alt="" className="lang-flag-img" />
+                        <span className="lang-name">{l.name}</span>
                       </span>
-                      {lang.code === l.code && (
-                        <Check size={16} className="text-(--accent)" />
-                      )}
+                      <svg
+                        className={`lang-check ${lang.code === l.code ? "active" : ""}`}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
 
-            {/* Profil */}
-            <div className="relative profile-wrapper">
+            <div className="profile-wrapper">
               {user ? (
                 <button
+                  className="profile-trigger"
                   onClick={(e) => {
                     e.stopPropagation();
                     setProfileOpen(!profileOpen);
                   }}
-                  className="w-10 h-10 rounded-full bg-(--accent-soft) text-(--accent-strong) font-bold text-[0.85rem] flex items-center justify-center border border-(--border) hover:scale-[1.04] transition-transform"
                 >
-                  {initials}
+                  <span>{initials}</span>
                 </button>
               ) : (
                 <Link
                   to="/auth"
-                  className="px-[0.4rem] py-1 rounded-full border border-(--border) text-[0.85rem] font-medium text-(--ink) hover:bg-(--bg-sunken) transition-colors"
+                  className="btn btn-outline"
+                  style={{ padding: "0.4rem 1rem" }}
                 >
                   Se connecter
                 </Link>
               )}
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-2.5 min-w-55 bg-(--bg-elevated) border border-(--border) rounded-(--r-sm) shadow-(--shadow-lg) p-2 z-50">
-                  {[
-                    { to: "/dashboard", label: "Espace artisan" },
-                    { to: "/appointments", label: "Mes rendez-vous" },
-                    { to: "/messages", label: "Messagerie" },
-                    { to: "/favorites", label: "Favoris" },
-                  ].map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setProfileOpen(false)}
-                      className="block px-[0.6rem] py-[0.7rem] text-[0.85rem] font-medium hover:bg-(--bg-sunken) rounded-lg transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+                <div className="profile-dropdown open">
+                  <Link to="/dashboard" onClick={() => setProfileOpen(false)}>
+                    Espace artisan
+                  </Link>
+                  <Link
+                    to="/appointments"
+                    onClick={() => setProfileOpen(false)}
+                  >
+                    Mes rendez-vous
+                  </Link>
+                  <Link to="/messages" onClick={() => setProfileOpen(false)}>
+                    Messagerie
+                  </Link>
+                  <Link to="/favorites" onClick={() => setProfileOpen(false)}>
+                    Favoris
+                  </Link>
                   <button
                     onClick={() => {
                       signOut();
                       setProfileOpen(false);
                     }}
-                    className="w-full text-left px-[0.6rem] py-[0.7rem] text-[0.85rem] font-medium hover:bg-(--bg-sunken) rounded-lg transition-colors"
                   >
                     Se déconnecter
                   </button>
@@ -233,7 +254,7 @@ export default function Header() {
 
             {/* Burger mobile */}
             <button
-              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-(--bg-sunken) transition-colors"
+              className="icon-btn lg:hidden"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
             >
@@ -247,35 +268,27 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Menu mobile */}
       {mobileOpen && (
         <div className="fixed inset-0 z-30 lg:hidden bg-(--bg)/98 backdrop-blur-2xl flex flex-col">
           <div className="h-17 flex items-center justify-between px-5 border-b border-(--border)">
-            <Logo />
-            <button
-              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-(--bg-sunken) transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
+            <a href="/" className="logo-container">
+              <span className="logo-mark">AC</span>
+              <span className="logo-text">ArtisanConnect</span>
+            </a>
+            <button className="icon-btn" onClick={() => setMobileOpen(false)}>
               <X size={18} strokeWidth={2.5} />
             </button>
           </div>
           <nav className="flex-1 flex flex-col justify-center px-8 gap-2">
-            {NAV_LINKS.map((link) => {
-              const active = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`px-5 py-4 rounded-2xl text-xl font-bold transition-all ${
-                    active
-                      ? "bg-(--accent-soft) text-(--accent-strong)"
-                      : "text-(--ink-soft) hover:bg-(--bg-sunken) hover:text-(--ink)"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`px-5 py-4 rounded-2xl text-xl font-bold ${location.pathname === link.path ? "bg-(--accent-soft) text-(--accent-strong)" : "text-(--ink-soft) hover:bg-(--bg-sunken)"}`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
           <div className="px-8 py-8 border-t border-(--border)">
             <Link
