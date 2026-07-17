@@ -1,4 +1,4 @@
-// src/pages/Auth.tsx
+// src/pages/Auth.tsx — style Terrain restauré, logique métier inchangée
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -93,12 +93,32 @@ export default function Auth() {
 
   const backHref =
     document.referrer && document.referrer.includes(window.location.host)
-      ? undefined // sera géré par onClick
+      ? undefined
       : "/";
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 animate-fade-in-up">
-      <div className="w-full max-w-110 bg-bg-elevated rounded-3xl p-10 shadow-lg border border-border relative">
+    <div
+      style={{
+        background: "var(--bg)",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "1.5rem",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "440px",
+          background: "var(--bg-elevated)",
+          borderRadius: "var(--r-card)",
+          padding: "2.5rem 2rem",
+          boxShadow: "var(--shadow-lg)",
+          border: "1px solid var(--border)",
+          position: "relative",
+        }}
+      >
         {/* Flèche retour */}
         <Link
           to={backHref || "#"}
@@ -108,7 +128,30 @@ export default function Auth() {
               window.history.back();
             }
           }}
-          className="absolute top-5 left-5 w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-bg-sunken hover:text-ink transition-all active:scale-95"
+          style={{
+            position: "absolute",
+            top: "1.25rem",
+            left: "1.25rem",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            color: "var(--ink-soft)",
+            background: "transparent",
+            textDecoration: "none",
+            transition: "background 0.2s, color 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--bg-sunken)";
+            e.currentTarget.style.color = "var(--ink)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "var(--ink-soft)";
+          }}
+          aria-label="Retour à l'accueil"
         >
           <ArrowLeft size={20} />
         </Link>
@@ -116,68 +159,105 @@ export default function Auth() {
         {/* Login */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
-            <h2 className="text-2xl font-bold text-center mb-1">
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                marginBottom: "0.25rem",
+                textAlign: "center",
+              }}
+            >
               Se connecter
             </h2>
-            <p className="text-sm text-center text-ink-faint mb-8">
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "0.85rem",
+                color: "var(--ink-faint)",
+                marginBottom: "2rem",
+              }}
+            >
               Accédez à votre espace ArtisanConnect.
             </p>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  Mot de passe
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
+            <div className="dash-field" style={{ marginBottom: "1.25rem" }}>
+              <label>Email</label>
+              <input
+                type="email"
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="dash-field" style={{ marginBottom: "1.75rem" }}>
+              <label>Mot de passe</label>
+              <input
+                type="password"
+                required
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+              />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-strong disabled:opacity-50 transition-all active:scale-[0.98] shadow-sm"
+              className="btn btn-primary"
+              style={{ width: "100%", marginBottom: "1.25rem" }}
             >
               {loading ? "Connexion…" : "Connexion"}
             </button>
 
-            <p className="text-center text-sm mt-4">
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "0.85rem",
+                marginBottom: "0.5rem",
+              }}
+            >
               <button
                 type="button"
                 onClick={() => setMode("signup")}
-                className="text-accent font-medium hover:underline"
+                style={{
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
               >
                 Créer un compte
               </button>
-              <span className="text-ink-faint mx-1.5">·</span>
+              <span style={{ color: "var(--ink-faint)", margin: "0 0.4rem" }}>
+                ·
+              </span>
               <button
                 type="button"
                 onClick={() => setMode("recover")}
-                className="text-accent font-medium hover:underline"
+                style={{
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
               >
                 Mot de passe oublié
               </button>
             </p>
 
             {error && (
-              <p className="text-center text-sm text-danger mt-3 font-medium">{error}</p>
+              <p
+                style={{
+                  color: "var(--danger)",
+                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  marginTop: "0.5rem",
+                  minHeight: "1.2rem",
+                }}
+              >
+                {error}
+              </p>
+            )}
+            {!error && (
+              <div style={{ minHeight: "1.2rem", marginTop: "0.5rem" }} />
             )}
           </form>
         )}
@@ -185,89 +265,116 @@ export default function Auth() {
         {/* Signup */}
         {mode === "signup" && (
           <form onSubmit={handleSignup}>
-            <h2 className="text-2xl font-bold text-center mb-1">
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                marginBottom: "0.25rem",
+                textAlign: "center",
+              }}
+            >
               Créer un compte
             </h2>
-            <p className="text-sm text-center text-ink-faint mb-8">
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "0.85rem",
+                color: "var(--ink-faint)",
+                marginBottom: "2rem",
+              }}
+            >
               Rejoignez ArtisanConnect en quelques secondes.
             </p>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  Nom complet
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={signupName}
-                  onChange={(e) => setSignupName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={signupEmail}
-                  onChange={(e) => setSignupEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  Mot de passe
-                </label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  Vous êtes ?
-                </label>
-                <select
-                  value={signupRole}
-                  onChange={(e) => setSignupRole(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  {ROLES.map((r) => (
-                    <option key={r.value} value={r.value}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="dash-field" style={{ marginBottom: "1.25rem" }}>
+              <label>Nom complet</label>
+              <input
+                type="text"
+                required
+                value={signupName}
+                onChange={(e) => setSignupName(e.target.value)}
+              />
+            </div>
+
+            <div className="dash-field" style={{ marginBottom: "1.25rem" }}>
+              <label>Email</label>
+              <input
+                type="email"
+                required
+                value={signupEmail}
+                onChange={(e) => setSignupEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="dash-field" style={{ marginBottom: "1.25rem" }}>
+              <label>Mot de passe</label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={signupPassword}
+                onChange={(e) => setSignupPassword(e.target.value)}
+              />
+            </div>
+
+            <div className="dash-field" style={{ marginBottom: "1.75rem" }}>
+              <label>Vous êtes ?</label>
+              <select
+                value={signupRole}
+                onChange={(e) => setSignupRole(e.target.value)}
+              >
+                {ROLES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-strong disabled:opacity-50 transition-all active:scale-[0.98] shadow-sm"
+              className="btn btn-primary"
+              style={{ width: "100%", marginBottom: "1.25rem" }}
             >
               {loading ? "Création…" : "S'inscrire"}
             </button>
 
-            <p className="text-center text-sm mt-4">
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "0.85rem",
+                marginBottom: "0.5rem",
+              }}
+            >
               <button
                 type="button"
                 onClick={() => setMode("login")}
-                className="text-accent font-medium hover:underline"
+                style={{
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
               >
                 Déjà un compte ? Connectez-vous
               </button>
             </p>
 
             {error && (
-              <p className="text-center text-sm text-danger mt-3 font-medium">{error}</p>
+              <p
+                style={{
+                  color: "var(--danger)",
+                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  marginTop: "0.5rem",
+                  minHeight: "1.2rem",
+                }}
+              >
+                {error}
+              </p>
+            )}
+            {!error && (
+              <div style={{ minHeight: "1.2rem", marginTop: "0.5rem" }} />
             )}
           </form>
         )}
@@ -275,49 +382,94 @@ export default function Auth() {
         {/* Recover */}
         {mode === "recover" && (
           <form onSubmit={handleRecover}>
-            <h2 className="text-2xl font-bold text-center mb-1">
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                marginBottom: "0.25rem",
+                textAlign: "center",
+              }}
+            >
               Mot de passe oublié
             </h2>
-            <p className="text-sm text-center text-ink-faint mb-8">
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "0.85rem",
+                color: "var(--ink-faint)",
+                marginBottom: "2rem",
+              }}
+            >
               Recevez un lien de réinitialisation par email.
             </p>
 
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Email</label>
+            <div className="dash-field" style={{ marginBottom: "1.75rem" }}>
+              <label>Email</label>
               <input
                 type="email"
                 required
                 value={recoverEmail}
                 onChange={(e) => setRecoverEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-strong disabled:opacity-50 transition-all active:scale-[0.98] shadow-sm"
+              className="btn btn-primary"
+              style={{ width: "100%", marginBottom: "1.25rem" }}
             >
               {loading ? "Envoi…" : "Envoyer le lien"}
             </button>
 
-            <p className="text-center text-sm mt-4">
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "0.85rem",
+                marginBottom: "0.5rem",
+              }}
+            >
               <button
                 type="button"
                 onClick={() => setMode("login")}
-                className="text-accent font-medium hover:underline"
+                style={{
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
               >
                 Retour à la connexion
               </button>
             </p>
 
             {message && (
-              <p className="text-center text-sm text-forest mt-3 font-medium">
+              <p
+                style={{
+                  color: "var(--accent)",
+                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  marginTop: "0.5rem",
+                  minHeight: "1.2rem",
+                }}
+              >
                 {message}
               </p>
             )}
             {error && (
-              <p className="text-center text-sm text-danger mt-3 font-medium">{error}</p>
+              <p
+                style={{
+                  color: "var(--danger)",
+                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  marginTop: "0.5rem",
+                  minHeight: "1.2rem",
+                }}
+              >
+                {error}
+              </p>
+            )}
+            {!message && !error && (
+              <div style={{ minHeight: "1.2rem", marginTop: "0.5rem" }} />
             )}
           </form>
         )}

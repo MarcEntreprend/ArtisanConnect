@@ -54,8 +54,18 @@ export default function Onboarding() {
 
   if (authLoading)
     return (
-      <div className="flex items-center justify-center min-h-screen text-ink-faint">
-        Chargement…
+      <div className="onboarding-overlay">
+        <div
+          className="onboarding-modal"
+          style={{
+            textAlign: "center",
+            padding: "2rem",
+            color: "var(--ink-faint)",
+            fontSize: "0.9rem",
+          }}
+        >
+          Chargement…
+        </div>
       </div>
     );
 
@@ -117,45 +127,47 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-(--bg)/95 backdrop-blur flex items-center justify-center p-4">
-      <div className="w-full max-w-125 bg-bg-elevated border border-border rounded-3xl shadow-lg p-10">
-        <div className="flex items-center gap-1 mb-8">{dots}</div>
+    <div className="onboarding-overlay">
+      <div className="onboarding-modal">
+        <div className="onboarding-steps">{dots}</div>
 
         {step === 1 && (
           <>
-            <h2 className="text-2xl font-extrabold mb-2">Bienvenue 👋</h2>
-            <p className="text-sm text-ink-faint mb-6">
+            <div className="onboarding-title">Bienvenue 👋</div>
+            <div className="onboarding-subtitle">
               Pour personnaliser votre espace, dites-nous qui vous êtes.
-            </p>
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {(["solo", "entreprise"] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setType(t)}
-                  className={`flex flex-col items-center gap-2 p-6 rounded-2xl border-2 transition-colors text-center ${
-                    type === t
-                      ? "border-accent bg-accent-soft"
-                      : "border-border hover:border-border-strong"
-                  }`}
-                >
-                  <span className="text-3xl">{t === "solo" ? "🧑‍🔧" : "🏪"}</span>
-                  <span className="font-bold text-sm">
-                    {t === "solo"
-                      ? "Artisan indépendant"
-                      : "Entreprise ou salon"}
-                  </span>
-                  <span className="text-xs text-ink-faint">
-                    {t === "solo" ? "Je travaille seul" : "J'ai une équipe"}
-                  </span>
-                </button>
-              ))}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-ink-faint">Étape 1 sur 3</span>
+            <div className="onboarding-choice-grid">
+              <div
+                className={`onboarding-choice ${type === "solo" ? "selected" : ""}`}
+                onClick={() => setType("solo")}
+              >
+                <div className="onboarding-choice-icon">🧑‍🔧</div>
+                <div className="onboarding-choice-label">
+                  Artisan indépendant
+                </div>
+                <div className="onboarding-choice-sub">Je travaille seul</div>
+              </div>
+              <div
+                className={`onboarding-choice ${type === "entreprise" ? "selected" : ""}`}
+                onClick={() => setType("entreprise")}
+              >
+                <div className="onboarding-choice-icon">🏪</div>
+                <div className="onboarding-choice-label">
+                  Entreprise ou salon
+                </div>
+                <div className="onboarding-choice-sub">J'ai une équipe</div>
+              </div>
+            </div>
+            <div className="onboarding-actions">
+              <span style={{ fontSize: ".8rem", color: "var(--ink-faint)" }}>
+                Étape 1 sur 3
+              </span>
               <button
+                type="button"
+                className="btn btn-primary"
                 disabled={!type}
                 onClick={() => setStep(2)}
-                className="btn btn-primary"
               >
                 Continuer →
               </button>
@@ -165,18 +177,16 @@ export default function Onboarding() {
 
         {step === 2 && (
           <>
-            <h2 className="text-2xl font-extrabold mb-2">Votre métier</h2>
-            <p className="text-sm text-ink-faint mb-6">
-              Quel est votre métier principal ?
-            </p>
-            <div className="mb-6">
-              <label className="block text-sm font-semibold mb-1.5">
-                Choisissez votre métier
-              </label>
+            <div className="onboarding-title">Votre métier</div>
+            <div className="onboarding-subtitle">
+              Quel est votre métier principal ? Vous pourrez en ajouter d'autres
+              plus tard.
+            </div>
+            <div className="onboarding-field">
+              <label>Choisissez votre domaine (ou métier)</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full p-3 rounded-xl border border-border bg-bg text-sm"
               >
                 <option value="">— Sélectionner —</option>
                 {CATEGORIES.map((c) => (
@@ -186,14 +196,19 @@ export default function Onboarding() {
                 ))}
               </select>
             </div>
-            <div className="flex items-center justify-between">
-              <button onClick={() => setStep(1)} className="btn btn-ghost">
+            <div className="onboarding-actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setStep(1)}
+              >
                 ← Retour
               </button>
               <button
+                type="button"
+                className="btn btn-primary"
                 disabled={!category}
                 onClick={() => setStep(3)}
-                className="btn btn-primary"
               >
                 Continuer →
               </button>
@@ -203,70 +218,73 @@ export default function Onboarding() {
 
         {step === 3 && (
           <>
-            <h2 className="text-2xl font-extrabold mb-2">
-              Votre premier service
-            </h2>
-            <p className="text-sm text-ink-faint mb-6">
+            <div className="onboarding-title">Votre premier service</div>
+            <div className="onboarding-subtitle">
               Ajoutez au moins un service pour que les clients puissent vous
               réserver.
-            </p>
-            <div className="space-y-4 mb-4">
-              <div>
-                <label className="block text-sm font-semibold mb-1">
-                  Nom du service
-                </label>
-                <input
-                  type="text"
-                  value={service.name}
-                  onChange={(e) =>
-                    setService({ ...service, name: e.target.value })
-                  }
-                  placeholder="Ex. Coupe de cheveux"
-                  className="w-full p-3 rounded-xl border border-border bg-bg text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">
-                  Prix (Gourdes)
-                </label>
-                <input
-                  type="number"
-                  value={service.price}
-                  onChange={(e) =>
-                    setService({ ...service, price: e.target.value })
-                  }
-                  placeholder="Ex. 2500"
-                  min="0"
-                  step="500"
-                  className="w-full p-3 rounded-xl border border-border bg-bg text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">
-                  Durée (minutes)
-                </label>
-                <input
-                  type="number"
-                  value={service.duration}
-                  onChange={(e) =>
-                    setService({ ...service, duration: e.target.value })
-                  }
-                  placeholder="Ex. 30"
-                  min="5"
-                  step="5"
-                  className="w-full p-3 rounded-xl border border-border bg-bg text-sm"
-                />
-              </div>
             </div>
-            {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-            <div className="flex items-center justify-between">
-              <button onClick={() => setStep(2)} className="btn btn-ghost">
+            <div className="onboarding-field">
+              <label>Nom du service</label>
+              <input
+                type="text"
+                placeholder="Ex. Coupe de cheveux"
+                value={service.name}
+                onChange={(e) =>
+                  setService({ ...service, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="onboarding-field">
+              <label>Prix (Gourdes)</label>
+              <input
+                type="number"
+                placeholder="Ex. 2500"
+                min="0"
+                step="500"
+                value={service.price}
+                onChange={(e) =>
+                  setService({ ...service, price: e.target.value })
+                }
+              />
+            </div>
+            <div className="onboarding-field">
+              <label>Durée (minutes)</label>
+              <input
+                type="number"
+                placeholder="Ex. 30"
+                min="5"
+                step="5"
+                value={service.duration}
+                onChange={(e) =>
+                  setService({ ...service, duration: e.target.value })
+                }
+              />
+            </div>
+            {error && (
+              <p
+                style={{
+                  color: "var(--danger)",
+                  fontSize: ".8rem",
+                  minHeight: "1.2rem",
+                  marginTop: "0.5rem",
+                }}
+              >
+                {error}
+              </p>
+            )}
+            <div className="onboarding-actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setStep(2)}
+              >
                 ← Retour
               </button>
               <button
-                onClick={handleFinish}
-                disabled={submitting}
+                type="button"
                 className="btn btn-primary"
+                disabled={submitting}
+                onClick={handleFinish}
               >
                 {submitting ? "Création…" : "Commencer 🎉"}
               </button>

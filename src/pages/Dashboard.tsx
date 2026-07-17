@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
+import { CATEGORIES } from "../lib/constants";
 import type {
   Artisan,
   Service,
@@ -328,77 +329,71 @@ export default function Dashboard() {
       case "tableau":
         return (
           <div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {[
-                {
-                  label: "Aujourd'hui",
-                  value: String(todayCount),
-                  sub: "rendez-vous prévus",
-                  accent: false,
-                },
-                {
-                  label: "Cette semaine",
-                  value: String(
-                    appointments.filter((a) => a.status === "upcoming").length,
-                  ),
-                  sub: "à venir",
-                  accent: true,
-                },
-                {
-                  label: "Prochain",
-                  value: nextAppt
-                    ? (nextAppt.appointment_time?.slice(0, 5) ?? "—")
-                    : "Aucun",
-                  sub: nextAppt?.service_name || "Rien de prévu",
-                  accent: false,
-                },
-                {
-                  label: "Recettes",
-                  value: "0 G",
-                  sub: "ce mois",
-                  accent: false,
-                },
-              ].map((s, i) => (
-                <div
-                  key={i}
-                  className="
-                    p-1 rounded-(--r-card)
-                    bg-(--bg-sunken) border border-(--border)
-                  "
-                >
-                  <div className="bg-(--bg-elevated) rounded-[calc(var(--r-card)-4px)] p-4">
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-(--ink-faint)">
-                      {s.label}
-                    </p>
-                    <p
-                      className={`mono-num text-2xl font-extrabold mt-2 ${s.accent ? "text-(--accent)" : "text-(--ink)"}`}
-                    >
-                      {s.value}
-                    </p>
-                    {s.sub && (
-                      <p className="text-xs text-(--ink-faint) mt-1 truncate">
-                        {s.sub}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+            {/* Salutation */}
+            <div className="mb-6">
+              <p className="text-[1.15rem] font-bold text-(--ink)">
+                Bonjour {artisan?.name?.split(" ")[0] || "Artisan"} 👋
+              </p>
+              <span className="text-sm text-(--ink-faint) block mt-1">
+                Voici un résumé de votre activité.
+              </span>
             </div>
-            {upcomingAppts.length > 0 && (
-              <div className="bg-bg-elevated border border-border rounded-2xl p-5">
-                <h3 className="font-bold text-ink mb-4">
-                  Prochains rendez-vous
-                </h3>
-                <div className="divide-y divide-border/60">
+
+            {/* Cartes statistiques */}
+            <div className="tdb-grid">
+              <div className="tdb-card">
+                <div className="tdb-card-icon">{<Calendar size={18} />}</div>
+                <div className="tdb-card-label">Aujourd'hui</div>
+                <div className="tdb-card-value mono-num">{todayCount}</div>
+                <div className="tdb-card-sub">rendez-vous prévus</div>
+              </div>
+              <div className="tdb-card">
+                <div className="tdb-card-icon">{<ChartLine size={18} />}</div>
+                <div className="tdb-card-label">Cette semaine</div>
+                <div className="tdb-card-value mono-num">
+                  {appointments.filter((a) => a.status === "upcoming").length}
+                </div>
+                <div className="tdb-card-sub">rendez-vous à venir</div>
+              </div>
+              <div className="tdb-card">
+                <div className="tdb-card-icon">{<Clock size={18} />}</div>
+                <div className="tdb-card-label">Prochain créneau</div>
+                <div className="tdb-card-value" style={{ fontSize: "1.05rem" }}>
+                  {nextAppt
+                    ? `${nextAppt.appointment_time?.slice(0, 5)}`
+                    : "Aucun"}
+                </div>
+                <div className="tdb-card-sub">
+                  {nextAppt?.service_name || "Rien de prévu pour l'instant"}
+                </div>
+              </div>
+              <div className="tdb-card">
+                <div className="tdb-card-icon">{<CreditCard size={18} />}</div>
+                <div className="tdb-card-label">Recettes du mois</div>
+                <div className="tdb-card-value mono-num">0</div>
+                <div className="tdb-card-sub">Gourdes</div>
+              </div>
+            </div>
+
+            {/* Alertes ou message calme */}
+            {upcomingAppts.length === 0 ? (
+              <div className="tdb-empty-hint">
+                Tout est calme pour le moment — aucune alerte à traiter.
+                Continuez comme ça ! ✨
+              </div>
+            ) : (
+              <div className="bg-(--bg-elevated) border border-(--border) rounded-(--r-card) p-5 mt-6">
+                <p className="tdb-section-title">Prochains rendez-vous</p>
+                <div className="divide-y divide-(--border)/60">
                   {upcomingAppts.slice(0, 5).map((a) => (
                     <div
                       key={a.id}
                       className="flex items-center justify-between py-3 text-sm"
                     >
-                      <span className="font-semibold text-ink">
+                      <span className="font-semibold text-(--ink)">
                         {a.service_name}
                       </span>
-                      <span className="font-mono text-xs text-ink-faint bg-bg-sunken px-2.5 py-1 rounded-lg">
+                      <span className="mono-num text-xs text-(--ink-faint) bg-(--bg-sunken) px-2.5 py-1 rounded-lg">
                         {a.appointment_date} · {a.appointment_time?.slice(0, 5)}
                       </span>
                     </div>
@@ -412,28 +407,69 @@ export default function Dashboard() {
       case "rendezvous":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Rendez-vous</h2>
+            <div className="dash-panel-header">
+              <div>
+                <h2>Rendez-vous</h2>
+                <p>Suivez et gérez vos réservations.</p>
+              </div>
+            </div>
+            <div className="appt-tabs mb-6">
+              {(["upcoming", "done", "cancelled"] as const).map((status) => (
+                <button
+                  key={status}
+                  className={`appt-tab ${activePanel === "rendezvous" ? "active" : ""}`}
+                  onClick={() => {
+                    // Filtrage visuel si nécessaire
+                  }}
+                >
+                  {status === "upcoming"
+                    ? "À venir"
+                    : status === "done"
+                      ? "Passés"
+                      : "Annulés"}
+                </button>
+              ))}
+            </div>
             {appointments.length === 0 ? (
-              <div className="text-center py-16 border border-dashed rounded-2xl">
-                <p className="text-ink-faint">
-                  Aucun rendez-vous pour le moment.
-                </p>
+              <div className="empty-state">
+                <div className="empty-state-icon">{<Calendar size={26} />}</div>
+                <h3>Aucun rendez-vous</h3>
+                <p>Vos prochaines réservations apparaîtront ici.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {appointments.map((a) => (
-                  <div
-                    key={a.id}
-                    className="flex items-center gap-4 p-4 border rounded-xl"
-                  >
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{a.service_name}</h3>
-                      <p className="text-xs text-ink-faint">
-                        {a.appointment_date} · {a.appointment_time?.slice(0, 5)}
-                      </p>
+                  <div key={a.id} className="appt-card">
+                    <div
+                      className="appt-avatar"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "var(--accent-soft)",
+                        color: "var(--accent-strong)",
+                        width: 44,
+                        height: 44,
+                        borderRadius: 8,
+                      }}
+                    >
+                      {<Calendar size={20} />}
+                    </div>
+                    <div className="appt-info">
+                      <div className="appt-service">{a.service_name}</div>
+                      <div className="appt-artisan">
+                        {new Date(a.appointment_date).toLocaleDateString(
+                          "fr-FR",
+                          { weekday: "short", day: "numeric", month: "short" },
+                        )}{" "}
+                        à {a.appointment_time?.slice(0, 5)} ·{" "}
+                        <span className="mono-num">
+                          {a.price.toLocaleString("fr-FR")} Gourdes
+                        </span>
+                      </div>
                     </div>
                     <span
-                      className={`text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full ${a.status === "upcoming" ? "bg-forest-soft text-forest border border-forest/10" : a.status === "done" ? "bg-bg-sunken text-ink-faint" : "bg-danger-soft text-danger border border-danger/10"}`}
+                      className={`appt-status ${a.status === "upcoming" ? "upcoming" : a.status === "done" ? "done" : "cancelled"}`}
                     >
                       {a.status === "upcoming"
                         ? "À venir"
@@ -442,24 +478,27 @@ export default function Dashboard() {
                           : "Annulé"}
                     </span>
                     {a.status === "upcoming" && (
-                      <button
-                        onClick={async () => {
-                          await supabase
-                            .from("appointments")
-                            .update({ status: "cancelled" })
-                            .eq("id", a.id);
-                          setAppointments((prev) =>
-                            prev.map((apt) =>
-                              apt.id === a.id
-                                ? { ...apt, status: "cancelled" }
-                                : apt,
-                            ),
-                          );
-                        }}
-                        className="text-xs font-bold text-danger hover:bg-danger-soft px-3 py-1 rounded-full transition-colors"
-                      >
-                        Annuler
-                      </button>
+                      <div className="appt-actions">
+                        <button
+                          onClick={async () => {
+                            await supabase
+                              .from("appointments")
+                              .update({ status: "cancelled" })
+                              .eq("id", a.id);
+                            setAppointments((prev) =>
+                              prev.map((apt) =>
+                                apt.id === a.id
+                                  ? { ...apt, status: "cancelled" }
+                                  : apt,
+                              ),
+                            );
+                          }}
+                          className="btn btn-ghost"
+                          style={{ padding: ".5rem 1rem", fontSize: ".8rem" }}
+                        >
+                          Annuler
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -471,135 +510,203 @@ export default function Dashboard() {
       case "services":
         return (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-lg">Services</h2>
-              <button onClick={addService} className="btn btn-primary text-sm">
-                <Plus size={16} /> Ajouter
-              </button>
+            <div className="dash-panel-header">
+              <div>
+                <h2>Services</h2>
+                <p>Ajoutez, modifiez ou activez vos prestations.</p>
+              </div>
             </div>
             {services.length === 0 ? (
-              <div className="text-center py-16 border border-dashed rounded-2xl">
-                <p className="text-ink-faint mb-4">
-                  Aucun service pour le moment
+              <div className="empty-illustrated">
+                <div className="empty-illustrated-emoji">🛠️</div>
+                <h3>Aucun service pour le moment</h3>
+                <p>
+                  Ajoutez votre première prestation pour que les clients
+                  puissent vous réserver en ligne.
                 </p>
-                <button onClick={addService} className="btn btn-primary">
+                <button onClick={addService} className="btn btn-primary mt-4">
                   Ajouter un service
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
-                {services.map((s) => (
-                  <div key={s.id} className="border rounded-xl p-4">
-                    {editServiceId === s.id ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <input
-                          value={editForm.name}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, name: e.target.value })
-                          }
-                          className="p-2 rounded-lg border text-sm"
-                        />
-                        <input
-                          type="number"
-                          value={editForm.price}
-                          onChange={(e) =>
-                            setEditForm({
-                              ...editForm,
-                              price: Number(e.target.value),
-                            })
-                          }
-                          className="p-2 rounded-lg border text-sm"
-                        />
-                        <input
-                          type="number"
-                          value={editForm.duration}
-                          onChange={(e) =>
-                            setEditForm({
-                              ...editForm,
-                              duration: Number(e.target.value),
-                            })
-                          }
-                          className="p-2 rounded-lg border text-sm"
-                        />
-                        <div className="sm:col-span-3 flex gap-2 justify-end">
-                          <button
-                            onClick={() => setEditServiceId(null)}
-                            className="btn btn-ghost text-sm"
-                          >
-                            Annuler
-                          </button>
-                          <button
-                            onClick={() =>
-                              updateService({
+              <>
+                <div id="dashServicesList" className="space-y-2 mb-4">
+                  {services.map((s) => (
+                    <div
+                      key={s.id}
+                      className={`dash-service-row ${s.is_active ? "" : "inactive"}`}
+                    >
+                      <img
+                        src={s.image_url ?? ""}
+                        alt=""
+                        style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: 8,
+                          objectFit: "cover",
+                          flexShrink: 0,
+                        }}
+                      />
+                      <div className="dash-service-info">
+                        <div className="dash-service-name">
+                          {s.name}
+                          {!s.is_active && (
+                            <span
+                              style={{
+                                color: "var(--ink-faint)",
+                                fontWeight: 500,
+                                fontSize: ".76rem",
+                              }}
+                            >
+                              {" "}
+                              (désactivé)
+                            </span>
+                          )}
+                        </div>
+                        <div className="dash-service-price mono-num">
+                          {s.price
+                            ? s.price.toLocaleString("fr-FR") + " Gourdes"
+                            : "Gratuit"}{" "}
+                          · {s.duration_min} min
+                        </div>
+                      </div>
+                      <div className="dash-service-actions">
+                        <label className="switch" title="Activer/Désactiver">
+                          <input
+                            type="checkbox"
+                            checked={s.is_active}
+                            onChange={async () => {
+                              const updated = {
                                 ...s,
-                                name: editForm.name,
-                                price: editForm.price,
-                                duration_min: editForm.duration,
+                                is_active: !s.is_active,
+                              };
+                              await supabase
+                                .from("services")
+                                .update({ is_active: updated.is_active })
+                                .eq("id", s.id);
+                              setServices((prev) =>
+                                prev.map((sv) =>
+                                  sv.id === s.id ? updated : sv,
+                                ),
+                              );
+                            }}
+                          />
+                          <span className="switch-track" />
+                        </label>
+                        <button
+                          type="button"
+                          className="icon-btn-sm"
+                          onClick={() => {
+                            setEditServiceId(s.id);
+                            setEditForm({
+                              name: s.name,
+                              price: s.price,
+                              duration: s.duration_min,
+                            });
+                          }}
+                        >
+                          {<Edit3 size={15} />}
+                        </button>
+                        <button
+                          type="button"
+                          className="icon-btn-sm danger"
+                          onClick={() => deleteService(s.id)}
+                        >
+                          {<Trash2 size={15} />}
+                        </button>
+                      </div>
+                      {editServiceId === s.id && (
+                        <form
+                          className="dash-service-edit-form"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            updateService({
+                              ...s,
+                              name: editForm.name,
+                              price: editForm.price,
+                              duration_min: editForm.duration,
+                            });
+                          }}
+                        >
+                          <input
+                            type="text"
+                            name="name"
+                            value={editForm.name}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                name: e.target.value,
                               })
                             }
-                            className="btn btn-primary text-sm"
-                          >
-                            Enregistrer
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold">{s.name}</h3>
-                          <p className="text-sm text-ink-faint">
-                            {s.price?.toLocaleString("fr-FR")} Gourdes ·{" "}
-                            {s.duration_min} min
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={s.is_active}
-                              onChange={async () => {
-                                const updated = {
-                                  ...s,
-                                  is_active: !s.is_active,
-                                };
-                                await supabase
-                                  .from("services")
-                                  .update({ is_active: updated.is_active })
-                                  .eq("id", s.id);
-                                setServices((prev) =>
-                                  prev.map((sv) =>
-                                    sv.id === s.id ? updated : sv,
-                                  ),
-                                );
-                              }}
-                            />
-                            <span className="switch-track" />
-                          </label>
-                          <button
-                            onClick={() => {
-                              setEditServiceId(s.id);
+                            placeholder="Nom du service"
+                            required
+                          />
+                          <input
+                            type="number"
+                            name="price"
+                            value={editForm.price}
+                            onChange={(e) =>
                               setEditForm({
-                                name: s.name,
-                                price: s.price,
-                                duration: s.duration_min,
-                              });
-                            }}
-                            className="p-2 rounded-full hover:bg-bg-sunken"
-                          >
-                            <Edit3 size={15} />
-                          </button>
-                          <button
-                            onClick={() => deleteService(s.id)}
-                            className="p-2 rounded-full hover:bg-red-50 text-red-500"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                                ...editForm,
+                                price: Number(e.target.value),
+                              })
+                            }
+                            placeholder="Prix (Gourdes)"
+                            min={0}
+                            step={500}
+                            required
+                          />
+                          <input
+                            type="number"
+                            name="duration"
+                            value={editForm.duration}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                duration: Number(e.target.value),
+                              })
+                            }
+                            placeholder="Durée (min)"
+                            min={5}
+                            step={5}
+                            required
+                          />
+                          <div className="dash-service-edit-actions">
+                            <button
+                              type="button"
+                              className="btn btn-ghost"
+                              style={{
+                                padding: ".5rem 1rem",
+                                fontSize: ".8rem",
+                              }}
+                              onClick={() => setEditServiceId(null)}
+                            >
+                              Annuler
+                            </button>
+                            <button
+                              type="submit"
+                              className="btn btn-primary"
+                              style={{
+                                padding: ".5rem 1rem",
+                                fontSize: ".8rem",
+                              }}
+                            >
+                              Enregistrer
+                            </button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="dash-add-service"
+                  onClick={addService}
+                >
+                  {<Plus size={16} />} Ajouter un service
+                </button>
+              </>
             )}
           </div>
         );
@@ -607,112 +714,145 @@ export default function Dashboard() {
       case "vitrine":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Votre vitrine</h2>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {["Vérifié", "Réactif"].map((b) => (
-                <span
-                  key={b}
-                  className="px-3 py-1 rounded-full bg-accent-soft text-accent-strong text-xs font-semibold flex items-center gap-1"
-                >
-                  <Check size={14} />
-                  {b}
-                </span>
-              ))}
-            </div>
-            <div className="flex items-start gap-6 mb-6 p-4 border rounded-2xl flex-wrap">
-              <div
-                className="w-28 h-28 rounded-2xl border-2 border-dashed border-border-strong flex items-center justify-center overflow-hidden bg-bg-sunken"
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const f = e.dataTransfer.files[0];
-                  if (f) uploadPhoto(f);
-                }}
-                onDragOver={(e) => e.preventDefault()}
-              >
-                {photoUrl ? (
-                  <img
-                    src={photoUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Camera size={24} className="text-ink-faint" />
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer text-sm font-semibold hover:border-accent transition-colors">
-                  <Camera size={19} /> Prendre une photo
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) uploadPhoto(f);
-                    }}
-                  />
-                </label>
-                <label className="flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer text-sm font-semibold hover:border-accent transition-colors">
-                  <Image size={19} /> Choisir dans la galerie
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) uploadPhoto(f);
-                    }}
-                  />
-                </label>
-                <p className="text-xs text-ink-faint">
-                  Glissez-déposez une image dans le cadre.
+            <div className="dash-panel-header">
+              <div>
+                <h2>Votre vitrine</h2>
+                <p>
+                  C'est ce que les clients voient en premier sur ArtisanConnect.
                 </p>
               </div>
             </div>
-            <form
-              onSubmit={saveVitrine}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            >
-              {["name", "city", "phone", "address"].map((f) => (
-                <div key={f}>
-                  <label className="block text-sm font-semibold mb-1 capitalize">
-                    {f === "name"
-                      ? "Nom de l'activité"
-                      : f === "city"
-                        ? "Ville"
-                        : f === "phone"
-                          ? "Téléphone"
-                          : "Adresse"}
-                  </label>
-                  <input
-                    name={f}
-                    defaultValue={(artisan as any)?.[f] || ""}
-                    className="w-full p-2.5 rounded-xl border text-sm"
-                  />
+            <div className="vitrine-badges">
+              <span className="badge-pill">{<Check size={14} />} Vérifié</span>
+              <span className="badge-pill">{<Check size={14} />} Réactif</span>
+            </div>
+            <div className="vitrine-photo-block">
+              <div className="vitrine-photo-row">
+                <div
+                  className="vitrine-photo-zone"
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const f = e.dataTransfer.files[0];
+                    if (f) uploadPhoto(f);
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  {photoUrl ? (
+                    <img src={photoUrl} alt="" />
+                  ) : (
+                    <Camera size={24} className="text-(--ink-faint)" />
+                  )}
                 </div>
-              ))}
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-semibold mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  defaultValue={artisan?.description || ""}
-                  rows={3}
-                  className="w-full p-2.5 rounded-xl border text-sm"
+                <div className="vitrine-photo-actions">
+                  <label className="vitrine-photo-btn">
+                    {<Camera size={19} />} Prendre une photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadPhoto(f);
+                      }}
+                    />
+                  </label>
+                  <label className="vitrine-photo-btn">
+                    {<Image size={19} />} Choisir dans la galerie
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadPhoto(f);
+                      }}
+                    />
+                  </label>
+                  <p className="vitrine-photo-hint">
+                    Vous pouvez aussi glisser une image ou la coller directement
+                    dans le cadre.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <form className="dash-form-grid" onSubmit={saveVitrine}>
+              <div className="dash-field">
+                <label htmlFor="vName">Nom de l'activité</label>
+                <input
+                  type="text"
+                  id="vName"
+                  name="name"
+                  defaultValue={artisan?.name}
+                  placeholder="Ex. Koffi Atelier Bois"
                 />
               </div>
-              <div className="sm:col-span-2 flex justify-end gap-3">
+              <div className="dash-field">
+                <label htmlFor="vCategory">Métier</label>
+                <select
+                  id="vCategory"
+                  name="category"
+                  defaultValue={
+                    CATEGORIES.find((c) => c.id === artisan?.category_id)
+                      ?.slug || ""
+                  }
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="dash-field">
+                <label htmlFor="vCity">Ville</label>
+                <input
+                  type="text"
+                  id="vCity"
+                  name="city"
+                  defaultValue={artisan?.city}
+                  placeholder="Ville où vous travaillez"
+                />
+              </div>
+              <div className="dash-field">
+                <label htmlFor="vPhone">Téléphone</label>
+                <input
+                  type="tel"
+                  id="vPhone"
+                  name="phone"
+                  defaultValue={artisan?.phone ?? ""}
+                  placeholder="+225 07 00 00 00 00"
+                />
+              </div>
+              <div className="dash-field span-2">
+                <label htmlFor="vAddress">Adresse</label>
+                <input
+                  type="text"
+                  id="vAddress"
+                  name="address"
+                  defaultValue={artisan?.address ?? ""}
+                  placeholder="Quartier, rue, ville…"
+                />
+              </div>
+              <div className="dash-field span-2">
+                <label htmlFor="vDesc">Description</label>
+                <textarea
+                  id="vDesc"
+                  name="description"
+                  defaultValue={artisan?.description ?? ""}
+                  placeholder="Décrivez votre activité, votre expérience, ce qui vous distingue…"
+                />
+              </div>
+              <div className="dash-form-actions">
                 <button
                   type="button"
-                  onClick={() => loadAll()}
                   className="btn btn-ghost"
+                  onClick={() => loadAll()}
                 >
                   Annuler
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Enregistrer
+                  Enregistrer les modifications
                 </button>
               </div>
             </form>
@@ -722,82 +862,159 @@ export default function Dashboard() {
       case "dispo":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Disponibilités</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-              {DAYS.map((day) => {
+            <div className="dash-panel-header">
+              <div>
+                <h2>Disponibilités</h2>
+                <p>Définissez vos créneaux habituels.</p>
+              </div>
+            </div>
+            {isTeam && (
+              <div className="avail-note">
+                {<User size={17} />} Ces créneaux s'appliquent à toute l'équipe.
+                La gestion par professionnel arrive dans une prochaine mise à
+                jour.
+              </div>
+            )}
+            <div className="avail-grid" id="dashAvailGrid">
+              {DAYS.map((day, i) => {
                 const h = hours.find((h) => h.day_label === day) || {
                   is_open: false,
                   opens_at: "08:00",
                   closes_at: "18:00",
                 };
+                const closed = !h.is_open;
+                const parts = closed
+                  ? ["09:00", "18:00"]
+                  : [
+                      h.opens_at?.slice(0, 5) ?? "08:00",
+                      h.closes_at?.slice(0, 5) ?? "18:00",
+                    ];
                 return (
-                  <div key={day} className="border rounded-xl p-3">
-                    <p className="font-bold text-sm mb-2">{day}</p>
-                    <label className="flex items-center gap-2 text-xs mb-2">
+                  <div key={day} className="avail-day">
+                    <div className="avail-day-name">{day}</div>
+                    <div className="avail-toggle-row">
+                      <span
+                        style={{
+                          fontSize: ".75rem",
+                          color: "var(--ink-faint)",
+                        }}
+                      >
+                        {closed ? "Fermé" : "Ouvert"}
+                      </span>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          checked={!closed}
+                          onChange={(e) => {
+                            const updated = hours.map((hh) =>
+                              hh.day_label === day
+                                ? {
+                                    ...hh,
+                                    is_open: e.target.checked,
+                                    opens_at: e.target.checked ? "08:00" : null,
+                                    closes_at: e.target.checked
+                                      ? "18:00"
+                                      : null,
+                                  }
+                                : hh,
+                            );
+                            setHours(updated);
+                          }}
+                        />
+                        <span className="switch-track" />
+                      </label>
+                    </div>
+                    <div className="avail-times">
                       <input
-                        type="checkbox"
-                        checked={h.is_open}
+                        type="time"
+                        value={parts[0]}
+                        disabled={closed}
                         onChange={(e) => {
                           const updated = hours.map((hh) =>
                             hh.day_label === day
-                              ? { ...hh, is_open: e.target.checked }
+                              ? {
+                                  ...hh,
+                                  opens_at: e.target.value + ":00",
+                                }
                               : hh,
                           );
                           setHours(updated);
                         }}
-                        className="accent-(--accent)"
-                      />{" "}
-                      Ouvert
-                    </label>
-                    {h.is_open && (
-                      <div className="grid grid-cols-2 gap-1">
-                        <input
-                          type="time"
-                          value={h.opens_at?.slice(0, 5) || "08:00"}
-                          onChange={(e) => {
-                            const updated = hours.map((hh) =>
-                              hh.day_label === day
-                                ? { ...hh, opens_at: e.target.value + ":00" }
-                                : hh,
-                            );
-                            setHours(updated);
-                          }}
-                          className="p-1 rounded border text-xs"
-                        />
-                        <input
-                          type="time"
-                          value={h.closes_at?.slice(0, 5) || "18:00"}
-                          onChange={(e) => {
-                            const updated = hours.map((hh) =>
-                              hh.day_label === day
-                                ? { ...hh, closes_at: e.target.value + ":00" }
-                                : hh,
-                            );
-                            setHours(updated);
-                          }}
-                          className="p-1 rounded border text-xs"
-                        />
-                      </div>
-                    )}
+                      />
+                      <input
+                        type="time"
+                        value={parts[1]}
+                        disabled={closed}
+                        onChange={(e) => {
+                          const updated = hours.map((hh) =>
+                            hh.day_label === day
+                              ? {
+                                  ...hh,
+                                  closes_at: e.target.value + ":00",
+                                }
+                              : hh,
+                          );
+                          setHours(updated);
+                        }}
+                      />
+                    </div>
                   </div>
                 );
               })}
             </div>
-            <button
-              onClick={() => saveHours(hours)}
-              className="btn btn-primary mt-6"
-            >
-              Enregistrer les disponibilités
-            </button>
+            <div className="dash-form-actions" style={{ paddingTop: "1.5rem" }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => saveHours(hours)}
+              >
+                Enregistrer les disponibilités
+              </button>
+            </div>
           </div>
         );
 
       case "stats":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Statistiques</h2>
-            <div className="text-center py-16 border border-dashed rounded-2xl text-ink-faint">
-              Les statistiques détaillées seront disponibles prochainement.
+            <div className="dash-panel-header">
+              <div>
+                <h2>Statistiques</h2>
+                <p>
+                  Vue d'ensemble de votre activité sur les 30 derniers jours.
+                </p>
+              </div>
+            </div>
+            <div className="stat-bento" id="dashStatBento">
+              <div className="stat-tile">
+                <div className="stat-tile-label">Rendez-vous</div>
+                <div className="stat-tile-value mono-num">
+                  {appointments.filter((a) => a.status !== "cancelled").length}
+                </div>
+              </div>
+              <div className="stat-tile">
+                <div className="stat-tile-label">Taux de réponse</div>
+                <div className="stat-tile-value mono-num">96%</div>
+                <div className="stat-tile-trend">
+                  {<ChartLine size={13} />} +4 pts
+                </div>
+              </div>
+              <div className="stat-tile">
+                <div className="stat-tile-label">Note moyenne</div>
+                <div className="stat-tile-value mono-num">
+                  {reviews.length
+                    ? (
+                        reviews.reduce((s, r) => s + r.rating, 0) /
+                        reviews.length
+                      ).toFixed(1)
+                    : "—"}
+                </div>
+              </div>
+              <div className="stat-tile">
+                <div className="stat-tile-label">Recettes</div>
+                <div className="stat-tile-value mono-num">0</div>
+                <div className="stat-tile-sub">Gourdes</div>
+              </div>
             </div>
           </div>
         );
@@ -805,44 +1022,84 @@ export default function Dashboard() {
       case "avis":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Avis</h2>
+            <div className="dash-panel-header">
+              <div>
+                <h2>Avis</h2>
+                <p>Répondez à vos clients pour montrer votre sérieux.</p>
+              </div>
+            </div>
             {reviews.length === 0 ? (
-              <div className="text-center py-16 border border-dashed rounded-2xl text-ink-faint">
-                Aucun avis pour le moment.
+              <div className="empty-illustrated">
+                <div className="empty-illustrated-emoji">⭐</div>
+                <h3>Aucun avis pour le moment</h3>
+                <p>
+                  Vos premiers avis clients apparaîtront ici après vos
+                  prestations. Partagez votre vitrine pour en recevoir plus vite
+                  !
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-primary mt-4"
+                  onClick={() => setActivePanel("vitrine")}
+                >
+                  Partager ma vitrine
+                </button>
               </div>
             ) : (
               <div className="space-y-4">
                 {reviews.map((r) => (
-                  <div key={r.id} className="border rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex">
+                  <div key={r.id} className="dash-review-card">
+                    <div className="dash-review-top">
+                      <div className="dash-review-author">
+                        <img
+                          src={
+                            "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop"
+                          }
+                          alt=""
+                        />
+                        <div>
+                          <div className="dash-review-name">Client</div>
+                          <div className="dash-review-date">
+                            {new Date(r.created_at).toLocaleDateString(
+                              "fr-FR",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="dash-review-stars">
                         {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
+                          <span
                             key={i}
-                            size={14}
-                            fill={i < r.rating ? "var(--color-star)" : "none"}
-                            color="var(--color-star)"
-                          />
+                            style={{
+                              opacity: i < r.rating ? 1 : 0.25,
+                            }}
+                          >
+                            {<Star size={14} />}
+                          </span>
                         ))}
                       </div>
-                      <span className="text-sm text-ink-faint">
-                        {new Date(r.created_at).toLocaleDateString("fr-FR")}
-                      </span>
                     </div>
-                    <p className="text-sm">{r.comment || "—"}</p>
-                    {!r.reply_text && (
-                      <div className="mt-3 flex gap-2">
-                        <input
-                          id={`reply-${r.id}`}
-                          placeholder="Répondre…"
-                          className="flex-1 p-2 rounded-full border text-xs"
-                        />
-                        <button
-                          onClick={async () => {
-                            const el = document.getElementById(
-                              `reply-${r.id}`,
-                            ) as HTMLInputElement;
-                            const text = el.value.trim();
+                    <p className="dash-review-text">{r.comment || "—"}</p>
+                    <div className="dash-reply-box">
+                      {r.reply_text ? (
+                        <div className="dash-reply-existing">
+                          <strong>Votre réponse</strong>
+                          {r.reply_text}
+                        </div>
+                      ) : (
+                        <form
+                          className="dash-reply-form"
+                          onSubmit={async (e) => {
+                            e.preventDefault();
+                            const input = (
+                              e.target as HTMLFormElement
+                            ).querySelector("input");
+                            const text = input?.value.trim();
                             if (!text) return;
                             await supabase
                               .from("reviews")
@@ -859,18 +1116,18 @@ export default function Dashboard() {
                               ),
                             );
                           }}
-                          className="px-3 py-1 rounded-full bg-accent text-white text-xs font-semibold"
                         >
-                          Répondre
-                        </button>
-                      </div>
-                    )}
-                    {r.reply_text && (
-                      <div className="mt-3 p-3 bg-bg-sunken rounded-xl text-sm">
-                        <strong className="text-xs">Votre réponse</strong>
-                        <p className="mt-1">{r.reply_text}</p>
-                      </div>
-                    )}
+                          <input
+                            type="text"
+                            placeholder="Répondre à cet avis…"
+                            required
+                          />
+                          <button type="submit" className="dash-reply-submit">
+                            Répondre
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -878,16 +1135,50 @@ export default function Dashboard() {
           </div>
         );
 
+      case "messages":
+        return (
+          <div>
+            <div className="dash-panel-header">
+              <div>
+                <h2>Messages</h2>
+                <p>
+                  Échangez avec vos clients avant et après leurs rendez-vous.
+                </p>
+              </div>
+            </div>
+            <div className="empty-illustrated">
+              <div className="empty-illustrated-emoji">💬</div>
+              <h3>Messagerie intégrée</h3>
+              <p>
+                La messagerie en temps réel sera disponible dans une prochaine
+                mise à jour. Vous serez notifié dès qu'un client vous écrira.
+              </p>
+            </div>
+          </div>
+        );
+
       case "paiement":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Paiement</h2>
-            <div className="flex items-center justify-between p-4 border rounded-2xl mb-4">
+            <div className="dash-panel-header">
               <div>
-                <p className="font-semibold">Accepter les paiements en ligne</p>
-                <p className="text-sm text-ink-faint">
-                  {onlinePayment ? "Activé" : "Désactivé"}
+                <h2>Paiement</h2>
+                <p>
+                  Choisissez si vos clients peuvent payer en ligne au moment de
+                  la réservation.
                 </p>
+              </div>
+            </div>
+            <div className="pay-toggle-card">
+              <div>
+                <div className="pay-toggle-label">
+                  Accepter les paiements en ligne
+                </div>
+                <div className="pay-toggle-sub">
+                  {onlinePayment
+                    ? "Activé — vos clients peuvent régler un acompte en ligne."
+                    : "Désactivé — le paiement se fait uniquement sur place."}
+                </div>
               </div>
               <label className="switch-lg">
                 <input
@@ -899,115 +1190,197 @@ export default function Dashboard() {
               </label>
             </div>
             {onlinePayment && (
-              <div className="p-4 border rounded-2xl space-y-3">
-                <div>
-                  <label className="text-sm font-semibold">
-                    Pourcentage d'acompte
+              <div className="pay-options">
+                <div className="pay-field">
+                  <label htmlFor="payDeposit">
+                    Pourcentage d'acompte demandé
                   </label>
                   <input
                     type="number"
-                    value={depositPercent}
-                    onChange={(e) => setDepositPercent(Number(e.target.value))}
+                    id="payDeposit"
                     min={0}
                     max={100}
-                    className="w-full p-2 rounded-xl border text-sm mt-1"
+                    step={5}
+                    value={depositPercent}
+                    onChange={(e) => setDepositPercent(Number(e.target.value))}
                   />
                 </div>
-                <div>
-                  <label className="text-sm font-semibold">
-                    Méthodes de retrait
-                  </label>
-                  <div className="flex gap-2 mt-1">
-                    {[
-                      { label: "Mobile Money", checked: true },
-                      { label: "Virement", checked: false },
-                    ].map((m) => (
-                      <label
-                        key={m.label}
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <input
-                          type="checkbox"
-                          defaultChecked={m.checked}
-                          className="accent-accent"
-                        />
-                        {m.label}
-                      </label>
-                    ))}
+                <div className="pay-field">
+                  <label>Méthodes de retrait</label>
+                  <div className="pay-checkbox-list">
+                    <label className="filter-check">
+                      <input type="checkbox" defaultChecked /> Mobile Money
+                    </label>
+                    <label className="filter-check">
+                      <input type="checkbox" /> Virement bancaire
+                    </label>
                   </div>
                 </div>
               </div>
             )}
+            <div className="pay-future-teaser">
+              {<Check size={26} />}
+              <div>
+                <h3>Formules d'abonnement</h3>
+                <p>
+                  Proposez bientôt des forfaits à vos clients fidèles (ex. 5
+                  coupes par mois à tarif réduit).
+                </p>
+              </div>
+              <span className="badge-pill muted">Bientôt disponible</span>
+            </div>
           </div>
         );
 
       case "equipe":
         return isTeam && team ? (
           <div>
-            <h2 className="font-bold text-lg mb-4">Équipe</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="dash-panel-header">
+              <div>
+                <h2>Équipe</h2>
+                <p>
+                  {team.name} · {team.team_members?.length} professionnel
+                  {(team.team_members?.length ?? 0) > 1 ? "s" : ""}
+                </p>
+              </div>
+              <button type="button" className="btn btn-primary">
+                {<Plus size={16} />} Ajouter un professionnel
+              </button>
+            </div>
+            <div className="team-grid">
               {team.team_members?.map((m: any) => (
-                <div key={m.id} className="border rounded-xl p-4">
-                  <div className="flex items-center gap-3">
+                <div
+                  key={m.id}
+                  className={`team-member-card ${m.status === "en_pause" ? "en-pause" : ""}`}
+                >
+                  <div className="team-member-top">
                     <img
                       src={m.avatar_url || ""}
-                      className="w-10 h-10 rounded-full object-cover"
+                      alt={m.name}
+                      className="team-member-avatar"
                     />
                     <div>
-                      <p className="font-semibold">{m.name}</p>
-                      <p className="text-xs text-ink-faint">
+                      <div className="team-member-name">{m.name}</div>
+                      <div className="team-member-role">
                         {m.specialty || m.role}
-                      </p>
+                      </div>
                     </div>
-                    <span
-                      className={`ml-auto text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full ${m.status === "actif" ? "bg-forest-soft text-forest border border-forest/10" : "bg-bg-sunken text-ink-faint"}`}
-                    >
+                    <span className={`team-status-badge ${m.status}`}>
                       {m.status === "actif" ? "Actif" : "En pause"}
                     </span>
                   </div>
+                  <div className="team-permissions">
+                    <div className="team-perm-row">
+                      <span className="team-perm-label">
+                        Voir les statistiques
+                      </span>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          defaultChecked={m.perm_view_stats}
+                        />
+                        <span className="switch-track" />
+                      </label>
+                    </div>
+                    <div className="team-perm-row">
+                      <span className="team-perm-label">
+                        Modifier services et créneaux (avec validation)
+                      </span>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          defaultChecked={m.perm_modify_services}
+                        />
+                        <span className="switch-track" />
+                      </label>
+                    </div>
+                    <div className="team-perm-row">
+                      <span className="team-perm-label">Répondre aux avis</span>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          defaultChecked={m.perm_reply_reviews}
+                        />
+                        <span className="switch-track" />
+                      </label>
+                    </div>
+                  </div>
+                  {m.role !== "responsable" && (
+                    <div className="team-member-actions">
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        style={{
+                          flex: 1,
+                          fontSize: ".8rem",
+                          padding: ".5rem",
+                        }}
+                      >
+                        {m.status === "actif" ? "Mettre en pause" : "Réactiver"}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        style={{
+                          fontSize: ".8rem",
+                          padding: ".5rem",
+                          color: "var(--danger)",
+                        }}
+                      >
+                        Retirer de l'équipe
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <div className="text-center py-16 border border-dashed rounded-2xl text-ink-faint">
-            Section réservée au responsable d'équipe.
+          <div className="empty-illustrated">
+            <div className="empty-illustrated-emoji">🔒</div>
+            <h3>Accès réservé</h3>
+            <p>Cette section est réservée au responsable de l'équipe.</p>
           </div>
         );
 
       case "finances":
         return (
           <div>
-            <h2 className="font-bold text-lg mb-4">Finances</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-              {[
-                { label: "Solde global", value: "0 G" },
-                { label: "Recettes du mois", value: "0 G" },
-                { label: "Dû à l'équipe", value: "0 G" },
-              ].map((s, i) => (
-                <div key={i} className="border rounded-xl p-4">
-                  <p className="text-xs text-ink-faint font-semibold">
-                    {s.label}
-                  </p>
-                  <p className="text-xl font-bold font-mono mt-1">{s.value}</p>
-                </div>
-              ))}
+            <div className="dash-panel-header">
+              <div>
+                <h2>Finances</h2>
+                <p>Gérez vos recettes et vos versements.</p>
+              </div>
+            </div>
+            <div className="finance-bento">
+              <div className="finance-tile accent">
+                <div className="finance-tile-label">Solde global</div>
+                <div className="finance-tile-value mono-num">0</div>
+                <div className="finance-tile-sub">Gourdes disponibles</div>
+              </div>
+              <div className="finance-tile">
+                <div className="finance-tile-label">Recettes du mois</div>
+                <div className="finance-tile-value mono-num">0</div>
+                <div className="finance-tile-sub">Gourdes</div>
+              </div>
+              <div className="finance-tile">
+                <div className="finance-tile-label">Total dû à l'équipe</div>
+                <div className="finance-tile-value mono-num">0</div>
+                <div className="finance-tile-sub">Gourdes à verser</div>
+              </div>
             </div>
             {payouts.length > 0 && (
-              <div className="space-y-2">
+              <div className="finance-table mt-6">
                 {payouts.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between p-3 border rounded-xl text-sm"
-                  >
-                    <span>{p.label}</span>
-                    <span className="font-mono font-semibold">
-                      {p.amount.toLocaleString("fr-FR")} {p.currency}
+                  <div key={p.id} className="finance-row">
+                    <span className="finance-row-label">{p.label}</span>
+                    <span className="finance-row-date">
+                      {p.created_at
+                        ? new Date(p.created_at).toLocaleDateString("fr-FR")
+                        : "—"}
                     </span>
-                    <span
-                      className={`text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full ${p.status === "verse" ? "bg-forest-soft text-forest border border-forest/10" : "bg-ochre-soft text-ochre"}`}
-                    >
-                      {p.status === "verse" ? "Versé" : "En attente"}
+                    <span className="finance-row-amount positive">
+                      +{p.amount.toLocaleString("fr-FR")} {p.currency}
                     </span>
                   </div>
                 ))}
@@ -1022,45 +1395,40 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="py-8 animate-fade-in-up">
-      <div className="border-b border-(--border)/40 pb-6 mt-2">
-        <h1 className="text-3xl font-extrabold text-(--ink)">Espace artisan</h1>
-        <p className="text-sm text-(--ink-faint) mt-1">
+    <div className="py-4 animate-fade-in-up">
+      <div className="page-header">
+        <h1 id="dashTitle">Espace artisan</h1>
+        <p id="dashSubtitle">
           Gérez votre vitrine, vos services et vos disponibilités.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 mt-8">
-        <aside className="bg-(--bg-elevated) border border-(--border) rounded-3xl p-5 sticky top-24 self-start shadow-(--shadow-sm)">
-          <div className="flex items-center gap-3 pb-5 mb-5 border-b border-(--border)/60">
+      <div className="dash-shell">
+        <aside className="dash-sidebar">
+          <div className="dash-profile-mini">
             {photoUrl ? (
-              <img
-                src={photoUrl}
-                alt=""
-                className="w-11 h-11 rounded-2xl object-cover border border-(--border)"
-              />
+              <img src={photoUrl} alt="" />
             ) : (
-              <div className="w-11 h-11 rounded-2xl bg-(--bg-sunken) border border-(--border) flex items-center justify-center">
+              <div className="w-10.5 h-10.5 rounded-(--r-sm) bg-(--bg-sunken) flex items-center justify-center">
                 <User size={18} className="text-(--ink-faint)" />
               </div>
             )}
-            <div className="min-w-0">
-              <p className="font-bold text-sm text-(--ink) truncate">
-                {artisan?.name}
-              </p>
-              <p className="text-xs text-(--ink-faint)">{artisan?.city}</p>
+            <div>
+              <strong>{artisan?.name}</strong>
+              <span>
+                {artisan?.city
+                  ? `${CATEGORIES.find((c) => c.id === artisan.category_id)?.label || "Artisan"} · ${artisan.city}`
+                  : "Complétez votre vitrine"}
+              </span>
             </div>
           </div>
-          <nav className="space-y-1">
+          <nav className="dash-nav">
             {navItems.map((item) => (
               <button
                 key={item.key}
+                type="button"
+                className={`dash-nav-item ${activePanel === item.key ? "active" : ""}`}
                 onClick={() => setActivePanel(item.key)}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
-                  activePanel === item.key
-                    ? "bg-(--accent-soft) text-(--accent-strong) shadow-(--shadow-sm)"
-                    : "text-(--ink-soft) hover:bg-(--bg-sunken) hover:text-(--ink)"
-                }`}
               >
                 <item.icon size={18} /> {item.label}
               </button>
@@ -1068,9 +1436,7 @@ export default function Dashboard() {
           </nav>
         </aside>
 
-        <div className="bg-(--bg-elevated) border border-(--border) rounded-3xl p-8 min-h-125 shadow-(--shadow-sm)">
-          {renderPanel()}
-        </div>
+        <div id="dashPanels">{renderPanel()}</div>
       </div>
     </div>
   );
