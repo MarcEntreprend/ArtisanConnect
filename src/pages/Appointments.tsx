@@ -7,7 +7,14 @@ import type { Appointment } from "../lib/types";
 
 type Tab = "upcoming" | "done" | "cancelled";
 
-const STATUS_CONFIG: Record<Tab, { label: string; className: string; icon: React.FC<{ size?: number; className?: string }> }> = {
+const STATUS_CONFIG: Record<
+  Tab,
+  {
+    label: string;
+    className: string;
+    icon: React.FC<{ size?: number; className?: string }>;
+  }
+> = {
   upcoming: {
     label: "À venir",
     className: "bg-accent-soft text-accent-strong border border-accent/10",
@@ -72,7 +79,8 @@ export default function Appointments() {
           Connectez-vous pour voir vos rendez-vous
         </h2>
         <p className="text-sm text-ink-soft mb-6 max-w-sm mx-auto leading-relaxed">
-          Accédez à vos réservations passées et à venir en vous connectant à votre espace client.
+          Accédez à vos réservations passées et à venir en vous connectant à
+          votre espace client.
         </p>
         <Link to="/auth" className="btn btn-primary px-8">
           Se connecter
@@ -85,14 +93,14 @@ export default function Appointments() {
     .sort((a, b) =>
       tab === "upcoming"
         ? new Date(a.appointment_date).getTime() -
-        new Date(b.appointment_date).getTime()
+          new Date(b.appointment_date).getTime()
         : new Date(b.appointment_date).getTime() -
-        new Date(a.appointment_date).getTime(),
+          new Date(a.appointment_date).getTime(),
     );
 
   return (
     <div className="max-w-4xl mx-auto py-8 animate-fade-in-up">
-      <div className="border-b border-border/40 pb-6 mt-6">
+      <div className="page-header">
         <h1 className="text-3xl font-extrabold text-ink">Mes rendez-vous</h1>
         <p className="text-sm text-ink-faint mt-1">
           Suivez et organisez vos réservations de services artisanaux.
@@ -105,10 +113,11 @@ export default function Appointments() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`pb-3.5 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${tab === t
+            className={`pb-3.5 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
+              tab === t
                 ? "text-ink border-accent"
                 : "text-ink-faint border-transparent hover:text-ink"
-              }`}
+            }`}
           >
             {t === "upcoming" ? "À venir" : t === "done" ? "Passés" : "Annulés"}
           </button>
@@ -121,12 +130,14 @@ export default function Appointments() {
           Chargement de vos rendez-vous…
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center text-center py-20 border border-dashed border-border-strong rounded-3xl mt-8 bg-bg-elevated/40">
-          <CalendarIcon size={44} className="text-ink-faint mb-4 stroke-[1.5px]" />
-          <h3 className="font-bold text-lg text-ink">{EMPTY_COPY[tab].title}</h3>
-          <p className="text-sm text-ink-soft mt-1 max-w-sm leading-relaxed">{EMPTY_COPY[tab].text}</p>
+        <div className="empty-state">
+          <div className="empty-state-icon">
+            <CalendarIcon size={28} />
+          </div>
+          <h3>{EMPTY_COPY[tab].title}</h3>
+          <p>{EMPTY_COPY[tab].text}</p>
           {tab === "upcoming" && (
-            <Link to="/search" className="btn btn-primary mt-6">
+            <Link to="/search" className="btn btn-primary">
               Réserver un artisan
             </Link>
           )}
@@ -146,18 +157,25 @@ export default function Appointments() {
                     <CalendarIcon size={20} />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-ink text-base">{a.service_name}</h3>
+                    <h3 className="font-bold text-ink text-base">
+                      {a.service_name}
+                    </h3>
                     <p className="text-xs text-ink-soft mt-1 flex items-center gap-1.5 flex-wrap">
                       <span className="font-semibold text-ink">
-                        {new Date(a.appointment_date).toLocaleDateString("fr-FR", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                        })}
+                        {new Date(a.appointment_date).toLocaleDateString(
+                          "fr-FR",
+                          {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          },
+                        )}
                       </span>
                       <span>à {a.appointment_time?.slice(0, 5)}</span>
                       <span className="text-ink-faint">·</span>
-                      <span className="font-mono text-accent font-semibold">{a.price.toLocaleString("fr-FR")} Gourdes</span>
+                      <span className="font-mono text-accent font-semibold">
+                        {a.price.toLocaleString("fr-FR")} Gourdes
+                      </span>
                     </p>
                   </div>
                 </div>

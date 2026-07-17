@@ -58,8 +58,8 @@ export default function Favorites() {
     );
 
   return (
-    <div className="py-4 animate-fade-in-up">
-      <div className="border-b border-border/40 pb-6 mt-6">
+    <div className="max-w-4xl mx-auto py-8 animate-fade-in-up">
+      <div className="page-header">
         <h1 className="text-3xl font-extrabold text-ink">Mes favoris</h1>
         <p className="text-sm text-ink-faint mt-1">
           {message || "Retrouvez ici les artisans que vous avez enregistrés."}
@@ -67,13 +67,16 @@ export default function Favorites() {
       </div>
 
       {favorites.length === 0 ? (
-        <div className="flex flex-col items-center text-center py-20 border border-dashed border-border-strong rounded-3xl mt-8 bg-bg-elevated/40">
-          <Heart size={48} className="text-ink-faint mb-4 stroke-[1.5px]" />
-          <h3 className="font-bold text-lg text-ink">Aucun favori pour l'instant</h3>
-          <p className="text-sm text-ink-soft mt-1 max-w-sm leading-relaxed">
-            Ajoutez des artisans à vos favoris en cliquant sur le cœur de leur profil pour les retrouver facilement.
+        <div className="empty-state">
+          <div className="empty-state-icon">
+            <Heart size={28} />
+          </div>
+          <h3>Aucun favori pour l'instant</h3>
+          <p>
+            Ajoutez des artisans à vos favoris en cliquant sur le cœur de leur
+            profil pour les retrouver facilement.
           </p>
-          <Link to="/search" className="btn btn-primary mt-6">
+          <Link to="/search" className="btn btn-primary">
             Découvrir des artisans
           </Link>
         </div>
@@ -82,13 +85,16 @@ export default function Favorites() {
           {favorites.map((a) => {
             const category = CATEGORIES.find((c) => c.id === a.category_id);
             return (
-              <Link
-                key={a.id}
-                to={`/artisan/${a.id}`}
-                className="artisan-card"
-              >
+              <Link key={a.id} to={`/artisan/${a.id}`} className="artisan-card">
                 <div className="artisan-card-media">
-                  <img src={a.avatar_url || "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"} alt={a.name} loading="lazy" />
+                  <img
+                    src={
+                      a.avatar_url ||
+                      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop"
+                    }
+                    alt={a.name}
+                    loading="lazy"
+                  />
                   {a.available_today && (
                     <span className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest text-white text-[10px] font-bold tracking-wide uppercase shadow-sm">
                       <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -109,7 +115,7 @@ export default function Favorites() {
                     <Heart size={15} fill="currentColor" />
                   </button>
                 </div>
-                <div className="p-5 flex-1 flex flex-col justify-between">
+                <div className="p-[1.35rem] flex-1 flex flex-col gap-[0.65rem]">
                   <div>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -120,18 +126,18 @@ export default function Favorites() {
                           {a.name}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-ochre shrink-0 bg-ochre-soft px-2 py-0.5 rounded-lg">
+                      <div className="flex items-center gap-1 text-sm font-semibold text-(--star) shrink-0 bg-(--accent-soft) px-2 py-0.5 rounded-lg">
                         <Star size={13} fill="currentColor" />
                         <span>{a.rating.toFixed(1)}</span>
                       </div>
                     </div>
-                    <p className="text-xs text-ink-soft mt-2 flex items-center gap-1">
+                    <p className="text-xs text-(--ink-soft) mt-2 flex items-center gap-1">
                       <MapPin size={12} className="text-ink-faint" />
                       <span>{a.city || "Haïti"}</span>
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/60 text-xs text-ink-soft">
+                  <div className="flex items-center justify-between pt-[0.7rem] border-t border-(--border) text-[0.8rem] text-(--ink-soft)">
                     <span className="text-ink-faint">
                       {a.reviews_count} avis clients
                     </span>

@@ -28,46 +28,41 @@ function ArtisanCard({ artisan }: { artisan: Artisan }) {
           loading="lazy"
         />
         <button
-          className={`absolute top-[0.65rem] right-[0.65rem] w-9 h-9 rounded-full bg-[color-mix(in_srgb,var(--bg-elevated)_82%,transparent)] backdrop-blur-[6px] flex items-center justify-center transition-transform hover:scale-[1.08] ${
-            fav ? "text-(--danger)" : "text-(--ink)"
-          }`}
+          className={`artisan-fav ${fav ? "active" : ""}`}
           onClick={(e) => {
             e.preventDefault();
             setFav(!fav);
           }}
+          aria-label={fav ? "Retirer des favoris" : "Ajouter aux favoris"}
         >
           <Heart size={18} fill={fav ? "currentColor" : "none"} />
         </button>
         {artisan.available_today && (
-          <span className="absolute bottom-[0.65rem] left-[0.65rem] flex items-center gap-[0.35rem] px-[0.3rem] py-[0.6rem] rounded-full bg-[color-mix(in_srgb,var(--bg-elevated)_88%,transparent)] backdrop-blur-[6px] text-[0.7rem] font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-(--accent)" />
+          <span className="artisan-availability">
+            <span className="availability-dot" />
             Disponible aujourd'hui
           </span>
         )}
       </div>
-      <div className="p-[1.1rem] flex-1 flex flex-col gap-[0.55rem]">
-        <div className="flex items-start justify-between gap-[0.6rem]">
-          <div className="min-w-0">
-            <h3 className="font-bold text-[1rem] leading-[1.3] text-(--ink)">
-              {artisan.name}
-            </h3>
-            <p className="text-[0.8rem] text-(--ink-faint) mt-[0.1rem]">
+      <div className="artisan-card-body">
+        <div className="artisan-card-top">
+          <div>
+            <div className="artisan-name">{artisan.name}</div>
+            <div className="artisan-category">
               {category?.label || "Artisan"} · {artisan.city || "—"}
-            </p>
+            </div>
           </div>
-          <div className="flex items-center gap-[0.3rem] text-[0.82rem] font-semibold text-(--star) shrink-0">
-            <Star size={15} fill="currentColor" />
+          <div className="artisan-rating">
+            <Star size={15} fill="var(--star)" />
             {artisan.rating.toFixed(1)}
-            <span className="text-(--ink-faint) font-normal">
-              ({artisan.reviews_count})
-            </span>
+            <span className="count">({artisan.reviews_count})</span>
           </div>
         </div>
-        <div className="flex items-center justify-between pt-[0.55rem] border-t border-(--border) text-[0.8rem] text-(--ink-soft)">
-          <span className="flex items-center gap-[0.3rem]">
-            <MapPin size={14} className="text-(--ink-faint)" />—
+        <div className="artisan-card-meta">
+          <span className="artisan-location">
+            <MapPin size={14} />—
           </span>
-          <span className="font-mono font-semibold text-(--ink)">
+          <span className="artisan-price mono-num">
             {formatPrice(artisan.price_from, artisan.currency)}
           </span>
         </div>
@@ -129,14 +124,12 @@ export default function Home() {
           {/* Texte */}
           <div>
             <span className="inline-flex items-center gap-[0.4rem] text-[0.78rem] font-semibold text-(--accent-strong) bg-(--accent-soft) px-[0.35rem] py-[0.8rem] rounded-full mb-[1.1rem]">
-              <span className="w-3.25 h-3.25 rounded-full bg-(--accent)" />
-              8 métiers, des centaines d'artisans vérifiés
+              <span className="w-3.25 h-3.25 rounded-full bg-(--accent)" />8
+              métiers, des centaines d'artisans vérifiés
             </span>
             <h1 className="text-[clamp(2.1rem,4.6vw,3.4rem)] font-extrabold tracking-tight leading-[1.05] max-w-[15ch] text-(--ink)">
               Le bon artisan,{" "}
-              <em className="italic text-(--accent)">
-                à côté de chez vous.
-              </em>
+              <em className="italic text-(--accent)">à côté de chez vous.</em>
             </h1>
             <p className="mt-[1.1rem] text-[1.05rem] text-(--ink-soft) max-w-[46ch] leading-[1.6]">
               Comparez les profils, lisez les avis et réservez en ligne.
@@ -155,10 +148,7 @@ export default function Home() {
             {/* Barre de recherche */}
             <div className="mt-7 max-w-140">
               <div className="flex items-center gap-[0.7rem] bg-(--bg-elevated) border-[1.5px] border-(--border) rounded-full py-[0.35rem] pl-[1.15rem] pr-[0.35rem] shadow-(--shadow-sm) focus-within:border-(--accent) focus-within:shadow-[0_0_0_4px_var(--accent-soft)] transition-shadow">
-                <Search
-                  size={19}
-                  className="text-(--ink-faint) shrink-0"
-                />
+                <Search size={19} className="text-(--ink-faint) shrink-0" />
                 <input
                   type="search"
                   value={searchQuery}

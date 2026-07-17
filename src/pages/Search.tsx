@@ -64,59 +64,43 @@ function ResultCard({ artisan, index }: { artisan: Artisan; index: number }) {
           alt={artisan.name}
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/35 via-transparent to-transparent" />
-
-        {artisan.available_today && (
-          <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-(--forest) text-white text-[10px] font-extrabold uppercase tracking-widest shadow-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            Dispo
-          </span>
-        )}
-
         <button
-          className={`
-            absolute top-3 right-3 w-8 h-8 rounded-full
-            bg-white/80 backdrop-blur-sm shadow-sm
-            flex items-center justify-center
-            transition-all duration-300
-            ${fav ? "text-(--danger) scale-110" : "text-(--ink-faint) hover:text-(--danger) hover:scale-105"}
-          `}
+          className={`artisan-fav ${fav ? "active" : ""}`}
           onClick={(e) => {
             e.preventDefault();
             setFav(!fav);
           }}
+          aria-label={fav ? "Retirer des favoris" : "Ajouter aux favoris"}
         >
-          <Heart
-            size={13}
-            fill={fav ? "currentColor" : "none"}
-            strokeWidth={2}
-          />
+          <Heart size={18} fill={fav ? "currentColor" : "none"} />
         </button>
-
-        <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-[11px] font-bold">
-          <Star size={10} fill="currentColor" className="text-(--star)" />
-          {artisan.rating.toFixed(1)}
-        </div>
+        {artisan.available_today && (
+          <span className="artisan-availability">
+            <span className="availability-dot" />
+            Disponible aujourd'hui
+          </span>
+        )}
       </div>
-
-      <div className="p-4 flex-1 flex flex-col gap-3">
-        <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-(--accent)">
-            {category?.icon} {category?.label || "Artisan"}
-          </span>
-          <h3 className="mt-0.5 font-bold text-(--ink) text-[0.92rem] leading-snug line-clamp-1">
-            {artisan.name}
-          </h3>
-          <p className="mt-1 flex items-center gap-1 text-[11px] text-(--ink-faint)">
-            <MapPin size={11} strokeWidth={2} />
-            {artisan.city || "Haïti"}
-          </p>
+      <div className="artisan-card-body">
+        <div className="artisan-card-top">
+          <div>
+            <div className="artisan-name">{artisan.name}</div>
+            <div className="artisan-category">
+              {category?.icon} {category?.label || "Artisan"} ·{" "}
+              {artisan.city || "—"}
+            </div>
+          </div>
+          <div className="artisan-rating">
+            <Star size={15} fill="var(--star)" />
+            {artisan.rating.toFixed(1)}
+            <span className="count">({artisan.reviews_count})</span>
+          </div>
         </div>
-        <div className="flex items-center justify-between pt-3 border-t border-(--border)">
-          <span className="text-[11px] text-(--ink-faint)">
-            {artisan.reviews_count} avis
+        <div className="artisan-card-meta">
+          <span className="artisan-location">
+            <MapPin size={14} />—
           </span>
-          <span className="mono-num text-[0.82rem] font-bold text-(--ink)">
+          <span className="artisan-price mono-num">
             {formatPrice(artisan.price_from, artisan.currency)}
           </span>
         </div>
@@ -227,18 +211,13 @@ export default function Search() {
   /* ─── Panneau filtres (commun desktop sidebar / mobile drawer) ─── */
   function FiltersPane() {
     return (
-      <div className="space-y-6">
+      <div>
         {/* Métier */}
-        <div>
-          <h3 className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-(--ink-faint) mb-3">
-            Métier
-          </h3>
-          <div className="space-y-1.5">
+        <div className="filter-block">
+          <h3>Métier</h3>
+          <div id="filterCategories">
             {CATEGORIES.map((c) => (
-              <label
-                key={c.slug}
-                className="flex items-center gap-2.5 py-1 text-sm text-(--ink-soft) hover:text-(--ink) cursor-pointer transition-colors"
-              >
+              <label key={c.slug} className="filter-check">
                 <input
                   type="checkbox"
                   checked={selectedCategories.has(c.slug)}
@@ -247,11 +226,8 @@ export default function Search() {
                     e.target.checked ? next.add(c.slug) : next.delete(c.slug);
                     setSelectedCategories(next);
                   }}
-                  className="accent-(--accent) w-3.5 h-3.5"
                 />
-                <span>
-                  {c.icon} {c.label}
-                </span>
+                {c.icon} {c.label}
               </label>
             ))}
           </div>
@@ -259,16 +235,11 @@ export default function Search() {
 
         {/* Ville */}
         {cities.length > 0 && (
-          <div className="border-t border-(--border) pt-5">
-            <h3 className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-(--ink-faint) mb-3">
-              Ville
-            </h3>
-            <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+          <div className="filter-block">
+            <h3>Ville</h3>
+            <div id="filterCities">
               {cities.map((city) => (
-                <label
-                  key={city}
-                  className="flex items-center gap-2.5 py-1 text-sm text-(--ink-soft) hover:text-(--ink) cursor-pointer transition-colors"
-                >
+                <label key={city} className="filter-check">
                   <input
                     type="checkbox"
                     checked={selectedCities.has(city)}
@@ -277,7 +248,6 @@ export default function Search() {
                       e.target.checked ? next.add(city) : next.delete(city);
                       setSelectedCities(next);
                     }}
-                    className="accent-(--accent) w-3.5 h-3.5"
                   />
                   {city}
                 </label>
@@ -287,86 +257,61 @@ export default function Search() {
         )}
 
         {/* Note minimale */}
-        <div className="border-t border-(--border) pt-5">
-          <h3 className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-(--ink-faint) mb-3">
-            Note minimale
-          </h3>
-          <div className="space-y-1.5">
-            {([0, 4, 4.5] as const).map((r) => (
-              <label
-                key={r}
-                className="flex items-center gap-2.5 py-1 text-sm text-(--ink-soft) hover:text-(--ink) cursor-pointer transition-colors"
-              >
+        <div className="filter-block">
+          <h3>Note minimale</h3>
+          <div id="filterRating">
+            {([0, 4, 4.5] as const).map((r, i) => (
+              <label key={r} className="filter-check">
                 <input
                   type="radio"
                   name="rating"
+                  value={r}
                   checked={minRating === r}
                   onChange={() => setMinRating(r)}
-                  className="accent-(--accent) w-3.5 h-3.5"
                 />
-                {r === 0 ? (
-                  "Toutes les notes"
-                ) : (
-                  <span className="flex items-center gap-1">
-                    {r}&thinsp;
-                    <Star
-                      size={11}
-                      fill="currentColor"
-                      className="text-(--star)"
-                    />{" "}
-                    et plus
-                  </span>
-                )}
+                {r === 0 ? "Toutes les notes" : `${r} et plus`}
               </label>
             ))}
           </div>
         </div>
 
         {/* Budget */}
-        <div className="border-t border-(--border) pt-5">
-          <h3 className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-(--ink-faint) mb-3">
-            Budget max
-          </h3>
+        <div className="filter-block">
+          <h3>Budget max</h3>
           <input
             type="range"
+            className="filter-range"
+            id="filterPrice"
             min="0"
             max="65000"
             step="1000"
             value={maxPrice}
             onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-(--accent) bg-(--bg-sunken)"
           />
-          <div className="flex justify-between text-xs font-mono mt-2 text-(--ink-faint)">
+          <div className="filter-range-value">
             <span>0 G</span>
-            <span className="font-bold text-(--accent)">
+            <span id="filterPriceValue">
               {maxPrice.toLocaleString("fr-FR")} G
             </span>
           </div>
         </div>
 
         {/* Disponible aujourd'hui */}
-        <div className="border-t border-(--border) pt-5">
-          <label className="flex items-center gap-3 cursor-pointer group">
-            <div
-              className={`
-              w-10 h-5 rounded-full relative transition-all duration-300 shrink-0
-              ${availableToday ? "bg-(--forest)" : "bg-(--border-strong)"}
-            `}
-              onClick={() => setAvailableToday(!availableToday)}
-            >
-              <div
-                className={`
-                absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm
-                transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]
-                ${availableToday ? "left-5" : "left-0.5"}
-              `}
-              />
-            </div>
-            <span className="text-sm font-semibold text-(--ink-soft) group-hover:text-(--ink) transition-colors">
-              Disponible aujourd'hui
-            </span>
+        <div className="filter-block">
+          <label className="filter-check">
+            <input
+              type="checkbox"
+              id="filterAvailableToday"
+              checked={availableToday}
+              onChange={(e) => setAvailableToday(e.target.checked)}
+            />
+            Disponible aujourd'hui uniquement
           </label>
         </div>
+
+        <button className="filter-reset" onClick={resetFilters}>
+          Réinitialiser les filtres
+        </button>
       </div>
     );
   }
@@ -374,54 +319,35 @@ export default function Search() {
   return (
     <div className="py-8 animate-fade-in-up">
       {/* ─── En-tête + barre de recherche ─── */}
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-(--ink) mb-1">
-          Trouver un artisan
-        </h1>
+      <div className="page-header">
+        <h1>Trouver un artisan</h1>
+
         <p className="text-(--ink-faint) text-sm mb-6">
           {artisans.length > 0
             ? `${artisans.length} artisans certifiés en Haïti`
             : "Découvrez les talents locaux"}
         </p>
 
-        {/* Double-bezel search */}
-        <div className="p-1.5 rounded-(--r-pill) bg-(--bg-elevated) border border-(--border) shadow-(--shadow-md) max-w-2xl">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-2 pl-4">
-              <SearchIcon
-                size={17}
-                strokeWidth={2}
-                className="text-(--ink-faint) shrink-0"
-              />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Un électricien à Pétion-Ville, une couturière…"
-                className="flex-1 bg-transparent text-sm text-(--ink) placeholder-(--ink-faint) outline-none py-1.5"
-              />
-              {query && (
-                <button
-                  onClick={() => setQuery("")}
-                  className="text-(--ink-faint) hover:text-(--ink) transition-colors"
-                >
-                  <X size={15} />
-                </button>
-              )}
-            </div>
-            {/* Bouton filtres mobile (visible < lg) */}
-            <button
-              onClick={() => setFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-(--bg-sunken) text-(--ink-soft) text-xs font-bold transition-colors hover:bg-(--border) mr-1 shrink-0"
-            >
-              <SlidersHorizontal size={14} strokeWidth={2} />
-              Filtres
-              {activeFilterCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-(--accent) text-white text-[9px] flex items-center justify-center font-extrabold ml-0.5">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
+        <div className="search-container max-w-2xl">
+          <div className="search-box">
+            <SearchIcon size={19} className="search-icon" />
+            <input
+              type="search"
+              className="search-input"
+              placeholder="Un métier, une ville, un nom d'artisan…"
+              maxLength={50}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="text-(--ink-faint) hover:text-(--ink) transition-colors shrink-0"
+                aria-label="Effacer la recherche"
+              >
+                <X size={15} />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -430,8 +356,8 @@ export default function Search() {
       <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-8">
         {/* Sidebar filtres desktop */}
         <aside className="hidden lg:block self-start sticky top-24">
-          <div className="bg-(--bg-elevated) border border-(--border) rounded-(--r-lg) p-5 shadow-(--shadow-sm)">
-            <div className="flex items-center justify-between mb-5">
+          <div className="filter-panel">
+            <div className="flex items-center justify-between mb-2">
               <span className="font-extrabold text-sm text-(--ink) flex items-center gap-2">
                 <SlidersHorizontal size={15} strokeWidth={2} />
                 Filtres
@@ -457,39 +383,26 @@ export default function Search() {
         {/* Résultats */}
         <div>
           {/* Toolbar tri */}
-          <div className="flex items-center justify-between gap-3 mb-6">
-            <p className="text-sm text-(--ink-soft)">
-              <strong className="text-(--ink) font-extrabold">
-                {filtered.length}
-              </strong>{" "}
-              artisan{filtered.length > 1 ? "s" : ""}
+          <div className="search-toolbar">
+            <p className="search-toolbar-count">
+              <strong>{filtered.length}</strong> artisans trouvés
               {query && (
-                <span className="text-(--ink-faint)">
-                  {" "}
-                  pour « {query} »
-                </span>
+                <span className="text-(--ink-faint)"> pour « {query} »</span>
               )}
             </p>
 
-            {/* Select tri custom */}
             <div className="relative">
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
-                className="
-                  appearance-none pl-4 pr-8 py-2 rounded-full
-                  border border-(--border) bg-(--bg-elevated)
-                  text-xs font-bold text-(--ink-soft)
-                  focus:outline-none focus:ring-2 focus:ring-(--accent)
-                  cursor-pointer
-                "
+                className="sort-select"
               >
                 <option value="pertinence">Pertinence</option>
                 <option value="rating">Meilleure note</option>
                 <option value="price-asc">Prix croissant</option>
               </select>
               <ChevronDown
-                size={13}
+                size={14}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-(--ink-faint) pointer-events-none"
               />
             </div>
@@ -503,17 +416,15 @@ export default function Search() {
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center text-center py-20 rounded-(--r-lg) border border-dashed border-(--border-strong) bg-(--bg-elevated)/50">
-              <div className="w-16 h-16 rounded-full bg-(--bg-sunken) flex items-center justify-center text-2xl mb-4">
-                🔍
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <SearchIcon size={28} />
               </div>
-              <h3 className="font-bold text-lg text-(--ink)">
-                Aucun résultat
-              </h3>
-              <p className="text-sm text-(--ink-soft) mt-1 max-w-xs">
-                Essayez d'élargir vos filtres ou modifiez votre recherche.
+              <h3>Aucun résultat</h3>
+              <p>
+                Essayez d'élargir vos filtres ou de rechercher un autre métier.
               </p>
-              <button onClick={resetFilters} className="btn btn-outline mt-6">
+              <button onClick={resetFilters} className="btn btn-outline">
                 Réinitialiser les filtres
               </button>
             </div>

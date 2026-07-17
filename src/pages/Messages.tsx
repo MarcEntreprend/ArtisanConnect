@@ -81,26 +81,24 @@ export default function Messages() {
 
   if (!user)
     return (
-      <div className="max-w-4xl mx-auto py-24 text-center animate-fade-in-up">
-        <div className="w-16 h-16 rounded-full bg-accent-soft text-accent flex items-center justify-center mx-auto mb-6">
-          <MessageSquare size={32} />
+      <div className="empty-state" style={{ marginTop: "4rem" }}>
+        <div className="empty-state-icon">
+          <MessageSquare size={28} />
         </div>
-        <h2 className="text-2xl font-bold mb-2 text-ink">
-          Connectez-vous pour accéder à vos messages
-        </h2>
-        <p className="text-sm text-ink-soft mb-6 max-w-sm mx-auto leading-relaxed">
+        <h3>Connectez-vous pour accéder à vos messages</h3>
+        <p>
           Échangez en temps réel avec vos artisans et suivez vos chantiers ou
           commandes en cours.
         </p>
-        <Link to="/auth" className="btn btn-primary px-8">
+        <Link to="/auth" className="btn btn-primary">
           Se connecter
         </Link>
       </div>
     );
 
   return (
-    <div className="max-w-5xl mx-auto py-8 animate-fade-in-up">
-      <div className="border-b border-border/40 pb-6 mt-6">
+    <div className="max-w-4xl mx-auto py-8 animate-fade-in-up">
+      <div className="page-header">
         <h1 className="text-3xl font-extrabold text-ink">Messagerie</h1>
         <p className="text-sm text-ink-faint mt-1">
           Discutez directement et planifiez avec vos artisans locaux.
@@ -119,8 +117,15 @@ export default function Messages() {
               Chargement…
             </div>
           ) : conversations.length === 0 ? (
-            <div className="p-8 text-center text-ink-faint italic">
-              Aucune conversation pour le moment.
+            <div
+              className="empty-state"
+              style={{ border: "none", padding: "3rem 1.5rem" }}
+            >
+              <div className="empty-state-icon">
+                <MessageSquare size={28} />
+              </div>
+              <h3>Aucune conversation</h3>
+              <p>Vos échanges avec les artisans apparaîtront ici.</p>
             </div>
           ) : (
             <div className="divide-y divide-border/60">
@@ -180,9 +185,17 @@ export default function Messages() {
           className={`flex flex-col bg-bg-elevated ${!activeId ? "hidden md:flex" : "flex"}`}
         >
           {!activeConv ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-ink-faint text-sm p-8 bg-bg-sunken/5">
-              <MessageSquare size={36} className="text-ink-faint/30 mb-3" />
-              <span>Sélectionnez un artisan pour démarrer la discussion</span>
+            <div
+              className="empty-state"
+              style={{ border: "none", flex: 1, justifyContent: "center" }}
+            >
+              <div className="empty-state-icon">
+                <MessageSquare size={28} />
+              </div>
+              <h3>Sélectionnez une conversation</h3>
+              <p>
+                Choisissez un artisan dans la liste pour démarrer la discussion.
+              </p>
             </div>
           ) : (
             <>
