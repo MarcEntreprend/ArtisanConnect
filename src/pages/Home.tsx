@@ -264,7 +264,7 @@ export default function Home() {
 
       {/* Témoignages */}
       <section className="testimonial-section">
-        <div className="section-heading">
+        <div className="section-heading" style={{ padding: "0 1.5rem" }}>
           <div>
             <h2>Ils ont trouvé leur artisan</h2>
             <p>Des retours vérifiés, publiés après chaque prestation</p>
