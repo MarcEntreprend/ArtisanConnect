@@ -119,24 +119,22 @@ export default function Home() {
   return (
     <div className="py-4 md:py-8" style={{ paddingTop: "2rem" }}>
       {/* Hero */}
-      <section className="relative pt-4 md:pt-6 pb-14 md:pb-20 overflow-hidden">
+      <section className="hero-section">
         <div className="grid grid-cols-1 md:grid-cols-[1.05fr_0.95fr] gap-10 md:gap-12 items-center">
-          {/* Texte */}
-          <div>
-            <span className="inline-flex items-center gap-[0.4rem] text-[0.78rem] font-semibold text-(--accent-strong) bg-(--accent-soft) px-[0.35rem] py-[0.8rem] rounded-full mb-[1.1rem]">
+          <div className="fade-in">
+            <span className="hero-eyebrow">
               <span className="w-3.25 h-3.25 rounded-full bg-(--accent)" />8
               métiers, des centaines d'artisans vérifiés
             </span>
-            <h1 className="text-[clamp(2.1rem,4.6vw,3.4rem)] font-extrabold tracking-tight leading-[1.05] max-w-[15ch] text-(--ink)">
-              Le bon artisan,{" "}
-              <em className="italic text-(--accent)">à côté de chez vous.</em>
+            <h1>
+              Le bon artisan, <em>à côté de chez vous.</em>
             </h1>
-            <p className="mt-[1.1rem] text-[1.05rem] text-(--ink-soft) max-w-[46ch] leading-[1.6]">
+            <p className="hero-sub">
               Comparez les profils, lisez les avis et réservez en ligne.
               Menuisiers, électriciens, couturières et plus encore, prêts à
               intervenir aujourd'hui.
             </p>
-            <p className="text-(--ink-faint) text-[0.85rem] mt-[0.35rem] capitalize">
+            <p className="date-text" id="currentDate">
               {new Date().toLocaleDateString("fr-FR", {
                 weekday: "long",
                 year: "numeric",
@@ -145,21 +143,22 @@ export default function Home() {
               })}
             </p>
 
-            {/* Barre de recherche */}
-            <div className="mt-7 max-w-140">
-              <div className="flex items-center gap-[0.7rem] bg-(--bg-elevated) border-[1.5px] border-(--border) rounded-full py-[0.35rem] pl-[1.15rem] pr-[0.35rem] shadow-(--shadow-sm) focus-within:border-(--accent) focus-within:shadow-[0_0_0_4px_var(--accent-soft)] transition-shadow">
-                <Search size={19} className="text-(--ink-faint) shrink-0" />
+            <div className="search-container">
+              <div className="search-box">
+                <Search size={19} className="search-icon" />
                 <input
                   type="search"
+                  className="search-input"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Un électricien à Dakar, une couturière à Lomé…"
-                  className="flex-1 bg-transparent text-[0.95rem] py-[0.65rem] outline-none placeholder-(--ink-faint)"
+                  placeholder="Un électricien à Maniche, une couturière à Lomé…"
+                  maxLength={50}
                 />
                 <button
+                  className="search-submit"
                   onClick={handleSearch}
-                  className="shrink-0 w-10.5 h-10.5 rounded-full bg-(--accent) text-(--accent-ink) flex items-center justify-center hover:bg-(--accent-strong) active:scale-[0.94] transition-all"
+                  aria-label="Rechercher"
                 >
                   <ArrowRight size={18} />
                 </button>
@@ -167,30 +166,26 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mosaïque */}
-          <div className="hidden md:grid grid-cols-2 gap-4">
-            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) hover:-translate-y-1.5 transition-transform duration-400 relative">
+          <div className="hero-visual fade-in">
+            <div className="hero-tile">
               <img
                 src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=500&h=500&fit=crop"
                 alt=""
-                className="w-full h-full object-cover"
               />
-              <span className="absolute bottom-3 left-3 bg-[color-mix(in_srgb,var(--bg-elevated)_88%,transparent)] backdrop-blur-sm px-[0.3rem] py-[0.65rem] rounded-full text-[0.72rem] font-semibold flex items-center gap-[0.3rem]">
+              <span className="hero-tile-tag">
                 <Star size={12} fill="var(--star)" /> 4.9
               </span>
             </div>
-            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) mt-8 hover:-translate-y-1.5 transition-transform duration-400">
+            <div className="hero-tile">
               <img
                 src="https://images.unsplash.com/photo-1601058268499-e52658b8bb88?w=500&h=500&fit=crop"
                 alt=""
-                className="w-full h-full object-cover"
               />
             </div>
-            <div className="rounded-(--r-card) overflow-hidden aspect-square shadow-(--shadow-md) -mt-8 hover:-translate-y-1.5 transition-transform duration-400">
+            <div className="hero-tile">
               <img
                 src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=500&h=500&fit=crop"
                 alt=""
-                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -198,15 +193,11 @@ export default function Home() {
       </section>
 
       {/* Catégories */}
-      <section className="py-2 md:py-4">
+      <section className="category-section">
         <div className="flex gap-[0.65rem] overflow-x-auto pb-[0.3rem] scrollbar-hide">
           <button
             onClick={() => setSelectedCategory("all")}
-            className={`flex items-center gap-[0.45rem] px-[0.6rem] py-[1.05rem] rounded-full border-[1.5px] text-[0.85rem] font-semibold whitespace-nowrap transition-all shrink-0 ${
-              selectedCategory === "all"
-                ? "bg-(--ink) border-(--ink) text-(--bg)"
-                : "bg-(--bg-elevated) border-(--border) text-(--ink-soft) hover:border-(--border-strong)"
-            }`}
+            className={`category-btn ${selectedCategory === "all" ? "active" : ""}`}
           >
             ⭐ Tous les métiers
           </button>
@@ -214,11 +205,7 @@ export default function Home() {
             <button
               key={cat.slug}
               onClick={() => setSelectedCategory(cat.slug)}
-              className={`flex items-center gap-[0.45rem] px-[0.6rem] py-[1.05rem] rounded-full border-[1.5px] text-[0.85rem] font-semibold whitespace-nowrap transition-all shrink-0 ${
-                selectedCategory === cat.slug
-                  ? "bg-(--accent) border-(--accent) text-(--accent-ink)"
-                  : "bg-(--bg-elevated) border-(--border) text-(--ink-soft) hover:border-(--border-strong)"
-              }`}
+              className={`category-btn ${selectedCategory === cat.slug ? "active" : ""}`}
             >
               {cat.icon} {cat.label}
             </button>
@@ -227,22 +214,17 @@ export default function Home() {
       </section>
 
       {/* Grille artisans */}
-      <section className="py-6 md:py-8">
-        <div className="flex items-end justify-between gap-4 mb-6">
+      <section className="near-section">
+        <div className="section-heading">
           <div>
-            <h2 className="text-[1.5rem] font-bold tracking-[-0.01em] text-(--ink)">
-              Près de vous
-            </h2>
-            <p className="text-(--ink-faint) text-[0.88rem] mt-[0.2rem]">
+            <h2>Près de vous</h2>
+            <p>
               {loading
                 ? "Chargement…"
                 : `${filtered.length} artisan${filtered.length > 1 ? "s" : ""} disponible${filtered.length > 1 ? "s" : ""}`}
             </p>
           </div>
-          <Link
-            to="/search"
-            className="flex items-center gap-1 text-[0.85rem] font-semibold text-(--accent) hover:gap-[0.45rem] transition-all whitespace-nowrap"
-          >
+          <Link to="/search" className="section-link">
             Voir tout <ArrowRight size={15} />
           </Link>
         </div>
@@ -281,78 +263,69 @@ export default function Home() {
       </section>
 
       {/* Témoignages */}
-      <section className="py-12 md:py-16">
-        <div className="bg-(--bg-sunken) rounded-(--r-card) p-8 md:p-10">
-          <div className="flex items-end justify-between gap-4 mb-6">
-            <div>
-              <h2 className="text-[1.5rem] font-bold tracking-[-0.01em] text-(--ink)">
-                Ils ont trouvé leur artisan
-              </h2>
-              <p className="text-(--ink-faint) text-[0.88rem] mt-[0.2rem]">
-                Des retours vérifiés, publiés après chaque prestation
-              </p>
-            </div>
+      <section className="testimonial-section">
+        <div className="section-heading">
+          <div>
+            <h2>Ils ont trouvé leur artisan</h2>
+            <p>Des retours vérifiés, publiés après chaque prestation</p>
           </div>
-          <div className="flex gap-[1.1rem] overflow-x-auto scrollbar-hide pb-2">
-            {[
-              {
-                name: "Chantal James",
-                role: "Cliente à Port-Salut",
-                rating: 5,
-                text: "J'ai trouvé une couturière à deux rues de chez moi en trois minutes. La prise de rendez-vous en ligne m'a évité trois appels perdus.",
-                avatar:
-                  "https://t4.ftcdn.net/jpg/03/51/56/07/240_F_351560776_sEYcaEM5PK8BxRx4GewPAYCbCmlKbBOJ.jpg",
-              },
-              {
-                name: "Serge Jean",
-                role: "Client à Fond Bleu",
-                rating: 5,
-                text: "L'électricienne est arrivée à l'heure annoncée, avec un devis clair avant de commencer. Ça change de mes anciennes expériences.",
-                avatar:
-                  "https://t4.ftcdn.net/jpg/05/17/43/25/240_F_517432572_Q7cWReFsAWbFjmOCxbJUnMeEbLacZCEl.jpg",
-              },
-              {
-                name: "Patrick Mvondo",
-                role: "Client à Champlois",
-                rating: 5,
-                text: "Le suivi par messagerie avant le rendez-vous m'a permis de préciser exactement ce qu'il fallait réparer.",
-                avatar:
-                  "https://t4.ftcdn.net/jpg/01/37/36/37/240_F_137363729_sjPyXboShqUJp4nTRl4KTWxcx9IS6Kip.jpg",
-              },
-            ].map((t, i) => (
-              <div
-                key={i}
-                className="shrink-0 w-[min(340px,82vw)] bg-(--bg-elevated) border border-(--border) rounded-(--r-card) p-6 flex flex-col gap-4"
-              >
-                <div className="flex gap-[0.15rem]">
-                  {Array.from({ length: t.rating }).map((_, si) => (
-                    <Star
-                      key={si}
-                      size={15}
-                      fill="currentColor"
-                      className="text-(--star)"
-                    />
-                  ))}
-                </div>
-                <p className="text-[0.92rem] leading-[1.55] text-(--ink)">
-                  « {t.text} »
-                </p>
-                <div className="flex items-center gap-[0.65rem] mt-auto">
-                  <img
-                    src={t.avatar}
-                    alt={t.name}
-                    className="w-9.5 h-9.5 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold text-[0.85rem]">{t.name}</p>
-                    <p className="text-[0.76rem] text-(--ink-faint)">
-                      {t.role}
-                    </p>
-                  </div>
+        </div>
+        <div className="testimonial-track">
+          {[
+            {
+              name: "Chantal James",
+              role: "Cliente à Port-Salut",
+              rating: 5,
+              text: "J'ai trouvé une couturière à deux rues de chez moi en trois minutes. La prise de rendez-vous en ligne m'a évité trois appels perdus.",
+              avatar:
+                "https://t4.ftcdn.net/jpg/03/51/56/07/240_F_351560776_sEYcaEM5PK8BxRx4GewPAYCbCmlKbBOJ.jpg",
+            },
+            {
+              name: "Serge Jean",
+              role: "Client à Fond Bleu",
+              rating: 5,
+              text: "L'électricienne est arrivée à l'heure annoncée, avec un devis clair avant de commencer. Ça change de mes anciennes expériences.",
+              avatar:
+                "https://t4.ftcdn.net/jpg/05/17/43/25/240_F_517432572_Q7cWReFsAWbFjmOCxbJUnMeEbLacZCEl.jpg",
+            },
+            {
+              name: "Patrick Mvondo",
+              role: "Client à Champlois",
+              rating: 5,
+              text: "Le suivi par messagerie avant le rendez-vous m'a permis de préciser exactement ce qu'il fallait réparer.",
+              avatar:
+                "https://t4.ftcdn.net/jpg/01/37/36/37/240_F_137363729_sjPyXboShqUJp4nTRl4KTWxcx9IS6Kip.jpg",
+            },
+            {
+              name: "Aïcha Omar",
+              role: "Cliente à Maniche",
+              rating: 4,
+              text: "Bonne plateforme, les avis des autres clients m'ont aidée à choisir le bon menuisier pour ma bibliothèque.",
+              avatar:
+                "https://t3.ftcdn.net/jpg/01/06/55/58/240_F_106555867_yd9obhwNljC895BovPDzclkRbsMLXL2M.jpg",
+            },
+          ].map((t, i) => (
+            <div key={i} className="testimonial-card">
+              <div className="testimonial-stars">
+                {Array.from({ length: t.rating }).map((_, si) => (
+                  <Star key={si} size={15} fill="currentColor" />
+                ))}
+              </div>
+              <p className="testimonial-quote">« {t.text} »</p>
+              <div className="testimonial-author">
+                <img
+                  src={t.avatar}
+                  alt={t.name}
+                  className="testimonial-avatar"
+                  loading="lazy"
+                />
+                <div>
+                  <div className="testimonial-name">{t.name}</div>
+                  <div className="testimonial-role">{t.role}</div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
